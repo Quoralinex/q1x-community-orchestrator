@@ -1,0 +1,19 @@
+name: Repository Baseline
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions:
+  contents: read
+jobs:
+  repository-baseline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate required governance files
+        shell: bash
+        run: |
+          set -euo pipefail
+          required=(README.md LICENSE COMMERCIAL-LICENSING.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md .github/CODEOWNERS)
+          for file in "${required[@]}"; do test -s "$file" || { echo "Missing or empty: $file"; exit 1; }; done
+          git diff --check

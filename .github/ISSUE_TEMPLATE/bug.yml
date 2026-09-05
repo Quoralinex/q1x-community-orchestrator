@@ -1,0 +1,26 @@
+name: Bug report
+description: Report a reproducible defect
+title: "bug: "
+labels: ["bug", "triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem
+      description: What happened, and what did you expect?
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment
+      description: OS, runtime, deployment profile, provider/adapters and relevant versions.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Reproduction
+      description: Minimal steps or test case. Remove secrets and private data.
+    validations:
+      required: true

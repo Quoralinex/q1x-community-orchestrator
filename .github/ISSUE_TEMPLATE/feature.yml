@@ -1,0 +1,24 @@
+name: Capability proposal
+description: Propose a new capability, adapter or orchestration behaviour
+title: "proposal: "
+labels: ["proposal", "triage"]
+body:
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Intended outcome
+      description: Describe the user outcome rather than only a specific implementation.
+    validations:
+      required: true
+  - type: textarea
+    id: usecases
+    attributes:
+      label: Use cases
+      description: Explain where this capability would be useful.
+    validations:
+      required: true
+  - type: textarea
+    id: constraints
+    attributes:
+      label: Constraints and risks
+      description: Include cost, security, licensing, platform and dependency considerations.
