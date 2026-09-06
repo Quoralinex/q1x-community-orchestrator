@@ -9,3 +9,5 @@ export * from './discovery.js';
 export * from './discovery-loader.js';
 export * from './model-security.js';
 export * from './model-transport.js';
+
+export * from './model-protocols.js';
