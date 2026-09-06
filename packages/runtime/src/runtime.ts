@@ -1,5 +1,5 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { Checkpoint, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterManifest, CapabilityDescriptor, Checkpoint, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
@@ -127,6 +127,40 @@ export class OpenControlRuntime {
 
   listReplanEvents(programmeId?: string): ReplanEvent[] {
     return this.store.listDocuments<ReplanEvent>('replan-event', programmeId);
+  }
+
+  putCapability(capability: CapabilityDescriptor): CapabilityDescriptor {
+    validateContract(SCHEMA_IDS.capability, capability);
+    this.store.putDocument({ kind: 'capability', id: capability.id, scopeId: null, document: capability });
+    this.store.appendEvent('registry.capability.put', 'capability', capability.id, null, { availability: capability.availability.state });
+    return capability;
+  }
+
+  getCapability(id: string): CapabilityDescriptor | undefined {
+    return this.store.getDocument<CapabilityDescriptor>('capability', id);
+  }
+
+  listCapabilities(): CapabilityDescriptor[] {
+    return this.store.listDocuments<CapabilityDescriptor>('capability');
+  }
+
+  putAdapterManifest(manifest: AdapterManifest): AdapterManifest {
+    validateContract(SCHEMA_IDS.adapterManifest, manifest);
+    const missing = manifest.capabilityIds.filter(id => !this.getCapability(id));
+    if (missing.length > 0) {
+      throw new RuntimeError('INVALID_REFERENCE', `Adapter capability not found: ${missing.join(', ')}`);
+    }
+    this.store.putDocument({ kind: 'adapter-manifest', id: manifest.id, scopeId: null, document: manifest });
+    this.store.appendEvent('registry.adapter.put', 'adapter-manifest', manifest.id, null, { capabilityIds: manifest.capabilityIds });
+    return manifest;
+  }
+
+  getAdapterManifest(id: string): AdapterManifest | undefined {
+    return this.store.getDocument<AdapterManifest>('adapter-manifest', id);
+  }
+
+  listAdapterManifests(): AdapterManifest[] {
+    return this.store.listDocuments<AdapterManifest>('adapter-manifest');
   }
 
   recordExecutionRequest(request: ExecutionRequest): ExecutionRequest {
