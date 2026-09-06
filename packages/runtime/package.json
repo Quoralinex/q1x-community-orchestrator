@@ -3,11 +3,20 @@
   "version": "0.1.0-alpha.1",
   "description": "Single-node Open Control Runtime for Q1X Community Orchestrator.",
   "type": "module",
-  "engines": { "node": ">=24" },
-  "files": ["dist"],
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist"
+  ],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "exports": { ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" } },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
   "dependencies": {
     "@quoralinex/q1x-community-contracts": "0.1.0-alpha.1",
     "@quoralinex/q1x-community-sdk": "0.1.0-alpha.1",
@@ -21,5 +30,10 @@
     "directory": "packages/runtime"
   },
   "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  },
+  "bin": {
+    "q1x": "./dist/cli.js"
+  }
 }
