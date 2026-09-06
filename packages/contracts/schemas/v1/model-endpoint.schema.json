@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:model-endpoint",
+  "title": "Model Endpoint",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "name",
+    "adapterKind",
+    "protocol",
+    "url",
+    "defaultModel"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "adapterKind": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/adapterKind"
+    },
+    "protocol": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "url": {
+      "type": "string",
+      "format": "uri"
+    },
+    "defaultModel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 300000
+    },
+    "staticHeaders": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "credentials": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "header",
+          "environmentKey"
+        ],
+        "properties": {
+          "header": {
+            "type": "string",
+            "minLength": 1
+          },
+          "environmentKey": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          },
+          "prefix": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
