@@ -13,7 +13,8 @@ const required = [
   "work-graph.schema.json", "replan-event.schema.json", "capability.schema.json",
   "adapter-manifest.schema.json", "execution-request.schema.json",
   "execution-result.schema.json", "evidence.schema.json", "artifact.schema.json",
-  "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json"
+  "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json",
+  "discovery-manifest.schema.json"
 ];
 
 async function load(name) {

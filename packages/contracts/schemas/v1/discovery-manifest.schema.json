@@ -1,0 +1,356 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:discovery-manifest",
+  "title": "Discovery Manifest",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "name",
+    "version",
+    "platforms",
+    "activation",
+    "probes",
+    "capability"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/platform"
+      }
+    },
+    "activation": {
+      "enum": [
+        "any",
+        "all"
+      ]
+    },
+    "probes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/probe"
+      }
+    },
+    "capability": {
+      "$ref": "#/$defs/capabilityTemplate"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "probe": {
+      "oneOf": [
+        {
+          "$ref": "#/$defs/commandProbe"
+        },
+        {
+          "$ref": "#/$defs/pathProbe"
+        },
+        {
+          "$ref": "#/$defs/environmentProbe"
+        },
+        {
+          "$ref": "#/$defs/httpProbe"
+        }
+      ]
+    },
+    "probePlatforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/platform"
+      }
+    },
+    "commandProbe": {
+      "type": "object",
+      "required": [
+        "kind",
+        "names"
+      ],
+      "properties": {
+        "kind": {
+          "const": "command"
+        },
+        "names": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "versionArgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 30000
+        },
+        "platforms": {
+          "$ref": "#/$defs/probePlatforms"
+        }
+      },
+      "additionalProperties": false
+    },
+    "pathProbe": {
+      "type": "object",
+      "required": [
+        "kind",
+        "paths"
+      ],
+      "properties": {
+        "kind": {
+          "const": "path"
+        },
+        "paths": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "platforms": {
+          "$ref": "#/$defs/probePlatforms"
+        }
+      },
+      "additionalProperties": false
+    },
+    "environmentProbe": {
+      "type": "object",
+      "required": [
+        "kind",
+        "keys"
+      ],
+      "properties": {
+        "kind": {
+          "const": "environment"
+        },
+        "keys": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+          }
+        },
+        "match": {
+          "enum": [
+            "any",
+            "all"
+          ]
+        },
+        "platforms": {
+          "$ref": "#/$defs/probePlatforms"
+        }
+      },
+      "additionalProperties": false
+    },
+    "httpProbe": {
+      "type": "object",
+      "required": [
+        "kind",
+        "url"
+      ],
+      "properties": {
+        "kind": {
+          "const": "http"
+        },
+        "url": {
+          "type": "string",
+          "format": "uri"
+        },
+        "method": {
+          "enum": [
+            "GET",
+            "HEAD"
+          ]
+        },
+        "acceptedStatus": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "integer",
+            "minimum": 100,
+            "maximum": 599
+          }
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 30000
+        },
+        "platforms": {
+          "$ref": "#/$defs/probePlatforms"
+        }
+      },
+      "additionalProperties": false
+    },
+    "capabilityTemplate": {
+      "type": "object",
+      "required": [
+        "id",
+        "name",
+        "adapterKind",
+        "operations",
+        "modalities",
+        "cost",
+        "privacy",
+        "trust",
+        "platforms"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1
+        },
+        "adapterKind": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/adapterKind"
+        },
+        "operations": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "modalities": {
+          "type": "object",
+          "required": [
+            "input",
+            "output"
+          ],
+          "properties": {
+            "input": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "urn:q1x:community:contracts:v1:common#/$defs/modality"
+              }
+            },
+            "output": {
+              "type": "array",
+              "uniqueItems": true,
+              "items": {
+                "$ref": "urn:q1x:community:contracts:v1:common#/$defs/modality"
+              }
+            }
+          },
+          "additionalProperties": false
+        },
+        "cost": {
+          "type": "object",
+          "required": [
+            "class"
+          ],
+          "properties": {
+            "class": {
+              "$ref": "urn:q1x:community:contracts:v1:common#/$defs/costClass"
+            },
+            "currency": {
+              "type": "string",
+              "pattern": "^[A-Z]{3}$"
+            },
+            "unitCost": {
+              "type": "number",
+              "minimum": 0
+            },
+            "unit": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "privacy": {
+          "type": "object",
+          "required": [
+            "executionLocation"
+          ],
+          "properties": {
+            "executionLocation": {
+              "$ref": "urn:q1x:community:contracts:v1:common#/$defs/privacyLevel"
+            },
+            "dataRetention": {
+              "enum": [
+                "none",
+                "session",
+                "provider-policy",
+                "configurable",
+                "unknown"
+              ]
+            }
+          },
+          "additionalProperties": false
+        },
+        "trust": {
+          "type": "object",
+          "required": [
+            "level"
+          ],
+          "properties": {
+            "level": {
+              "$ref": "urn:q1x:community:contracts:v1:common#/$defs/trustLevel"
+            },
+            "validatedAt": {
+              "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+            },
+            "source": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "additionalProperties": false
+        },
+        "platforms": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": {
+            "$ref": "urn:q1x:community:contracts:v1:common#/$defs/platform"
+          }
+        },
+        "metadata": {
+          "type": "object",
+          "additionalProperties": true
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}
