@@ -38,4 +38,4 @@ Contributions are welcome through pull requests. `main` is protected. Read [`CON
 
 ## Licence
 
-This repository is **source-available**, not OSI Open Source, because commercial use is restricted. Non-commercial use is licensed under the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate commercial licence from Quoralinex. See [`LICENSE`](LICENSE) and [`COMMERCIAL-LICENSING.md`](COMMERCIAL-LICENSING.md).
+Use is free under the **PolyForm Noncommercial License 1.0.0** for permitted non-commercial purposes. Commercial use, distribution as part of a commercial product or service, or other commercial exploitation requires a separate commercial licence from Quoralinex. See [`LICENSE`](LICENSE) and [`COMMERCIAL-LICENSING.md`](COMMERCIAL-LICENSING.md).
