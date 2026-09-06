@@ -69,6 +69,7 @@ async function postJson(endpoint: ModelEndpoint, body: unknown, context: ModelTr
     const response = await fetchImpl(endpoint.url, {
       method: 'POST',
       headers,
+      redirect: 'manual',
       body: JSON.stringify(body),
       signal: AbortSignal.timeout(endpoint.timeoutMs ?? 30000),
     });

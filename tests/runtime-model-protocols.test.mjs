@@ -51,6 +51,19 @@ test("built-in compatible transports map and normalize all three protocols", asy
   assert.equal(JSON.stringify([chat, responses, messages]).includes("super-secret"), false);
 });
 
+test("built-in transports disable automatic redirects", async () => {
+  const { createDefaultModelTransportRegistry } = await module();
+  let redirect;
+  const ep = { ...endpoint(1, "openai-chat-completions", "endpoint.redirect"), url: "https://example.invalid/v1/chat" };
+  const fakeFetch = async (_url, init) => {
+    redirect = init.redirect;
+    return new Response(JSON.stringify({ choices: [{ message: { content: "ok" } }] }), { status: 200, headers: { "content-type": "application/json" } });
+  };
+  const result = await createDefaultModelTransportRegistry().invoke(ep, request(ep.id), { fetch: fakeFetch });
+  assert.equal(result.outputText, "ok");
+  assert.equal(redirect, "manual");
+});
+
 test("non-success transport responses are sanitized", async t => {
   const server = createServer((_req, res) => { res.statusCode = 500; res.end("sensitive-provider-body"); });
   await new Promise(resolve => server.listen(0, "127.0.0.1", resolve)); t.after(() => server.close());
