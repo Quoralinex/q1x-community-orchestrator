@@ -27,3 +27,11 @@ test("TypeScript schema catalog covers every normative Phase 1 schema", async ()
   for (const name of files) schemaIds.push((await load(`${name}.schema.json`)).$id);
   assert.deepEqual(new Set(Object.values(SCHEMA_IDS)), new Set(schemaIds));
 });
+
+test("workspace packages carry the repository licence", async () => {
+  const rootLicense = await readFile(path.join(root, "LICENSE"), "utf8");
+  for (const workspace of ["contracts", "sdk-typescript"]) {
+    const packageLicense = await readFile(path.join(root, "packages", workspace, "LICENSE"), "utf8");
+    assert.equal(packageLicense, rootLicense, `${workspace} licence must match repository LICENSE`);
+  }
+});
