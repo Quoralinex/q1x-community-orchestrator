@@ -32,9 +32,8 @@ a:hover { color: #a8c6ff; }
 .skip-link:focus { top: 1rem; }
 .site-header { position: sticky; top: 0; z-index: 20; border-bottom: 1px solid var(--border); background: rgba(6,11,23,.90); backdrop-filter: blur(18px); }
 .header-inner { min-height: 4.8rem; display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
-.brand { display: inline-flex; align-items: center; gap: .8rem; color: var(--text); text-decoration: none; font-weight: 760; }
-.brand-mark { display: grid; place-items: center; min-width: 2.65rem; height: 2.65rem; padding: 0 .5rem; border: 1px solid rgba(118,167,255,.55); border-radius: .78rem; background: linear-gradient(145deg, rgba(47,124,255,.98), rgba(47,124,255,.34)); box-shadow: 0 0 28px rgba(47,124,255,.30); font-size: .77rem; letter-spacing: .02em; }
-.brand-word { letter-spacing: -.02em; }
+.brand { display: inline-flex; align-items: center; color: var(--text); text-decoration: none; }
+.brand-logo { display: block; width: 118px; height: auto; max-height: 3rem; object-fit: contain; object-position: left center; }
 .nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .95rem; }
 .nav a { color: var(--muted); text-decoration: none; font-size: .92rem; font-weight: 650; }
 .nav a:hover { color: var(--text); }
@@ -59,4 +58,4 @@ th { color: var(--text); }
 .site-footer { border-top: 1px solid var(--border); background: rgba(6,11,23,.75); }
 .footer-inner { min-height: 5rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; color: var(--subtle); font-size: .9rem; }
 @media (max-width: 860px) { .header-inner { align-items: flex-start; flex-direction: column; padding: 1rem 0; } .nav { justify-content: flex-start; } .grid { grid-template-columns: 1fr; } }
-@media (max-width: 560px) { .brand-word { display: none; } .shell { width: min(100% - 1.5rem, 1120px); } .content { padding-top: 2.6rem; } .footer-inner { align-items: flex-start; flex-direction: column; padding: 1rem 0; } }
+@media (max-width: 560px) { .brand-logo { width: 104px; } .shell { width: min(100% - 1.5rem, 1120px); } .content { padding-top: 2.6rem; } .footer-inner { align-items: flex-start; flex-direction: column; padding: 1rem 0; } }

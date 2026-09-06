@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="docs/assets/brand/q1x-logo-transparent.png" alt="Q1X" width="180">
+</p>
+
 # Q1X Community Orchestrator
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
