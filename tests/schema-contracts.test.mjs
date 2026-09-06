@@ -21,7 +21,7 @@ async function load(name) {
   return JSON.parse(await readFile(path.join(schemaDir, name), "utf8"));
 }
 
-test("all Phase 1 normative schemas exist and self-validate", async () => {
+test("all normative schemas exist and self-validate", async () => {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   for (const name of required) {

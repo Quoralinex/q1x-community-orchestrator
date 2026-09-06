@@ -44,6 +44,8 @@ test("capability and adapter registry persists across restart", async () => {
   runtime = OpenControlRuntime.open({ home });
   assert.deepEqual(runtime.listCapabilities(), [capability]);
   assert.deepEqual(runtime.listAdapterManifests(), [adapter]);
+  assert.equal(runtime.getStatus().counts.capabilities, 1);
+  assert.equal(runtime.getStatus().counts.adapters, 1);
   runtime.close();
   await rm(home, { recursive: true, force: true });
 });

@@ -1,0 +1,50 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "discovery.example-local-http",
+  "name": "Example local HTTP service",
+  "version": "1.0.0",
+  "platforms": [
+    "any"
+  ],
+  "activation": "any",
+  "probes": [
+    {
+      "kind": "http",
+      "url": "http://127.0.0.1:8080/health",
+      "method": "GET",
+      "acceptedStatus": [
+        200,
+        204
+      ],
+      "timeoutMs": 1500
+    }
+  ],
+  "capability": {
+    "id": "capability.example-local-http",
+    "name": "Example local HTTP service",
+    "adapterKind": "provider-http",
+    "operations": [
+      "request"
+    ],
+    "modalities": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "cost": {
+      "class": "unknown"
+    },
+    "privacy": {
+      "executionLocation": "unknown"
+    },
+    "trust": {
+      "level": "unverified"
+    },
+    "platforms": [
+      "any"
+    ]
+  }
+}

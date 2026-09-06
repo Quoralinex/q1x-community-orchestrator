@@ -1,0 +1,50 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "discovery.example-local-command",
+  "name": "Example local command",
+  "version": "1.0.0",
+  "platforms": [
+    "any"
+  ],
+  "activation": "any",
+  "probes": [
+    {
+      "kind": "command",
+      "names": [
+        "q1x-example-tool"
+      ],
+      "versionArgs": [
+        "--version"
+      ],
+      "timeoutMs": 2000
+    }
+  ],
+  "capability": {
+    "id": "capability.example-local-command",
+    "name": "Example local command",
+    "adapterKind": "cli-tui",
+    "operations": [
+      "execute"
+    ],
+    "modalities": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "cost": {
+      "class": "unknown"
+    },
+    "privacy": {
+      "executionLocation": "unknown"
+    },
+    "trust": {
+      "level": "unverified"
+    },
+    "platforms": [
+      "any"
+    ]
+  }
+}

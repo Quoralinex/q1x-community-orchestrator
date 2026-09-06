@@ -24,6 +24,8 @@ export interface RuntimeStatus {
     executionRequestsPending: number;
     executionResults: number;
     checkpoints: number;
+    capabilities: number;
+    adapters: number;
   };
 }
 
@@ -293,7 +295,9 @@ export class OpenControlRuntime {
         workGraphs: graphs.length,
         executionRequestsPending: requests.filter(request => !completedRequestIds.has(request.id)).length,
         executionResults: results.length,
-        checkpoints: this.listCheckpoints(programmeId).length
+        checkpoints: this.listCheckpoints(programmeId).length,
+        capabilities: this.listCapabilities().length,
+        adapters: this.listAdapterManifests().length
       }
     };
   }
