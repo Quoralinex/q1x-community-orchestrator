@@ -18,6 +18,10 @@ interface DocumentRow {
   document_json: string;
 }
 
+interface ScopeRow {
+  scope_id: string | null;
+}
+
 export class SqliteStore {
   readonly home: string;
   readonly databasePath: string;
@@ -90,6 +94,13 @@ export class SqliteStore {
       'SELECT storage_revision FROM document_heads WHERE kind = ? AND id = ?'
     ).get(kind, id) as HeadRow | undefined;
     return row?.storage_revision;
+  }
+
+  getDocumentScope(kind: string, id: string): string | null | undefined {
+    const row = this.db.prepare(
+      'SELECT scope_id FROM document_heads WHERE kind = ? AND id = ?'
+    ).get(kind, id) as ScopeRow | undefined;
+    return row?.scope_id;
   }
 
   putDocument<T>({ kind, id, scopeId, document }: PutDocumentInput<T>): number {

@@ -1,5 +1,5 @@
 import { SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { Mission, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
@@ -111,6 +111,69 @@ export class OpenControlRuntime {
 
   listReplanEvents(programmeId?: string): ReplanEvent[] {
     return this.store.listDocuments<ReplanEvent>('replan-event', programmeId);
+  }
+
+  recordExecutionRequest(request: ExecutionRequest): ExecutionRequest {
+    validateContract(SCHEMA_IDS.executionRequest, request);
+    if (this.getExecutionRequest(request.id)) {
+      throw new RuntimeError('EXECUTION_CONFLICT', `Execution request already exists: ${request.id}`);
+    }
+    const located = this.findWorkItem(request.workItemId);
+    if (!located) {
+      throw new RuntimeError('INVALID_REFERENCE', `Execution work item not found: ${request.workItemId}`);
+    }
+    if (located.node.status === 'completed' || located.node.status === 'cancelled') {
+      throw new RuntimeError('EXECUTION_CONFLICT', `Execution work item is terminal: ${request.workItemId}`);
+    }
+    this.store.putDocument({ kind: 'execution-request', id: request.id, scopeId: located.programmeId, document: request });
+    this.store.appendEvent('execution.request', 'execution-request', request.id, located.programmeId, { workItemId: request.workItemId });
+    return request;
+  }
+
+  getExecutionRequest(id: string): ExecutionRequest | undefined {
+    return this.store.getDocument<ExecutionRequest>('execution-request', id);
+  }
+
+  listExecutionRequests(programmeId?: string): ExecutionRequest[] {
+    return this.store.listDocuments<ExecutionRequest>('execution-request', programmeId);
+  }
+
+  recordExecutionResult(result: ExecutionResult): ExecutionResult {
+    validateContract(SCHEMA_IDS.executionResult, result);
+    const request = this.getExecutionRequest(result.requestId);
+    if (!request) {
+      throw new RuntimeError('INVALID_REFERENCE', `Execution request not found: ${result.requestId}`);
+    }
+    if (request.workItemId !== result.workItemId) {
+      throw new RuntimeError('EXECUTION_CONFLICT', 'Execution result work item does not match its request');
+    }
+    if (this.getExecutionResult(result.requestId) || this.store.getHeadRevision('execution-result', result.id) !== undefined) {
+      throw new RuntimeError('EXECUTION_CONFLICT', `Execution request already has a result: ${result.requestId}`);
+    }
+    const scopeId = this.store.getDocumentScope('execution-request', request.id);
+    if (!scopeId) throw new RuntimeError('INVALID_REFERENCE', `Execution request has no programme scope: ${request.id}`);
+    this.store.putDocument({ kind: 'execution-result', id: result.id, scopeId, document: result });
+    this.store.appendEvent('execution.result', 'execution-result', result.id, scopeId, { requestId: result.requestId, status: result.status });
+    return result;
+  }
+
+  getExecutionResult(requestId: string): ExecutionResult | undefined {
+    return this.listExecutionResults().find(result => result.requestId === requestId);
+  }
+
+  listExecutionResults(programmeId?: string): ExecutionResult[] {
+    return this.store.listDocuments<ExecutionResult>('execution-result', programmeId);
+  }
+
+  private findWorkItem(workItemId: string): { node: WorkNode; programmeId: string } | undefined {
+    const matches = this.listWorkGraphs().flatMap(graph => {
+      const node = graph.nodes.find(candidate => candidate.id === workItemId);
+      return node ? [{ node, programmeId: graph.programmeId }] : [];
+    });
+    if (matches.length > 1) {
+      throw new RuntimeError('CONFLICT', `Work item id is ambiguous across programmes: ${workItemId}`);
+    }
+    return matches[0];
   }
 
   private assertWorkNodeTransitions(previous: WorkGraph, next: WorkGraph): void {
