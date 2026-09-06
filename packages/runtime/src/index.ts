@@ -6,3 +6,4 @@ export * from './runtime.js';
 export * from './schema-loader.js';
 export * from './store.js';
 export * from './discovery.js';
+export * from './discovery-loader.js';

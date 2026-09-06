@@ -4,6 +4,7 @@ import { resolve } from 'node:path';
 import type { ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
+import { loadDiscoveryManifests } from './discovery-loader.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -29,13 +30,31 @@ function required<T>(value: T | undefined, kind: string, id: string): T {
   return value;
 }
 
-function execute(runtime: OpenControlRuntime, args: string[]): unknown {
+async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unknown> {
   const command = args.shift();
   if (!command) throw new Error('A command is required');
   if (command === 'init') return runtime.getStatus();
   if (command === 'status') return runtime.getStatus(takeOption(args, '--programme'));
+  if (command === 'discover') {
+    const manifests = loadDiscoveryManifests(requiredOption(args, '--manifest'));
+    return runtime.discoverMany(manifests);
+  }
 
   const action = args.shift();
+  if (command === 'capabilities') {
+    if (action === 'list') return runtime.listCapabilities();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('capabilities get requires an id');
+      return required(runtime.getCapability(id), 'Capability', id);
+    }
+  }
+  if (command === 'adapters') {
+    if (action === 'list') return runtime.listAdapterManifests();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('adapters get requires an id');
+      return required(runtime.getAdapterManifest(id), 'Adapter manifest', id);
+    }
+  }
   if (command === 'mission') {
     if (action === 'put') return runtime.putMission(readJsonFile(requiredOption(args, '--file')) as Mission);
     if (action === 'list') return runtime.listMissions();
@@ -99,7 +118,7 @@ let runtime: OpenControlRuntime | undefined;
 try {
   const home = takeOption(args, '--home');
   runtime = OpenControlRuntime.open({ home });
-  writeResult(execute(runtime, args));
+  writeResult(await execute(runtime, args));
 } catch (error) {
   writeError(error);
   process.exitCode = 1;
