@@ -1,27 +1,35 @@
+---
+layout: default
+title: Home
+---
+
+<section class="hero">
+<p class="eyebrow">Universal orchestration for long-horizon work</p>
+
 # Q1X Community Orchestrator
 
-Q1X Community Orchestrator is intended to coordinate complex digital missions across models, agents, tools, applications and services without binding users to one AI vendor, operating system or deployment provider.
+<p class="lede">Turn broad goals into governed programmes of work across AI models, agents, tools, applications and digital services—without binding users to one vendor, operating system or deployment provider.</p>
+</section>
+
+<div class="grid">
+  <article class="card"><h3>Mission-led</h3><p>Start with an outcome. Build workstreams, dependencies, experiments, evidence and deliverables dynamically.</p></article>
+  <article class="card"><h3>Capability-routed</h3><p>Use cloud or local models, MCP, A2A, CLI/TUI, browser control, desktop applications, software runtimes and future devices.</p></article>
+  <article class="card"><h3>Local-first capable</h3><p>Run without a mandatory paid model API, then scale from one machine to distributed or cloud deployments.</p></article>
+</div>
 
 ## The idea
 
-A user describes an outcome. Q1X constructs a programme, decomposes it into workstreams and executable work, discovers available capabilities, assembles dynamic teams, supervises dependencies and evidence, and adapts the plan when conditions change.
+A user describes an outcome. The orchestrator constructs a programme, decomposes it into executable work, discovers available capabilities, assembles dynamic teams, supervises dependencies and evidence, and safely replans when conditions change.
 
-The system is deliberately broader than software development. Software delivery is one workload alongside research, company creation, digital R&D, infrastructure, documentation, product development, operations and other multi-stage work.
+Software delivery is only one workload. The project is designed for research, company creation, digital R&D, infrastructure, documentation, product development, operations, analysis and other multi-stage digital missions.
 
-## Design goals
+<div class="callout"><strong>Design rule:</strong> models are capabilities, not the architecture. The system routes work by capability, cost, privacy, modality, evidence, trust and availability.</div>
 
-- Run locally with no mandatory paid model API.
-- Scale from one computer to distributed/cloud deployments.
-- Work across macOS, Windows and Linux.
-- Route by capability, cost, privacy, modality, evidence and availability.
-- Support cloud and local models, MCP tools, A2A agents, CLIs, browser control, desktop applications and future devices.
-- Persist programmes, approvals, artifacts, evidence and checkpoints.
-- Replan safely when research or execution invalidates earlier assumptions.
+## Explore the project
 
-## Documentation map
-
-- [Architecture](architecture.md)
-- [Use cases](use-cases.md)
-- [Deployment model](deployment.md)
-- [Delivery roadmap](roadmap.md)
-- [Licensing](licensing.md)
+- [Architecture](architecture.md) — mission engine, programme graph, control runtime and capability fabric.
+- [Use cases](use-cases.md) — business, research, R&D, product, infrastructure and software examples.
+- [Deployment model](deployment.md) — zero-cost personal, team and distributed profiles.
+- [Review and governance](review-model.md) — CI, primary review, independent review and merge gates.
+- [Delivery roadmap](roadmap.md) — staged implementation from foundation to stable community release.
+- [Licensing](licensing.md) — free non-commercial use and commercial licensing.

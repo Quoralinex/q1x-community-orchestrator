@@ -1,3 +1,5 @@
 title: Q1X Community Orchestrator
 description: General-purpose, provider-neutral orchestration for long-horizon digital missions.
-theme: minima
+url: https://quoralinex.github.io
+baseurl: /q1x-community-orchestrator
+markdown: kramdown
