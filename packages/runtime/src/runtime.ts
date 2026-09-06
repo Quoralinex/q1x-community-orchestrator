@@ -1,6 +1,7 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterManifest, CapabilityDescriptor, Checkpoint, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
+import { discoverManifest, type DiscoveryContext, type DiscoveryResult } from './discovery.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
 import { validateContract } from './schema-loader.js';
@@ -161,6 +162,24 @@ export class OpenControlRuntime {
 
   listAdapterManifests(): AdapterManifest[] {
     return this.store.listDocuments<AdapterManifest>('adapter-manifest');
+  }
+
+  async discover(manifest: DiscoveryManifest, context: DiscoveryContext = {}): Promise<DiscoveryResult> {
+    validateContract(SCHEMA_IDS.discoveryManifest, manifest);
+    const result = await discoverManifest(manifest, context);
+    this.putCapability(result.capability);
+    this.store.appendEvent('discovery.run', 'capability', result.capability.id, null, {
+      manifestId: manifest.id,
+      availability: result.capability.availability.state,
+      probeKinds: result.probes.map(probe => probe.kind)
+    });
+    return result;
+  }
+
+  async discoverMany(manifests: DiscoveryManifest[], context: DiscoveryContext = {}): Promise<DiscoveryResult[]> {
+    const results: DiscoveryResult[] = [];
+    for (const manifest of manifests) results.push(await this.discover(manifest, context));
+    return results;
   }
 
   recordExecutionRequest(request: ExecutionRequest): ExecutionRequest {

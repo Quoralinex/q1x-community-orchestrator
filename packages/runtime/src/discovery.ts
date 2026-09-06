@@ -100,6 +100,31 @@ function environmentProbe(probe: Extract<DiscoveryProbe, { kind: 'environment' }
   const success = (probe.match ?? 'all') === 'any' ? present.length > 0 : present.length === probe.keys.length;
   return { kind: 'environment', applicable: true, success, detail: `${present.length}/${probe.keys.length} configuration key(s) present`, metadata: { presentKeys: present } };
 }
+
+async function httpProbe(probe: Extract<DiscoveryProbe, { kind: 'http' }>): Promise<ProbeResult> {
+  let url: URL;
+  try {
+    url = new URL(probe.url);
+  } catch {
+    return { kind: 'http', applicable: true, success: false, detail: 'invalid URL' };
+  }
+  if (url.username || url.password) {
+    return { kind: 'http', applicable: true, success: false, detail: 'embedded URL credentials are not allowed' };
+  }
+  try {
+    const response = await fetch(url, {
+      method: probe.method ?? 'GET',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(probe.timeoutMs ?? 1500)
+    });
+    const accepted = probe.acceptedStatus ?? [];
+    const success = accepted.length > 0 ? accepted.includes(response.status) : response.status >= 200 && response.status < 300;
+    return { kind: 'http', applicable: true, success, detail: `HTTP ${response.status}`, metadata: { status: response.status } };
+  } catch (error) {
+    return { kind: 'http', applicable: true, success: false, detail: error instanceof Error ? error.name : 'request failed' };
+  }
+}
+
 export async function runProbe(probe: DiscoveryProbe, context: DiscoveryContext = {}): Promise<ProbeResult> {
   const platform = context.platform ?? currentPlatform();
   if (!applies(probe.platforms, platform)) return { kind: probe.kind, applicable: false, success: false, detail: 'probe not applicable on this platform' };
@@ -108,12 +133,15 @@ export async function runProbe(probe: DiscoveryProbe, context: DiscoveryContext 
   if (probe.kind === 'command') return commandProbe(probe, platform, env);
   if (probe.kind === 'path') return pathProbe(probe, home);
   if (probe.kind === 'environment') return environmentProbe(probe, env);
-  return { kind: 'http', applicable: true, success: false, detail: 'http probe not implemented' };
+  return httpProbe(probe);
 }
 
 export async function discoverManifest(manifest: DiscoveryManifest, context: DiscoveryContext = {}): Promise<DiscoveryResult> {
   const platform = context.platform ?? currentPlatform();
-  const probes = await Promise.all(manifest.probes.map(probe => runProbe(probe, context)));
+  const manifestApplicable = applies(manifest.platforms, platform);
+  const probes = manifestApplicable
+    ? await Promise.all(manifest.probes.map(probe => runProbe(probe, context)))
+    : manifest.probes.map(probe => ({ kind: probe.kind, applicable: false, success: false, detail: 'manifest not applicable on this platform' } as ProbeResult));
   const applicable = probes.filter(probe => probe.applicable);
   const activated = applicable.length > 0 && (manifest.activation === 'any'
     ? applicable.some(probe => probe.success)
