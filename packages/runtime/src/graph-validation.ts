@@ -1,7 +1,7 @@
 import type { WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 
-export function validateGraphStructure(graph: WorkGraph): void {
+export function validateGraphStructure(graph: WorkGraph, allowedParentIds: Iterable<string> = []): void {
   const ids = new Set<string>();
   for (const node of graph.nodes) {
     if (ids.has(node.id)) {
@@ -10,8 +10,9 @@ export function validateGraphStructure(graph: WorkGraph): void {
     ids.add(node.id);
   }
 
+  const validParents = new Set([...ids, ...allowedParentIds]);
   for (const node of graph.nodes) {
-    if (node.parentId && !ids.has(node.parentId)) {
+    if (node.parentId && !validParents.has(node.parentId)) {
       throw new RuntimeError('INVALID_REFERENCE', `Unknown parent node: ${node.parentId}`);
     }
   }
@@ -29,8 +30,7 @@ function assertAcyclicExecutionDependencies(graph: WorkGraph): void {
   const adjacency = new Map<string, string[]>();
   for (const node of graph.nodes) adjacency.set(node.id, []);
   for (const edge of graph.edges) {
-    if (edge.type === 'depends-on') adjacency.get(edge.to)?.push(edge.from);
-    if (edge.type === 'blocks') adjacency.get(edge.from)?.push(edge.to);
+    if (edge.type === 'depends-on' || edge.type === 'blocks') adjacency.get(edge.from)?.push(edge.to);
   }
 
   const visiting = new Set<string>();

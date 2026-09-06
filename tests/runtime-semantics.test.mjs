@@ -29,7 +29,7 @@ test('dependency graph must be acyclic', async () => {
     ...baseGraph,
     edges: [
       { from: 'a', to: 'b', type: 'depends-on' },
-      { from: 'a', to: 'b', type: 'blocks' }
+      { from: 'b', to: 'a', type: 'blocks' }
     ]
   };
   assert.throws(() => validateGraphStructure(cyclic), error => error?.code === 'GRAPH_CYCLE');

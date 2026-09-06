@@ -42,8 +42,8 @@ Cross-document rules are enforced in code:
 - A programme can be stored only when its referenced mission exists.
 - First programme and work-graph contract revisions must be `1`; subsequent revisions must increment by exactly one.
 - A work graph can be stored only when its programme exists.
-- Work-node ids must be unique, `parentId` must reference a node in the same graph, and every edge endpoint must exist.
-- Execution-dependency edges (`depends-on` and `blocks`) must not form a directed cycle. Informational edges are not used for deadlock detection.
+- Work-node ids must be unique, `parentId` must reference a node in the same graph or a workstream in the owning programme, and every edge endpoint must exist.
+- Execution-dependency edges (`depends-on` and `blocks`) run from prerequisite/blocker to dependent/blocked node and must not form a directed cycle. Informational edges are not used for deadlock detection.
 - Mission, programme and work-node lifecycle transitions are constrained; completed and cancelled states are terminal.
 - An execution request must reference a non-terminal work node.
 - An execution result must reference an existing request, match its work item, and may be recorded only once.
