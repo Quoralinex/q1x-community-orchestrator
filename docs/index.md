@@ -6,7 +6,7 @@ title: Home
 <section class="hero">
 <p class="eyebrow">Universal orchestration for long-horizon work</p>
 
-# Q1X Community Orchestrator
+<h1>Q1X Community Orchestrator</h1>
 
 <p class="lede">Turn broad goals into governed programmes of work across AI models, agents, tools, applications and digital services—without binding users to one vendor, operating system or deployment provider.</p>
 </section>
