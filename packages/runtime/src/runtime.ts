@@ -1,5 +1,5 @@
-import { SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
+import type { Checkpoint, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
@@ -8,6 +8,22 @@ import { SqliteStore } from './store.js';
 
 export interface RuntimeOpenOptions {
   home?: string;
+}
+
+
+export interface RuntimeStatus {
+  contractVersion: typeof CONTRACT_VERSION;
+  home: string;
+  databasePath: string;
+  programmeId?: string;
+  counts: {
+    missions: number;
+    programmes: number;
+    workGraphs: number;
+    executionRequestsPending: number;
+    executionResults: number;
+    checkpoints: number;
+  };
 }
 
 export class OpenControlRuntime {
@@ -163,6 +179,70 @@ export class OpenControlRuntime {
 
   listExecutionResults(programmeId?: string): ExecutionResult[] {
     return this.store.listDocuments<ExecutionResult>('execution-result', programmeId);
+  }
+
+  createCheckpoint(programmeId: string, checkpointId?: string): Checkpoint {
+    const programme = this.getProgramme(programmeId);
+    if (!programme) throw new RuntimeError('INVALID_REFERENCE', `Checkpoint programme not found: ${programmeId}`);
+    const graphs = this.listWorkGraphs(programmeId);
+    if (graphs.length !== 1) {
+      throw new RuntimeError('CONFLICT', `Phase 2 checkpoints require exactly one current work graph for ${programmeId}`);
+    }
+    const graph = graphs[0];
+    const id = checkpointId ?? `checkpoint.${programmeId}.${Date.now().toString(36)}`;
+    if (this.store.getCheckpoint(id)) throw new RuntimeError('CONFLICT', `Checkpoint already exists: ${id}`);
+    const checkpoint: Checkpoint = {
+      contractVersion: CONTRACT_VERSION,
+      id,
+      programmeId,
+      workGraphRevision: graph.revision,
+      resumableNodeIds: graph.nodes.filter(node => !['completed', 'cancelled'].includes(node.status)).map(node => node.id),
+      stateRefs: [{ id: programme.id, kind: 'programme' }, { id: graph.id, kind: 'work-graph' }],
+      createdAt: new Date().toISOString()
+    };
+    validateContract(SCHEMA_IDS.checkpoint, checkpoint);
+    const snapshot = this.store.captureScopeHeads(programmeId);
+    this.store.saveCheckpoint(id, programmeId, checkpoint, snapshot);
+    this.store.appendEvent('checkpoint.create', 'checkpoint', id, programmeId, { workGraphRevision: graph.revision });
+    return checkpoint;
+  }
+
+  listCheckpoints(programmeId?: string): Checkpoint[] {
+    return this.store.listCheckpoints<Checkpoint>(programmeId);
+  }
+
+  restoreCheckpoint(checkpointId: string): Checkpoint {
+    const stored = this.store.getCheckpoint<Checkpoint>(checkpointId);
+    if (!stored) throw new RuntimeError('CHECKPOINT_NOT_FOUND', `Checkpoint not found: ${checkpointId}`);
+    this.store.restoreScopeHeads(stored.checkpoint.programmeId, stored.snapshot);
+    this.store.appendEvent('checkpoint.restore', 'checkpoint', checkpointId, stored.checkpoint.programmeId, {
+      workGraphRevision: stored.checkpoint.workGraphRevision
+    });
+    return stored.checkpoint;
+  }
+
+  getStatus(programmeId?: string): RuntimeStatus {
+    const programmes = programmeId ? [this.getProgramme(programmeId)].filter(Boolean) as Programme[] : this.listProgrammes();
+    const missionIds = new Set(programmes.map(programme => programme.missionId));
+    const missions = programmeId ? this.listMissions().filter(mission => missionIds.has(mission.id)) : this.listMissions();
+    const graphs = programmeId ? this.listWorkGraphs(programmeId) : this.listWorkGraphs();
+    const requests = programmeId ? this.listExecutionRequests(programmeId) : this.listExecutionRequests();
+    const results = programmeId ? this.listExecutionResults(programmeId) : this.listExecutionResults();
+    const completedRequestIds = new Set(results.map(result => result.requestId));
+    return {
+      contractVersion: CONTRACT_VERSION,
+      home: this.home,
+      databasePath: this.databasePath,
+      ...(programmeId ? { programmeId } : {}),
+      counts: {
+        missions: missions.length,
+        programmes: programmes.length,
+        workGraphs: graphs.length,
+        executionRequestsPending: requests.filter(request => !completedRequestIds.has(request.id)).length,
+        executionResults: results.length,
+        checkpoints: this.listCheckpoints(programmeId).length
+      }
+    };
   }
 
   private findWorkItem(workItemId: string): { node: WorkNode; programmeId: string } | undefined {

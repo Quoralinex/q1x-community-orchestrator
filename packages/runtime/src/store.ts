@@ -3,6 +3,18 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { resolveRuntimeHome } from './home.js';
 
+export interface HeadPointer {
+  kind: string;
+  id: string;
+  storageRevision: number;
+  scopeId: string | null;
+}
+
+export interface StoredCheckpoint<T = unknown> {
+  checkpoint: T;
+  snapshot: HeadPointer[];
+}
+
 export interface PutDocumentInput<T = unknown> {
   kind: string;
   id: string;
@@ -18,9 +30,9 @@ interface DocumentRow {
   document_json: string;
 }
 
-interface ScopeRow {
-  scope_id: string | null;
-}
+interface ScopeRow { scope_id: string | null; }
+interface HeadPointerRow { kind: string; id: string; storage_revision: number; scope_id: string | null; }
+interface CheckpointRow { checkpoint_json: string; snapshot_json: string; }
 
 export class SqliteStore {
   readonly home: string;
@@ -151,6 +163,44 @@ export class SqliteStore {
       ? this.db.prepare(sql).all(kind)
       : this.db.prepare(sql).all(kind, scopeId)) as unknown as DocumentRow[];
     return rows.map(row => JSON.parse(row.document_json) as T);
+  }
+
+  captureScopeHeads(scopeId: string): HeadPointer[] {
+    const rows = this.db.prepare(
+      'SELECT kind, id, storage_revision, scope_id FROM document_heads WHERE scope_id = ? ORDER BY kind, id'
+    ).all(scopeId) as unknown as HeadPointerRow[];
+    return rows.map(row => ({ kind: row.kind, id: row.id, storageRevision: row.storage_revision, scopeId: row.scope_id }));
+  }
+
+  saveCheckpoint<T>(id: string, programmeId: string, checkpoint: T, snapshot: HeadPointer[]): void {
+    this.db.prepare(`INSERT INTO checkpoints
+      (id, programme_id, checkpoint_json, snapshot_json, created_at) VALUES (?, ?, ?, ?, ?)`
+    ).run(id, programmeId, JSON.stringify(checkpoint), JSON.stringify(snapshot), new Date().toISOString());
+  }
+
+  getCheckpoint<T = unknown>(id: string): StoredCheckpoint<T> | undefined {
+    const row = this.db.prepare('SELECT checkpoint_json, snapshot_json FROM checkpoints WHERE id = ?').get(id) as CheckpointRow | undefined;
+    return row ? { checkpoint: JSON.parse(row.checkpoint_json) as T, snapshot: JSON.parse(row.snapshot_json) as HeadPointer[] } : undefined;
+  }
+
+  listCheckpoints<T = unknown>(programmeId?: string): T[] {
+    const rows = (programmeId === undefined
+      ? this.db.prepare('SELECT checkpoint_json FROM checkpoints ORDER BY created_at, id').all()
+      : this.db.prepare('SELECT checkpoint_json FROM checkpoints WHERE programme_id = ? ORDER BY created_at, id').all(programmeId)) as unknown as { checkpoint_json: string }[];
+    return rows.map(row => JSON.parse(row.checkpoint_json) as T);
+  }
+
+  restoreScopeHeads(scopeId: string, snapshot: HeadPointer[]): void {
+    this.db.exec('BEGIN IMMEDIATE;');
+    try {
+      this.db.prepare('DELETE FROM document_heads WHERE scope_id = ?').run(scopeId);
+      const insert = this.db.prepare('INSERT INTO document_heads (kind, id, storage_revision, scope_id) VALUES (?, ?, ?, ?)');
+      for (const head of snapshot) insert.run(head.kind, head.id, head.storageRevision, head.scopeId);
+      this.db.exec('COMMIT;');
+    } catch (error) {
+      this.db.exec('ROLLBACK;');
+      throw error;
+    }
   }
 
   appendEvent(eventType: string, subjectType: string, subjectId: string, scopeId: string | null, payload: unknown): void {
