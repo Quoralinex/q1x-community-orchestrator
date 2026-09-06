@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:approval",
+  "title": "Approval",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "subject",
+    "state",
+    "requestedAt",
+    "requestedBy"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "subject": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/reference"
+    },
+    "state": {
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "expired",
+        "cancelled"
+      ]
+    },
+    "requestedAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    },
+    "requestedBy": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/actor"
+    },
+    "requiredApproverKinds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "human",
+          "agent",
+          "service"
+        ]
+      }
+    },
+    "decision": {
+      "type": "object",
+      "required": [
+        "actor",
+        "action",
+        "decidedAt"
+      ],
+      "properties": {
+        "actor": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/actor"
+        },
+        "action": {
+          "enum": [
+            "approve",
+            "reject"
+          ]
+        },
+        "decidedAt": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+        },
+        "reason": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "state": {
+            "enum": [
+              "approved",
+              "rejected"
+            ]
+          }
+        },
+        "required": [
+          "state"
+        ]
+      },
+      "then": {
+        "required": [
+          "decision"
+        ]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

@@ -1,0 +1,75 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:artifact",
+  "title": "Artifact",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "kind",
+    "uri",
+    "createdAt"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "kind": {
+      "enum": [
+        "document",
+        "code",
+        "dataset",
+        "image",
+        "audio",
+        "video",
+        "model",
+        "archive",
+        "report",
+        "configuration",
+        "other"
+      ]
+    },
+    "uri": {
+      "type": "string",
+      "format": "uri"
+    },
+    "mediaType": {
+      "type": "string",
+      "minLength": 1
+    },
+    "checksum": {
+      "type": "object",
+      "required": [
+        "algorithm",
+        "value"
+      ],
+      "properties": {
+        "algorithm": {
+          "enum": [
+            "sha256",
+            "sha512"
+          ]
+        },
+        "value": {
+          "type": "string",
+          "pattern": "^[A-Fa-f0-9]+$"
+        }
+      },
+      "additionalProperties": false
+    },
+    "createdBy": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/actor"
+    },
+    "createdAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}
