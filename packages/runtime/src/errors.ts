@@ -8,7 +8,11 @@ export type RuntimeErrorCode =
   | 'GRAPH_CYCLE'
   | 'EXECUTION_CONFLICT'
   | 'CHECKPOINT_NOT_FOUND'
-  | 'STORAGE_ERROR';
+  | 'STORAGE_ERROR'
+  | 'INSECURE_ENDPOINT'
+  | 'MISSING_CREDENTIAL'
+  | 'TRANSPORT_NOT_FOUND'
+  | 'MODEL_TRANSPORT_ERROR';
 
 export class RuntimeError extends Error {
   readonly code: RuntimeErrorCode;

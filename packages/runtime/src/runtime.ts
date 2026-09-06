@@ -1,7 +1,8 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { discoverManifest, type DiscoveryContext, type DiscoveryResult } from './discovery.js';
+import { assertSafeEndpointConfiguration } from './model-security.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
 import { validateContract } from './schema-loader.js';
@@ -164,6 +165,22 @@ export class OpenControlRuntime {
 
   listAdapterManifests(): AdapterManifest[] {
     return this.store.listDocuments<AdapterManifest>('adapter-manifest');
+  }
+
+  putModelEndpoint(endpoint: ModelEndpoint): ModelEndpoint {
+    validateContract(SCHEMA_IDS.modelEndpoint, endpoint);
+    assertSafeEndpointConfiguration(endpoint);
+    this.store.putDocument({ kind: 'model-endpoint', id: endpoint.id, scopeId: null, document: endpoint });
+    this.store.appendEvent('model.endpoint.put', 'model-endpoint', endpoint.id, null, { protocol: endpoint.protocol, adapterKind: endpoint.adapterKind });
+    return endpoint;
+  }
+
+  getModelEndpoint(id: string): ModelEndpoint | undefined {
+    return this.store.getDocument<ModelEndpoint>('model-endpoint', id);
+  }
+
+  listModelEndpoints(): ModelEndpoint[] {
+    return this.store.listDocuments<ModelEndpoint>('model-endpoint');
   }
 
   async discover(manifest: DiscoveryManifest, context: DiscoveryContext = {}): Promise<DiscoveryResult> {
