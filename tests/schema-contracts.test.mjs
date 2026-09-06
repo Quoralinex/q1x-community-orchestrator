@@ -13,14 +13,15 @@ const required = [
   "work-graph.schema.json", "replan-event.schema.json", "capability.schema.json",
   "adapter-manifest.schema.json", "execution-request.schema.json",
   "execution-result.schema.json", "evidence.schema.json", "artifact.schema.json",
-  "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json"
+  "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json",
+  "discovery-manifest.schema.json"
 ];
 
 async function load(name) {
   return JSON.parse(await readFile(path.join(schemaDir, name), "utf8"));
 }
 
-test("all Phase 1 normative schemas exist and self-validate", async () => {
+test("all normative schemas exist and self-validate", async () => {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   for (const name of required) {

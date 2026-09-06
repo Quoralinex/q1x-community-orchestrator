@@ -1,6 +1,7 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { Checkpoint, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
+import { discoverManifest, type DiscoveryContext, type DiscoveryResult } from './discovery.js';
 import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
 import { validateContract } from './schema-loader.js';
@@ -23,6 +24,8 @@ export interface RuntimeStatus {
     executionRequestsPending: number;
     executionResults: number;
     checkpoints: number;
+    capabilities: number;
+    adapters: number;
   };
 }
 
@@ -127,6 +130,58 @@ export class OpenControlRuntime {
 
   listReplanEvents(programmeId?: string): ReplanEvent[] {
     return this.store.listDocuments<ReplanEvent>('replan-event', programmeId);
+  }
+
+  putCapability(capability: CapabilityDescriptor): CapabilityDescriptor {
+    validateContract(SCHEMA_IDS.capability, capability);
+    this.store.putDocument({ kind: 'capability', id: capability.id, scopeId: null, document: capability });
+    this.store.appendEvent('registry.capability.put', 'capability', capability.id, null, { availability: capability.availability.state });
+    return capability;
+  }
+
+  getCapability(id: string): CapabilityDescriptor | undefined {
+    return this.store.getDocument<CapabilityDescriptor>('capability', id);
+  }
+
+  listCapabilities(): CapabilityDescriptor[] {
+    return this.store.listDocuments<CapabilityDescriptor>('capability');
+  }
+
+  putAdapterManifest(manifest: AdapterManifest): AdapterManifest {
+    validateContract(SCHEMA_IDS.adapterManifest, manifest);
+    const missing = manifest.capabilityIds.filter(id => !this.getCapability(id));
+    if (missing.length > 0) {
+      throw new RuntimeError('INVALID_REFERENCE', `Adapter capability not found: ${missing.join(', ')}`);
+    }
+    this.store.putDocument({ kind: 'adapter-manifest', id: manifest.id, scopeId: null, document: manifest });
+    this.store.appendEvent('registry.adapter.put', 'adapter-manifest', manifest.id, null, { capabilityIds: manifest.capabilityIds });
+    return manifest;
+  }
+
+  getAdapterManifest(id: string): AdapterManifest | undefined {
+    return this.store.getDocument<AdapterManifest>('adapter-manifest', id);
+  }
+
+  listAdapterManifests(): AdapterManifest[] {
+    return this.store.listDocuments<AdapterManifest>('adapter-manifest');
+  }
+
+  async discover(manifest: DiscoveryManifest, context: DiscoveryContext = {}): Promise<DiscoveryResult> {
+    validateContract(SCHEMA_IDS.discoveryManifest, manifest);
+    const result = await discoverManifest(manifest, context);
+    this.putCapability(result.capability);
+    this.store.appendEvent('discovery.run', 'capability', result.capability.id, null, {
+      manifestId: manifest.id,
+      availability: result.capability.availability.state,
+      probeKinds: result.probes.map(probe => probe.kind)
+    });
+    return result;
+  }
+
+  async discoverMany(manifests: DiscoveryManifest[], context: DiscoveryContext = {}): Promise<DiscoveryResult[]> {
+    const results: DiscoveryResult[] = [];
+    for (const manifest of manifests) results.push(await this.discover(manifest, context));
+    return results;
   }
 
   recordExecutionRequest(request: ExecutionRequest): ExecutionRequest {
@@ -240,7 +295,9 @@ export class OpenControlRuntime {
         workGraphs: graphs.length,
         executionRequestsPending: requests.filter(request => !completedRequestIds.has(request.id)).length,
         executionResults: results.length,
-        checkpoints: this.listCheckpoints(programmeId).length
+        checkpoints: this.listCheckpoints(programmeId).length,
+        capabilities: this.listCapabilities().length,
+        adapters: this.listAdapterManifests().length
       }
     };
   }

@@ -2,7 +2,7 @@
 
 1. **Phase 1 — Contract foundation:** versioned JSON schemas, TypeScript reference SDK, cross-domain examples and contract CI. **Implemented in pre-alpha.**
 2. **Phase 2 — Open Control Runtime:** SQLite-backed single-node runtime, persistent work graph, execution lifecycle, transactional checkpoints/recovery and JSON-first `q1x` CLI. **Implemented in pre-alpha.**
-3. Capability discovery and live registry.
+3. **Phase 3 — Capability discovery and live registry:** manifest-driven command/path/environment/HTTP probes, persistent registry and discovery CLI. **Implemented in pre-alpha.**
 4. Provider-neutral model transport and local inference adapters.
 5. MCP, A2A and CLI/TUI adapters.
 6. Browser/web control and desktop/application adapters.

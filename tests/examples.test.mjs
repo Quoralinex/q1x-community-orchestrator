@@ -11,7 +11,7 @@ const schemaDir = path.join(root, "packages", "contracts", "schemas", "v1");
 const schemaNames = [
   "common", "mission", "programme", "work-graph", "replan-event", "capability",
   "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-  "approval", "checkpoint", "deployment-profile"
+  "approval", "checkpoint", "deployment-profile", "discovery-manifest"
 ];
 
 async function json(file) {
@@ -43,7 +43,10 @@ const examples = [
   ["software-delivery/artifact.json", "artifact"],
   ["software-delivery/approval.json", "approval"],
   ["software-delivery/checkpoint.json", "checkpoint"],
-  ["software-delivery/deployment-profile.json", "deployment-profile"]
+  ["software-delivery/deployment-profile.json", "deployment-profile"],
+  ["discovery/local-command.discovery.json", "discovery-manifest"],
+  ["discovery/local-http.discovery.json", "discovery-manifest"],
+  ["discovery/desktop-path.discovery.json", "discovery-manifest"]
 ];
 
 test("cross-domain examples validate against normative schemas", async () => {

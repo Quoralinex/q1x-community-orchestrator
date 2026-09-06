@@ -28,3 +28,23 @@ export interface AdapterManifest {
   configurationKeys?: string[];
   metadata?: Record<string, unknown>;
 }
+
+export type DiscoveryProbe =
+  | { kind: "command"; names: string[]; versionArgs?: string[]; timeoutMs?: number; platforms?: Platform[] }
+  | { kind: "path"; paths: string[]; platforms?: Platform[] }
+  | { kind: "environment"; keys: string[]; match?: "any" | "all"; platforms?: Platform[] }
+  | { kind: "http"; url: string; method?: "GET" | "HEAD"; acceptedStatus?: number[]; timeoutMs?: number; platforms?: Platform[] };
+
+export type CapabilityTemplate = Omit<CapabilityDescriptor, "contractVersion" | "availability">;
+
+export interface DiscoveryManifest {
+  contractVersion: ContractVersion;
+  id: Identifier;
+  name: string;
+  version: string;
+  platforms: Platform[];
+  activation: "any" | "all";
+  probes: DiscoveryProbe[];
+  capability: CapabilityTemplate;
+  metadata?: Record<string, unknown>;
+}

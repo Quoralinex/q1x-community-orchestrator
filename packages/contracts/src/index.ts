@@ -32,4 +32,5 @@ export const SCHEMA_IDS = {
   approval: "urn:q1x:community:contracts:v1:approval",
   checkpoint: "urn:q1x:community:contracts:v1:checkpoint",
   deploymentProfile: "urn:q1x:community:contracts:v1:deployment-profile",
+  discoveryManifest: "urn:q1x:community:contracts:v1:discovery-manifest",
 } as const;

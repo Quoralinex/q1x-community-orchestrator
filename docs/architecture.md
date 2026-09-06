@@ -25,3 +25,7 @@ Programme checkpoints restore current head pointers transactionally without dele
 The runtime binds no network port and invokes no external provider in Phase 2. Capability discovery, routing and execution adapters remain separate later layers.
 
 See [Open Control Runtime](runtime.md) for commands and recovery behaviour.
+
+## Phase 3 discovery boundary
+
+Capability discovery is manifest-driven. The core engine understands generic command, path, environment and HTTP probes; it does not know product/vendor names. Discovery produces the existing `CapabilityDescriptor` contract and persists it through the Phase 2 runtime. Adapter/plugin authors can therefore add new products without modifying the orchestrator core.

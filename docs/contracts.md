@@ -24,6 +24,7 @@ The `v1` contract layer is the stable public language used to describe missions,
 | Approval | Human, agent or service decision gates |
 | Checkpoint | Resumable programme state references |
 | Deployment profile | Personal, team or distributed runtime requirements |
+| Discovery manifest | OS-neutral command, path, environment and HTTP probes that produce live capabilities |
 
 ## Adapter kinds
 

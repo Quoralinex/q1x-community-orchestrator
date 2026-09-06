@@ -17,11 +17,11 @@ test("TypeScript adapter catalog matches the normative schema enum", async () =>
   assert.deepEqual([...ADAPTER_KINDS], common.$defs.adapterKind.enum);
 });
 
-test("TypeScript schema catalog covers every normative Phase 1 schema", async () => {
+test("TypeScript schema catalog covers every normative schema", async () => {
   const files = [
     "common", "mission", "programme", "work-graph", "replan-event", "capability",
     "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-    "approval", "checkpoint", "deployment-profile"
+    "approval", "checkpoint", "deployment-profile", "discovery-manifest"
   ];
   const schemaIds = [];
   for (const name of files) schemaIds.push((await load(`${name}.schema.json`)).$id);
@@ -47,4 +47,5 @@ test("runtime package is distributable and licensed", async () => {
   assert.equal(packageJson.engines.node, ">=24");
   assert.equal(packageJson.bin.q1x, "./dist/cli.js");
   assert.match(runtimeReadme, /Open Control Runtime/i);
+  assert.match(runtimeReadme, /capability discovery/i);
 });

@@ -1,0 +1,71 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "discovery.example-desktop-path",
+  "name": "Example desktop application",
+  "version": "1.0.0",
+  "platforms": [
+    "macos",
+    "windows",
+    "linux"
+  ],
+  "activation": "any",
+  "probes": [
+    {
+      "kind": "path",
+      "paths": [
+        "~/Applications/ExampleAI.app"
+      ],
+      "platforms": [
+        "macos"
+      ]
+    },
+    {
+      "kind": "path",
+      "paths": [
+        "~/AppData/Local/ExampleAI"
+      ],
+      "platforms": [
+        "windows"
+      ]
+    },
+    {
+      "kind": "path",
+      "paths": [
+        "~/.local/share/example-ai"
+      ],
+      "platforms": [
+        "linux"
+      ]
+    }
+  ],
+  "capability": {
+    "id": "capability.example-desktop",
+    "name": "Example desktop application",
+    "adapterKind": "desktop-control",
+    "operations": [
+      "operate"
+    ],
+    "modalities": {
+      "input": [
+        "text"
+      ],
+      "output": [
+        "text"
+      ]
+    },
+    "cost": {
+      "class": "unknown"
+    },
+    "privacy": {
+      "executionLocation": "local"
+    },
+    "trust": {
+      "level": "unverified"
+    },
+    "platforms": [
+      "macos",
+      "windows",
+      "linux"
+    ]
+  }
+}

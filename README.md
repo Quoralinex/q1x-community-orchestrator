@@ -37,6 +37,17 @@ npm run check
 
 See [`docs/contracts.md`](docs/contracts.md) for the contract catalog and versioning rules.
 
+## Phase 3: capability discovery and live registry
+
+The runtime can now discover host capabilities from provider-neutral discovery manifests using command, filesystem path, environment-key and HTTP probes. Results are persisted in the local SQLite registry and can be inspected with `q1x capabilities`. Vendor-specific discovery belongs in optional manifests/plugins rather than the core.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x discover --manifest examples/discovery
+node packages/runtime/dist/cli.js --home .q1x capabilities list
+```
+
+See [`docs/discovery.md`](docs/discovery.md) for the discovery contract, security boundary and examples.
+
 
 ## Phase 2: Open Control Runtime
 

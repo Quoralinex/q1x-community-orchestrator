@@ -5,6 +5,7 @@ import type {
   ExecutionRequest,
   ExecutionResult,
   Mission,
+  DiscoveryManifest,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -59,3 +60,25 @@ const adapter: CapabilityAdapter = {
 
 void mission;
 void adapter;
+
+const discoveryManifest: DiscoveryManifest = {
+  contractVersion: "1.0.0",
+  id: "discovery.test-cli",
+  name: "Test CLI discovery",
+  version: "1.0.0",
+  platforms: ["linux", "macos", "windows"],
+  activation: "any",
+  probes: [{ kind: "command", names: ["test-cli"], versionArgs: ["--version"] }],
+  capability: {
+    id: "capability.test-cli",
+    name: "Test CLI",
+    adapterKind: "cli-tui",
+    operations: ["execute"],
+    modalities: { input: ["text"], output: ["text"] },
+    cost: { class: "no-usage-fee" },
+    privacy: { executionLocation: "local" },
+    trust: { level: "unverified" },
+    platforms: ["linux", "macos", "windows"],
+  },
+};
+void discoveryManifest;
