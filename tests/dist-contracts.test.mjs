@@ -35,3 +35,16 @@ test("workspace packages carry the repository licence", async () => {
     assert.equal(packageLicense, rootLicense, `${workspace} licence must match repository LICENSE`);
   }
 });
+
+test("runtime package is distributable and licensed", async () => {
+  const rootLicense = await readFile(path.join(root, "LICENSE"), "utf8");
+  const runtimeDir = path.join(root, "packages", "runtime");
+  const packageJson = JSON.parse(await readFile(path.join(runtimeDir, "package.json"), "utf8"));
+  const runtimeLicense = await readFile(path.join(runtimeDir, "LICENSE"), "utf8");
+  const runtimeReadme = await readFile(path.join(runtimeDir, "README.md"), "utf8");
+  assert.equal(runtimeLicense, rootLicense);
+  assert.equal(packageJson.name, "@quoralinex/q1x-community-runtime");
+  assert.equal(packageJson.engines.node, ">=24");
+  assert.equal(packageJson.bin.q1x, "./dist/cli.js");
+  assert.match(runtimeReadme, /Open Control Runtime/i);
+});
