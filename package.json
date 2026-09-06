@@ -13,8 +13,9 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean",
     "test": "node --test tests/*.test.mjs",
-    "check": "npm run build && npm test && npm run test:types",
-    "test:types": "tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts"
+    "check": "npm run build && npm test && npm run test:types && npm run test:dist",
+    "test:types": "tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts",
+    "test:dist": "node --test tests/dist-contracts.test.mjs"
   },
   "devDependencies": {
     "ajv": "^8.17.1",

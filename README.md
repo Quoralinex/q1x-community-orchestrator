@@ -24,6 +24,19 @@ Example domains include company formation, research programmes, digital R&D, pro
 - Adaptive: plans can be revised, cancelled, branched and resumed when evidence changes.
 - Governed: approvals, policy, audit, artifacts and evidence are part of execution, not afterthoughts.
 
+## Phase 1: public contract layer
+
+The first executable foundation is now the provider-neutral `v1` contract family under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK.
+
+Validated examples cover company formation, digital R&D and software delivery so the architecture is not centred on repository automation.
+
+```bash
+npm ci
+npm run check
+```
+
+See [`docs/contracts.md`](docs/contracts.md) for the contract catalog and versioning rules.
+
 ## Planned capability fabric
 
 The runtime is intended to support native provider APIs, generic HTTP model APIs, OpenAI- and Anthropic-compatible wire protocols, local inference servers, model gateways, MCP, A2A, CLI/TUI execution, browser and web control, desktop control, software/simulation adapters and edge/device bridges.

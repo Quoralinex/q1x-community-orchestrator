@@ -2,6 +2,14 @@
 
 The architecture is centred on missions and capabilities rather than specific model brands.
 
-Core layers planned for delivery are: mission/goal intake; programme decomposition; work graph; adaptive programme supervision; dynamic teams; open control runtime; live capability registry; capability router; and adapter families for model APIs, local inference, MCP, A2A, CLI/TUI, browser/web control, desktop control, software runtimes and edge/device bridges.
+Core layers are: mission/goal intake; programme decomposition; work graph; adaptive programme supervision; dynamic teams; open control runtime; live capability registry; capability router; and adapter families for model APIs, local inference, MCP, A2A, CLI/TUI, browser/web control, desktop control, software runtimes and edge/device bridges.
 
-The public runtime will expose stable contracts so deployment infrastructure can change without rewriting orchestration logic.
+## Phase 1 contract boundary
+
+The first implemented layer is a versioned, language-neutral contract system. JSON Schema 2020-12 defines missions, programmes, work graphs, replanning events, capabilities, adapters, execution envelopes, evidence, artifacts, approvals, checkpoints and deployment profiles.
+
+These contracts are deliberately independent from model brands, operating systems, databases, cloud platforms and CI providers. A TypeScript SDK is supplied as the first reference implementation, but the JSON schemas remain authoritative so Python, Rust, Go, Java, .NET and other implementations can interoperate later.
+
+Schema validation covers document structure. Semantic orchestration rules that require cross-document state—such as proving a work graph is acyclic—belong in later runtime validators rather than being falsely represented as JSON Schema guarantees.
+
+See [Contracts](contracts.md) for the current schema catalog.

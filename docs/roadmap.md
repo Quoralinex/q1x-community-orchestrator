@@ -1,8 +1,8 @@
 # Delivery Roadmap
 
-1. Foundation, governance, licence and architecture contracts.
-2. Single-node Open Control Runtime and persistent work graph.
-3. Capability discovery and registry.
+1. **Phase 1 — Contract foundation:** versioned JSON schemas, TypeScript reference SDK, cross-domain examples and contract CI. **Implemented in pre-alpha.**
+2. **Phase 2 — Open Control Runtime:** single-node runtime and persistent work graph.
+3. Capability discovery and live registry.
 4. Provider-neutral model transport and local inference adapters.
 5. MCP, A2A and CLI/TUI adapters.
 6. Browser/web control and desktop/application adapters.
