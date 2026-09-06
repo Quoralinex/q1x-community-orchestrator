@@ -1,0 +1,23 @@
+{
+  "name": "q1x-community-orchestrator",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Provider-neutral orchestration contracts and runtime workspace for Q1X Community Orchestrator.",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "tsc -b --clean",
+    "test": "node --test tests/*.test.mjs",
+    "check": "npm run build && npm test"
+  },
+  "devDependencies": {
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.9.2"
+  }
+}
