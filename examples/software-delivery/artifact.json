@@ -1,0 +1,13 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "artifact.test-report.001",
+  "kind": "report",
+  "uri": "file:///workspace/reports/test-report.json",
+  "mediaType": "application/json",
+  "checksum": {
+    "algorithm": "sha256",
+    "value": "0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+  },
+  "createdBy": {"id": "service.local-test-runner", "kind": "service"},
+  "createdAt": "2026-09-06T01:30:05Z"
+}

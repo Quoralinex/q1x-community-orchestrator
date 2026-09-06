@@ -1,0 +1,24 @@
+{
+  "name": "@quoralinex/q1x-community-sdk",
+  "version": "0.1.0-alpha.1",
+  "description": "TypeScript reference SDK for Q1X Community Orchestrator contracts.",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "dependencies": {
+    "@quoralinex/q1x-community-contracts": "0.1.0-alpha.1"
+  },
+  "license": "SEE LICENSE IN LICENSE",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quoralinex/q1x-community-orchestrator.git",
+    "directory": "packages/sdk-typescript"
+  },
+  "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
+  "publishConfig": {
+    "access": "public"
+  }
+}

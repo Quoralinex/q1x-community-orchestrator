@@ -1,0 +1,13 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "execution.result.001",
+  "requestId": "execution.request.001",
+  "workItemId": "task.implement-contract-test",
+  "status": "succeeded",
+  "output": {"summary": "Implementation and tests completed."},
+  "artifactRefs": ["artifact.test-report.001"],
+  "evidenceRefs": ["evidence.test-run.001"],
+  "usage": {"durationMs": 4200, "cost": 0, "currency": "USD"},
+  "startedAt": "2026-09-06T01:30:00Z",
+  "finishedAt": "2026-09-06T01:30:05Z"
+}

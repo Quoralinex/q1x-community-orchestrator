@@ -1,0 +1,130 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:execution-result",
+  "title": "Execution Result",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "requestId",
+    "workItemId",
+    "status",
+    "startedAt",
+    "finishedAt"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "requestId": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "workItemId": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "status": {
+      "enum": [
+        "succeeded",
+        "failed",
+        "cancelled",
+        "partial"
+      ]
+    },
+    "output": {},
+    "artifactRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "inputUnits": {
+          "type": "number",
+          "minimum": 0
+        },
+        "outputUnits": {
+          "type": "number",
+          "minimum": 0
+        },
+        "cost": {
+          "type": "number",
+          "minimum": 0
+        },
+        "currency": {
+          "type": "string",
+          "pattern": "^[A-Z]{3}$"
+        },
+        "durationMs": {
+          "type": "integer",
+          "minimum": 0
+        }
+      },
+      "additionalProperties": false
+    },
+    "error": {
+      "type": "object",
+      "required": [
+        "code",
+        "message",
+        "retryable"
+      ],
+      "properties": {
+        "code": {
+          "type": "string",
+          "minLength": 1
+        },
+        "message": {
+          "type": "string",
+          "minLength": 1
+        },
+        "retryable": {
+          "type": "boolean"
+        },
+        "details": {}
+      },
+      "additionalProperties": false
+    },
+    "startedAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    },
+    "finishedAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "status": {
+            "const": "failed"
+          }
+        },
+        "required": [
+          "status"
+        ]
+      },
+      "then": {
+        "properties": {
+          "error": {}
+        },
+        "required": [
+          "error"
+        ]
+      }
+    }
+  ],
+  "additionalProperties": false
+}

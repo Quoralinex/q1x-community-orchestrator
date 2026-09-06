@@ -1,0 +1,144 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:common",
+  "title": "Q1X Community Common Contract Definitions",
+  "type": "object",
+  "$defs": {
+    "identifier": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 128,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reference": {
+      "type": "object",
+      "required": [
+        "id"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "kind": {
+          "type": "string",
+          "minLength": 1
+        },
+        "uri": {
+          "type": "string",
+          "format": "uri"
+        }
+      },
+      "additionalProperties": false
+    },
+    "actor": {
+      "type": "object",
+      "required": [
+        "id",
+        "kind"
+      ],
+      "properties": {
+        "id": {
+          "$ref": "#/$defs/identifier"
+        },
+        "kind": {
+          "enum": [
+            "human",
+            "agent",
+            "service",
+            "device",
+            "system"
+          ]
+        },
+        "displayName": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "additionalProperties": false
+    },
+    "modality": {
+      "enum": [
+        "text",
+        "image",
+        "audio",
+        "video",
+        "document",
+        "structured-data",
+        "code",
+        "binary",
+        "sensor-data",
+        "control"
+      ]
+    },
+    "adapterKind": {
+      "enum": [
+        "native-api",
+        "provider-http",
+        "openai-protocol",
+        "anthropic-protocol",
+        "local-inference",
+        "mcp",
+        "a2a",
+        "cli-tui",
+        "browser-control",
+        "desktop-control",
+        "software-runtime",
+        "edge-device"
+      ]
+    },
+    "platform": {
+      "enum": [
+        "any",
+        "macos",
+        "windows",
+        "linux",
+        "web",
+        "container",
+        "mobile",
+        "embedded"
+      ]
+    },
+    "costClass": {
+      "enum": [
+        "no-usage-fee",
+        "free-tier",
+        "metered",
+        "subscription",
+        "unknown"
+      ]
+    },
+    "privacyLevel": {
+      "enum": [
+        "local",
+        "private-network",
+        "managed-cloud",
+        "public-cloud",
+        "browser-session",
+        "unknown"
+      ]
+    },
+    "trustLevel": {
+      "enum": [
+        "unverified",
+        "discovered",
+        "configured",
+        "validated",
+        "trusted"
+      ]
+    },
+    "availabilityState": {
+      "enum": [
+        "unknown",
+        "available",
+        "degraded",
+        "busy",
+        "offline",
+        "disabled"
+      ]
+    }
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "execution.request.001",
+  "workItemId": "task.implement-contract-test",
+  "requirements": {
+    "operations": ["code.edit", "test.run"],
+    "adapterKinds": ["cli-tui"],
+    "inputModalities": ["text", "code"],
+    "outputModalities": ["code"],
+    "localOnly": true,
+    "minimumTrust": "validated"
+  },
+  "input": {"instruction": "Implement the requested change and run the relevant tests."},
+  "contextRefs": [{"id": "context.spec", "kind": "document", "uri": "urn:q1x:example:context:spec"}],
+  "policy": {"timeoutSeconds": 900, "maxAttempts": 2, "maxCost": 0, "currency": "USD", "privacy": "local"},
+  "createdAt": "2026-09-06T01:30:00Z"
+}

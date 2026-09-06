@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "deployment.personal-local",
+  "class": "personal",
+  "persistence": {"state": "embedded", "artifacts": "filesystem"},
+  "coordination": "inline",
+  "networkMode": "local-only",
+  "workerConcurrency": 2,
+  "minimumResources": {"cpuCores": 2, "memoryMb": 2048, "storageMb": 1024},
+  "metadata": {"mandatoryPaidApi": false}
+}

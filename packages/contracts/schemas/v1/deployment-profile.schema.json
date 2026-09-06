@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:deployment-profile",
+  "title": "Deployment Profile",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "class",
+    "persistence",
+    "coordination",
+    "networkMode",
+    "workerConcurrency"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "class": {
+      "enum": [
+        "personal",
+        "team",
+        "distributed"
+      ]
+    },
+    "persistence": {
+      "type": "object",
+      "required": [
+        "state",
+        "artifacts"
+      ],
+      "properties": {
+        "state": {
+          "enum": [
+            "embedded",
+            "external"
+          ]
+        },
+        "artifacts": {
+          "enum": [
+            "filesystem",
+            "s3-compatible",
+            "external",
+            "none"
+          ]
+        }
+      },
+      "additionalProperties": false
+    },
+    "coordination": {
+      "enum": [
+        "inline",
+        "database",
+        "distributed"
+      ]
+    },
+    "networkMode": {
+      "enum": [
+        "local-only",
+        "lan",
+        "internet"
+      ]
+    },
+    "workerConcurrency": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "minimumResources": {
+      "type": "object",
+      "properties": {
+        "cpuCores": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "memoryMb": {
+          "type": "integer",
+          "minimum": 128
+        },
+        "storageMb": {
+          "type": "integer",
+          "minimum": 128
+        }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false
+}

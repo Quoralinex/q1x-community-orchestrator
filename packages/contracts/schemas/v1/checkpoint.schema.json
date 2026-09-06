@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:checkpoint",
+  "title": "Checkpoint",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "programmeId",
+    "workGraphRevision",
+    "createdAt"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "programmeId": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "workGraphRevision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "resumableNodeIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "stateRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/reference"
+      }
+    },
+    "artifactRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "createdAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    }
+  },
+  "additionalProperties": false
+}

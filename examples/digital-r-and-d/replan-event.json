@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "replan.low-noise-fan.001",
+  "programmeId": "programme.low-noise-fan-rd",
+  "trigger": "evidence",
+  "rationale": "Virtual evidence invalidated one candidate assumption, so an alternate digital concept branch is required before prototype review.",
+  "invalidatedNodeIds": ["experiment.concept-models"],
+  "createdNodeIds": ["experiment.alternate-concept-model"],
+  "evidenceRefs": ["evidence.virtual-acoustic.001"],
+  "occurredAt": "2026-09-06T02:00:00Z"
+}

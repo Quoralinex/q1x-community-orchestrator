@@ -1,0 +1,15 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "programme.company-launch",
+  "missionId": "mission.company-launch",
+  "revision": 1,
+  "status": "active",
+  "workstreams": [
+    {"id": "ws.strategy", "title": "Strategy and market", "objective": "Define the business model, market and launch assumptions.", "status": "active"},
+    {"id": "ws.company", "title": "Company and documentation", "objective": "Prepare company, legal and policy documentation for human approval.", "status": "planned"},
+    {"id": "ws.market", "title": "Brand, web and go-to-market", "objective": "Prepare customer-facing digital assets and launch activity.", "status": "planned"}
+  ],
+  "assumptions": ["Jurisdiction-specific legal actions remain human-approved."],
+  "createdAt": "2026-09-06T01:30:00Z",
+  "updatedAt": "2026-09-06T01:30:00Z"
+}

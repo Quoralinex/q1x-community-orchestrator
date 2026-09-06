@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "checkpoint.programme.001",
+  "programmeId": "programme.software-delivery",
+  "workGraphRevision": 3,
+  "resumableNodeIds": ["task.publish-release"],
+  "stateRefs": [{"id": "state.work-graph.3", "kind": "work-graph", "uri": "urn:q1x:example:state:work-graph:3"}],
+  "artifactRefs": ["artifact.test-report.001"],
+  "evidenceRefs": ["evidence.test-run.001"],
+  "createdAt": "2026-09-06T01:31:10Z"
+}

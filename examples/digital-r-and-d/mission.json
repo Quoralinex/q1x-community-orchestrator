@@ -1,0 +1,14 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "mission.low-noise-fan-rd",
+  "title": "Explore a lower-noise cooling fan concept",
+  "objective": "Use digital research, modelling and simulation to identify promising lower-noise cooling fan concepts before any physical prototype.",
+  "outcomes": [
+    {"id": "outcome.candidate-concepts", "description": "Candidate concepts are evidence-ranked.", "successCriteria": ["At least two concepts have documented assumptions, predicted acoustic implications and feasibility evidence."]},
+    {"id": "outcome.prototype-gate", "description": "A prototype decision package is available.", "successCriteria": ["The selected concept has simulation evidence, limitations and a human-reviewed prototype test plan."]}
+  ],
+  "constraints": {"researchMode": "digital-first", "physicalPrototype": "approval-gated"},
+  "tags": ["research", "digital-r-and-d", "acoustics"],
+  "status": "active",
+  "createdAt": "2026-09-06T01:30:00Z"
+}

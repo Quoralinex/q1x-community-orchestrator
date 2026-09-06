@@ -1,0 +1,65 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:replan-event",
+  "title": "Replan Event",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "programmeId",
+    "trigger",
+    "rationale",
+    "occurredAt"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "programmeId": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "trigger": {
+      "enum": [
+        "evidence",
+        "failure",
+        "constraint-change",
+        "user-change",
+        "capability-change",
+        "dependency-change",
+        "other"
+      ]
+    },
+    "rationale": {
+      "type": "string",
+      "minLength": 1
+    },
+    "invalidatedNodeIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "createdNodeIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "evidenceRefs": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+      }
+    },
+    "occurredAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    }
+  },
+  "additionalProperties": false
+}

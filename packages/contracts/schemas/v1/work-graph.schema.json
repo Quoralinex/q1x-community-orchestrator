@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:work-graph",
+  "title": "Work Graph",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "programmeId",
+    "revision",
+    "nodes",
+    "edges",
+    "updatedAt"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "programmeId": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "revision": {
+      "type": "integer",
+      "minimum": 1
+    },
+    "nodes": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "kind",
+          "title",
+          "status"
+        ],
+        "properties": {
+          "id": {
+            "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+          },
+          "kind": {
+            "enum": [
+              "workstream",
+              "work-package",
+              "task",
+              "experiment",
+              "decision",
+              "milestone"
+            ]
+          },
+          "title": {
+            "type": "string",
+            "minLength": 1
+          },
+          "description": {
+            "type": "string"
+          },
+          "parentId": {
+            "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+          },
+          "status": {
+            "enum": [
+              "pending",
+              "ready",
+              "running",
+              "blocked",
+              "completed",
+              "failed",
+              "cancelled"
+            ]
+          },
+          "capabilityRequirements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "operation"
+              ],
+              "properties": {
+                "operation": {
+                  "type": "string",
+                  "minLength": 1
+                },
+                "adapterKinds": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "urn:q1x:community:contracts:v1:common#/$defs/adapterKind"
+                  }
+                },
+                "inputModalities": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "urn:q1x:community:contracts:v1:common#/$defs/modality"
+                  }
+                },
+                "outputModalities": {
+                  "type": "array",
+                  "uniqueItems": true,
+                  "items": {
+                    "$ref": "urn:q1x:community:contracts:v1:common#/$defs/modality"
+                  }
+                }
+              },
+              "additionalProperties": false
+            }
+          },
+          "approvalRequired": {
+            "type": "boolean"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "edges": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "from",
+          "to",
+          "type"
+        ],
+        "properties": {
+          "from": {
+            "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+          },
+          "to": {
+            "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+          },
+          "type": {
+            "enum": [
+              "depends-on",
+              "blocks",
+              "produces",
+              "informs",
+              "invalidates"
+            ]
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "updatedAt": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
+    }
+  },
+  "additionalProperties": false
+}
