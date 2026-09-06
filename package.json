@@ -4,7 +4,7 @@
   "private": true,
   "description": "Provider-neutral orchestration contracts and runtime workspace for Q1X Community Orchestrator.",
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   },
   "workspaces": [
     "packages/*"
@@ -18,6 +18,7 @@
     "test:dist": "node --test tests/dist-contracts.test.mjs"
   },
   "devDependencies": {
+    "@types/node": "^24.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "typescript": "^7.0.2"

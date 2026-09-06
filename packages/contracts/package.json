@@ -3,12 +3,13 @@
   "version": "0.1.0-alpha.1",
   "description": "Normative public contracts for Q1X Community Orchestrator.",
   "type": "module",
-  "files": [
-    "dist",
-    "schemas"
-  ],
+  "files": ["dist", "schemas"],
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
+  "exports": {
+    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
+    "./schemas/v1/*": "./schemas/v1/*"
+  },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
@@ -16,7 +17,5 @@
     "directory": "packages/contracts"
   },
   "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
-  "publishConfig": {
-    "access": "public"
-  }
+  "publishConfig": { "access": "public" }
 }
