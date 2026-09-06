@@ -13,3 +13,15 @@ These contracts are deliberately independent from model brands, operating system
 Schema validation covers document structure. Semantic orchestration rules that require cross-document state—such as proving a work graph is acyclic—belong in later runtime validators rather than being falsely represented as JSON Schema guarantees.
 
 See [Contracts](contracts.md) for the current schema catalog.
+
+## Phase 2 open control runtime
+
+The first runtime implementation is a Node.js 24+ TypeScript package backed by Node's built-in SQLite module. It persists immutable contract-document versions, current head pointers, programme checkpoint snapshots and append-only runtime events in a local `state.sqlite` database.
+
+Every persisted public document is first validated against the normative Phase 1 schemas. Runtime validators then enforce rules that span documents or revisions: referenced missions/programmes must exist, programme and work-graph revisions advance exactly one step, work-graph references and execution dependencies are valid, lifecycle transitions are legal, and execution results match a unique request.
+
+Programme checkpoints restore current head pointers transactionally without deleting immutable history. Mission state is intentionally outside programme restore scope so one programme cannot rewind mission state shared with another programme.
+
+The runtime binds no network port and invokes no external provider in Phase 2. Capability discovery, routing and execution adapters remain separate later layers.
+
+See [Open Control Runtime](runtime.md) for commands and recovery behaviour.

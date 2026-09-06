@@ -13,9 +13,10 @@
     "build": "tsc -b",
     "clean": "tsc -b --clean",
     "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs",
-    "check": "npm run build && npm test && npm run test:types && npm run test:dist",
+    "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist",
     "test:types": "tsc --ignoreConfig --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts",
-    "test:dist": "node --test tests/dist-contracts.test.mjs"
+    "test:dist": "node --test tests/dist-contracts.test.mjs",
+    "test:runtime": "node --test tests/runtime-*.test.mjs"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",

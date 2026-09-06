@@ -29,6 +29,7 @@ Software delivery is only one workload. The project is designed for research, co
 
 - [Architecture](architecture.md) — mission engine, programme graph, control runtime and capability fabric.
 - [Contracts](contracts.md) — normative schemas, adapter taxonomy and versioning rules.
+- [Open Control Runtime](runtime.md) — SQLite state, semantic validation, CLI commands and checkpoint recovery.
 - [Use cases](use-cases.md) — business, research, R&D, product, infrastructure and software examples.
 - [Deployment model](deployment.md) — zero-cost personal, team and distributed profiles.
 - [Review and governance](review-model.md) — CI, primary review, independent review and merge gates.

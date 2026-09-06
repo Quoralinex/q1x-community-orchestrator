@@ -37,6 +37,22 @@ npm run check
 
 See [`docs/contracts.md`](docs/contracts.md) for the contract catalog and versioning rules.
 
+
+## Phase 2: Open Control Runtime
+
+The first executable runtime now lives under [`packages/runtime/`](packages/runtime/). On Node.js 24+ it uses the built-in SQLite module to persist missions, programmes, work graphs, replanning records, execution requests/results and transactional programme checkpoints without requiring a hosted database or model provider.
+
+The JSON-first `q1x` CLI can initialize an isolated runtime, load Phase 1 contract documents, inspect current state and create or restore checkpoints:
+
+```bash
+npm ci
+npm run build
+node packages/runtime/dist/cli.js --home ./q1x-state init
+node packages/runtime/dist/cli.js --home ./q1x-state mission put --file examples/company-launch/mission.json
+```
+
+See [`docs/runtime.md`](docs/runtime.md) for the command surface, recovery semantics and current pre-alpha boundaries.
+
 ## Planned capability fabric
 
 The runtime is intended to support native provider APIs, generic HTTP model APIs, OpenAI- and Anthropic-compatible wire protocols, local inference servers, model gateways, MCP, A2A, CLI/TUI execution, browser and web control, desktop control, software/simulation adapters and edge/device bridges.

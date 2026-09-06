@@ -2,7 +2,19 @@
 
 ## Personal / zero-provider-bill baseline
 
-A single-node runtime should operate with an embedded database, local artifact storage and local inference. Docker and a native/local installation path are planned.
+The implemented pre-alpha single-node runtime uses Node.js 24+ and a local SQLite database at `~/.q1x-community-orchestrator/state.sqlite` by default. `Q1X_HOME` or `q1x --home <path>` selects another runtime home. Local artifact storage, local inference, Docker and native packaging remain later delivery phases.
+
+
+
+### Current local setup
+
+```bash
+npm ci
+npm run build
+node packages/runtime/dist/cli.js init
+```
+
+No hosted database, cloud account, model provider or API key is required for the Phase 2 runtime. It currently stores orchestration state only and does not expose a network service or invoke external workers.
 
 ## Team / self-hosted
 
