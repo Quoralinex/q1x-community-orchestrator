@@ -1,0 +1,15 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "approval.release.001",
+  "subject": {"id": "task.publish-release", "kind": "task"},
+  "state": "approved",
+  "requestedAt": "2026-09-06T01:30:00Z",
+  "requestedBy": {"id": "agent.release-coordinator", "kind": "agent", "displayName": "Release coordinator"},
+  "requiredApproverKinds": ["human"],
+  "decision": {
+    "actor": {"id": "human.maintainer", "kind": "human", "displayName": "Repository maintainer"},
+    "action": "approve",
+    "decidedAt": "2026-09-06T01:31:00Z",
+    "reason": "Release evidence reviewed."
+  }
+}

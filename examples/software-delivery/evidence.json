@@ -1,0 +1,13 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "evidence.test-run.001",
+  "kind": "test-result",
+  "summary": "Automated contract tests passed.",
+  "sourceUri": "urn:q1x:example:test-run:001",
+  "claims": ["The requested validation suite completed successfully."],
+  "provenance": {
+    "actor": {"id": "service.local-test-runner", "kind": "service", "displayName": "Local test runner"},
+    "method": "automated-test"
+  },
+  "collectedAt": "2026-09-06T01:30:05Z"
+}

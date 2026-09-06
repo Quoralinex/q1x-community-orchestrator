@@ -1,0 +1,16 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "programme.low-noise-fan-rd",
+  "missionId": "mission.low-noise-fan-rd",
+  "revision": 1,
+  "status": "active",
+  "workstreams": [
+    {"id": "ws.literature", "title": "Research landscape", "objective": "Map relevant acoustic and airflow concepts.", "status": "active"},
+    {"id": "ws.models", "title": "Digital modelling", "objective": "Build comparable digital concept models.", "status": "planned"},
+    {"id": "ws.simulation", "title": "Simulation and evidence", "objective": "Evaluate candidates using virtual experiments.", "status": "planned"},
+    {"id": "ws.review", "title": "Independent technical review", "objective": "Challenge assumptions and evidence before prototype recommendation.", "status": "planned"}
+  ],
+  "assumptions": ["Physical testing occurs only after a separate human prototype decision."],
+  "createdAt": "2026-09-06T01:30:00Z",
+  "updatedAt": "2026-09-06T01:30:00Z"
+}

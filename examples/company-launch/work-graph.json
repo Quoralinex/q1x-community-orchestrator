@@ -1,0 +1,18 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "graph.company-launch",
+  "programmeId": "programme.company-launch",
+  "revision": 1,
+  "nodes": [
+    {"id": "task.market-research", "kind": "task", "title": "Research target market", "status": "ready", "parentId": "ws.strategy", "capabilityRequirements": [{"operation": "research", "inputModalities": ["text"], "outputModalities": ["document"]}], "approvalRequired": false},
+    {"id": "task.business-model", "kind": "task", "title": "Draft business model", "status": "pending", "parentId": "ws.strategy", "capabilityRequirements": [{"operation": "business-planning", "outputModalities": ["document"]}], "approvalRequired": false},
+    {"id": "task.company-docs", "kind": "task", "title": "Prepare company documentation", "status": "pending", "parentId": "ws.company", "capabilityRequirements": [{"operation": "document-drafting", "outputModalities": ["document"]}], "approvalRequired": true},
+    {"id": "task.website", "kind": "task", "title": "Create launch website", "status": "pending", "parentId": "ws.market", "capabilityRequirements": [{"operation": "web-development", "outputModalities": ["code"]}], "approvalRequired": true}
+  ],
+  "edges": [
+    {"from": "task.market-research", "to": "task.business-model", "type": "informs"},
+    {"from": "task.business-model", "to": "task.company-docs", "type": "depends-on"},
+    {"from": "task.business-model", "to": "task.website", "type": "depends-on"}
+  ],
+  "updatedAt": "2026-09-06T01:30:00Z"
+}

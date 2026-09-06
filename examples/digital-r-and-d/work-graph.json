@@ -1,0 +1,18 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "graph.low-noise-fan-rd",
+  "programmeId": "programme.low-noise-fan-rd",
+  "revision": 1,
+  "nodes": [
+    {"id": "task.acoustic-research", "kind": "task", "title": "Research acoustic sources and prior concepts", "status": "ready", "parentId": "ws.literature", "capabilityRequirements": [{"operation": "scientific-research", "outputModalities": ["document"]}], "approvalRequired": false},
+    {"id": "experiment.concept-models", "kind": "experiment", "title": "Create comparative digital concept models", "status": "pending", "parentId": "ws.models", "capabilityRequirements": [{"operation": "simulation-model-preparation", "outputModalities": ["structured-data"]}], "approvalRequired": false},
+    {"id": "experiment.virtual-acoustics", "kind": "experiment", "title": "Run virtual acoustic comparisons", "status": "pending", "parentId": "ws.simulation", "capabilityRequirements": [{"operation": "simulation", "inputModalities": ["structured-data"], "outputModalities": ["structured-data"]}], "approvalRequired": false},
+    {"id": "decision.prototype-readiness", "kind": "decision", "title": "Assess readiness for prototype planning", "status": "pending", "parentId": "ws.review", "capabilityRequirements": [{"operation": "technical-review", "outputModalities": ["document"]}], "approvalRequired": true}
+  ],
+  "edges": [
+    {"from": "task.acoustic-research", "to": "experiment.concept-models", "type": "informs"},
+    {"from": "experiment.concept-models", "to": "experiment.virtual-acoustics", "type": "depends-on"},
+    {"from": "experiment.virtual-acoustics", "to": "decision.prototype-readiness", "type": "informs"}
+  ],
+  "updatedAt": "2026-09-06T01:30:00Z"
+}

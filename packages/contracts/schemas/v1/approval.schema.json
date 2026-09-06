@@ -90,6 +90,9 @@
         ]
       },
       "then": {
+        "properties": {
+          "decision": {}
+        },
         "required": [
           "decision"
         ]

@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.local-cli",
+  "name": "Generic local CLI adapter",
+  "version": "0.1.0",
+  "adapterKind": "cli-tui",
+  "platforms": ["macos", "windows", "linux"],
+  "capabilityIds": ["capability.local-cli-coding"],
+  "transport": {"protocol": "pty"},
+  "configurationKeys": ["command", "workingDirectory"]
+}

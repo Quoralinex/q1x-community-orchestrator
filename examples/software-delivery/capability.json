@@ -1,0 +1,14 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "capability.local-cli-coding",
+  "name": "Local CLI coding worker",
+  "adapterKind": "cli-tui",
+  "operations": ["code.edit", "test.run"],
+  "modalities": {"input": ["text", "code"], "output": ["text", "code"]},
+  "availability": {"state": "available", "checkedAt": "2026-09-06T01:30:00Z"},
+  "cost": {"class": "no-usage-fee"},
+  "privacy": {"executionLocation": "local", "dataRetention": "none"},
+  "trust": {"level": "validated", "validatedAt": "2026-09-06T01:30:00Z", "source": "local capability discovery"},
+  "platforms": ["macos", "windows", "linux"],
+  "metadata": {"providerNeutral": true}
+}

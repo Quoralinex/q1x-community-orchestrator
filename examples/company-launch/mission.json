@@ -1,0 +1,25 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "mission.company-launch",
+  "title": "Launch a new services company",
+  "objective": "Plan and coordinate the digital work required to establish and launch a new services company.",
+  "outcomes": [
+    {
+      "id": "outcome.operating-model",
+      "description": "A coherent operating model is ready for launch.",
+      "successCriteria": ["Core business model, target customers and operating assumptions are documented."]
+    },
+    {
+      "id": "outcome.launch-assets",
+      "description": "Launch-critical digital assets are ready.",
+      "successCriteria": ["Required company documents, brand, website and launch plan have accepted deliverables."]
+    }
+  ],
+  "constraints": {
+    "costPreference": "low-cost-first",
+    "humanApprovalFor": ["legal-filing", "spend", "public-publish"]
+  },
+  "tags": ["business", "company-launch"],
+  "status": "active",
+  "createdAt": "2026-09-06T01:30:00Z"
+}
