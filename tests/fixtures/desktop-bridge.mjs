@@ -1,3 +1,9 @@
+const processMode = process.argv[2];
+if (processMode === 'exit-early') {
+  process.stdin.destroy();
+  process.exit(0);
+}
+
 let input = '';
 for await (const chunk of process.stdin) input += chunk;
 const envelope = JSON.parse(input || '{}');
@@ -7,6 +13,10 @@ const mode = batch.metadata?.fixtureMode;
 if (mode === 'delay') {
   await new Promise(resolve => setTimeout(resolve, 250));
 }
+if (mode === 'ignore-term') {
+  process.on('SIGTERM', () => {});
+  await new Promise(resolve => setTimeout(resolve, 600));
+}
 if (mode === 'overflow') {
   process.stdout.write('x'.repeat(16384));
   process.exit(0);
@@ -15,6 +25,19 @@ if (mode === 'fail') {
   process.stdout.write(JSON.stringify({
     ok: false,
     error: { code: 'FIXTURE_FAILURE', message: 'Synthetic bridge failure', retryable: false }
+  }));
+  process.exit(0);
+}
+if (mode === 'mismatch-actions') {
+  process.stdout.write(JSON.stringify({
+    ok: true,
+    result: {
+      contractVersion: '1.0.0',
+      id: `${batch.id}.result`,
+      batchId: batch.id,
+      status: 'succeeded',
+      actions: [{ id: 'unexpected-action', status: 'succeeded', durationMs: 1 }]
+    }
   }));
   process.exit(0);
 }
