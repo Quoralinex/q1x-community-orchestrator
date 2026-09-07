@@ -1,0 +1,11 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "browser.managed-chromium",
+  "name": "Managed Chromium browser",
+  "backend": "playwright",
+  "mode": "managed",
+  "engine": "chromium",
+  "headless": true,
+  "browserChannel": "chrome",
+  "timeoutMs": 60000
+}

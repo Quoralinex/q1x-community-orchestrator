@@ -1,0 +1,9 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "browser.existing-cdp",
+  "name": "Existing Chromium-family browser",
+  "backend": "playwright",
+  "mode": "cdp",
+  "cdpUrl": "http://127.0.0.1:9222",
+  "timeoutMs": 30000
+}

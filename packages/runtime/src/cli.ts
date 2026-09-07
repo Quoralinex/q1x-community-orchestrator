@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { AdapterEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
@@ -70,6 +70,20 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
       return runtime.executeAdapter(endpointId, readJsonFile(requiredOption(args, '--file')) as ExecutionRequest);
     }
     if (action === 'discover') return runtime.discoverAdapterCapabilities(endpointId);
+  }
+  if (command === 'browser-endpoints') {
+    if (action === 'put') return runtime.putBrowserEndpoint(readJsonFile(requiredOption(args, '--file')) as BrowserEndpoint);
+    if (action === 'list') return runtime.listBrowserEndpoints();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('browser-endpoints get requires an id');
+      return required(runtime.getBrowserEndpoint(id), 'Browser endpoint', id);
+    }
+  }
+  if (command === 'browser') {
+    const endpointId = args.shift();
+    if (!endpointId) throw new Error(`browser ${action ?? ''}`.trim() + ' requires an endpoint id');
+    if (action === 'run') return runtime.runBrowserBatch(endpointId, readJsonFile(requiredOption(args, '--file')) as BrowserActionBatch);
+    if (action === 'discover') return runtime.discoverBrowserCapability(endpointId);
   }
   if (command === 'endpoints') {
     if (action === 'put') return runtime.putModelEndpoint(readJsonFile(requiredOption(args, '--file')) as ModelEndpoint);
