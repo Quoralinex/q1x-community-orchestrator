@@ -107,55 +107,121 @@
       "allOf": [
         {
           "if": { "properties": { "kind": { "enum": ["launch-application", "focus-application", "close-application"] } }, "required": ["kind"] },
-          "then": { "required": ["application"] }
+          "then": {
+            "required": ["application"],
+            "properties": { "application": { "type": "string", "minLength": 1 } }
+          }
         },
         {
           "if": { "properties": { "kind": { "enum": ["focus-window", "move-window", "resize-window"] } }, "required": ["kind"] },
-          "then": { "required": ["windowId"] }
+          "then": {
+            "required": ["windowId"],
+            "properties": { "windowId": { "type": "string", "minLength": 1 } }
+          }
         },
         {
           "if": { "properties": { "kind": { "enum": ["click", "double-click", "hover", "type", "set-value", "select", "toggle"] } }, "required": ["kind"] },
-          "then": { "required": ["target"] }
+          "then": {
+            "required": ["target"],
+            "properties": { "target": { "$ref": "#/$defs/target" } }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "type" } }, "required": ["kind"] },
-          "then": { "required": ["target", "text"] }
+          "then": {
+            "required": ["target", "text"],
+            "properties": {
+              "target": { "$ref": "#/$defs/target" },
+              "text": { "type": "string" }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "press" } }, "required": ["kind"] },
-          "then": { "required": ["key"] }
+          "then": {
+            "required": ["key"],
+            "properties": { "key": { "type": "string", "minLength": 1 } }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "set-value" } }, "required": ["kind"] },
-          "then": { "required": ["target", "value"] }
+          "then": {
+            "required": ["target", "value"],
+            "properties": {
+              "target": { "$ref": "#/$defs/target" },
+              "value": {
+                "oneOf": [
+                  { "type": "string" },
+                  { "type": "number" },
+                  { "type": "boolean" },
+                  { "type": "null" }
+                ]
+              }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "select" } }, "required": ["kind"] },
-          "then": { "required": ["target", "values"] }
+          "then": {
+            "required": ["target", "values"],
+            "properties": {
+              "target": { "$ref": "#/$defs/target" },
+              "values": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "mouse-move" } }, "required": ["kind"] },
-          "then": { "required": ["x", "y"] }
+          "then": {
+            "required": ["x", "y"],
+            "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "wheel" } }, "required": ["kind"] },
-          "then": { "required": ["deltaX", "deltaY"] }
+          "then": {
+            "required": ["deltaX", "deltaY"],
+            "properties": { "deltaX": { "type": "number" }, "deltaY": { "type": "number" } }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "drag" } }, "required": ["kind"] },
-          "then": { "required": ["source", "target"] }
+          "then": {
+            "required": ["source", "target"],
+            "properties": {
+              "source": { "$ref": "#/$defs/target" },
+              "target": { "$ref": "#/$defs/target" }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "move-window" } }, "required": ["kind"] },
-          "then": { "required": ["windowId", "x", "y"] }
+          "then": {
+            "required": ["windowId", "x", "y"],
+            "properties": {
+              "windowId": { "type": "string", "minLength": 1 },
+              "x": { "type": "number" },
+              "y": { "type": "number" }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "resize-window" } }, "required": ["kind"] },
-          "then": { "required": ["windowId", "width", "height"] }
+          "then": {
+            "required": ["windowId", "width", "height"],
+            "properties": {
+              "windowId": { "type": "string", "minLength": 1 },
+              "width": { "type": "number", "minimum": 1 },
+              "height": { "type": "number", "minimum": 1 }
+            }
+          }
         },
         {
           "if": { "properties": { "kind": { "const": "screenshot" } }, "required": ["kind"] },
-          "then": { "required": ["outputPath"] }
+          "then": {
+            "required": ["outputPath"],
+            "properties": { "outputPath": { "type": "string", "minLength": 1 } }
+          }
         }
       ],
       "additionalProperties": false
