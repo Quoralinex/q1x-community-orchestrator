@@ -36,8 +36,12 @@ jobs:
         run: npm run build
       - name: Self-validate normative schemas
         run: node --test tests/schema-contracts.test.mjs
-      - name: Validate contract examples
+      - name: Validate existing contract examples
         run: node --test tests/examples.test.mjs
+      - name: Validate desktop endpoint example
+        run: node --test --test-name-pattern="desktop endpoint example validates" tests/desktop-examples.test.mjs
+      - name: Validate desktop action batch example
+        run: node --test --test-name-pattern="desktop action batch example validates" tests/desktop-examples.test.mjs
       - name: Run runtime integration tests
         run: npm run test:runtime
       - name: Run strict SDK consumer type test
