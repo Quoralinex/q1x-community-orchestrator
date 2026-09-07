@@ -1,9 +1,10 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, DesktopActionBatch, DesktopEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, CapabilityDescriptor, DesktopActionBatch, DesktopEndpoint, ExecutionBinding, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ProgrammeProposal, ReplanEvent, SupervisionPolicy, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
+import './supervision-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
 
 function takeOption(args: string[], name: string): string | undefined {
@@ -42,11 +43,51 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
 
   const action = args.shift();
   if (command === 'capabilities') {
+    if (action === 'put') return runtime.putCapability(readJsonFile(requiredOption(args, '--file')) as CapabilityDescriptor);
     if (action === 'list') return runtime.listCapabilities();
     if (action === 'get') {
       const id = args.shift(); if (!id) throw new Error('capabilities get requires an id');
       return required(runtime.getCapability(id), 'Capability', id);
     }
+  }
+  if (command === 'bindings') {
+    if (action === 'put') return runtime.putExecutionBinding(readJsonFile(requiredOption(args, '--file')) as ExecutionBinding);
+    if (action === 'list') return runtime.listExecutionBindings();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('bindings get requires an id');
+      return required(runtime.getExecutionBinding(id), 'Execution binding', id);
+    }
+  }
+  if (command === 'team') {
+    const programmeId = args.shift();
+    if (!programmeId) throw new Error(`team ${action ?? ''}`.trim() + ' requires a programme id');
+    if (action === 'form') {
+      const policy = readJsonFile(requiredOption(args, '--policy')) as SupervisionPolicy;
+      return runtime.formTeam(programmeId, { policy });
+    }
+    if (action === 'assignments') return runtime.listWorkAssignments(programmeId);
+    if (action === 'plans') return runtime.listTeamPlans(programmeId);
+  }
+  if (command === 'assignment' && action === 'cancel') {
+    const assignmentId = args.shift();
+    if (!assignmentId) throw new Error('assignment cancel requires an assignment id');
+    return runtime.cancelWorkAssignment(assignmentId);
+  }
+  if (command === 'proposal') {
+    const proposal = readJsonFile(requiredOption(args, '--file')) as ProgrammeProposal;
+    if (action === 'validate') return runtime.validateProgrammeProposal(proposal);
+    if (action === 'accept') return runtime.acceptProgrammeProposal(proposal);
+  }
+  if (command === 'supervision') {
+    const programmeId = args.shift();
+    if (!programmeId) throw new Error(`supervision ${action ?? ''}`.trim() + ' requires a programme id');
+    const policy = readJsonFile(requiredOption(args, '--policy')) as SupervisionPolicy;
+    if (action === 'cycle') return runtime.runSupervisionCycle(programmeId, policy);
+    if (action === 'run') {
+      const maxCycles = takeOption(args, '--max-cycles');
+      return runtime.superviseUntilStop(programmeId, policy, maxCycles ? { maxCycles: Number.parseInt(maxCycles, 10) } : undefined);
+    }
+    if (action === 'cycles') return runtime.listSupervisionCycles(programmeId);
   }
   if (command === 'adapters') {
     if (action === 'list') return runtime.listAdapterManifests();
