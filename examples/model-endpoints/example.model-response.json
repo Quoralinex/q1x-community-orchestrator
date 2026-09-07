@@ -1,0 +1,1 @@
+{"contractVersion":"1.0.0","id":"model.response.example","requestId":"model.request.example","endpointId":"endpoint.local-chat","outputText":"Example normalized response.","model":"local-model","usage":{"inputTokens":8,"outputTokens":4},"finishReason":"stop","startedAt":"2026-09-06T03:30:00Z","finishedAt":"2026-09-06T03:30:01Z"}

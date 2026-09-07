@@ -8,3 +8,4 @@ export * from "./governance.js";
 export * from "./mission.js";
 export * from "./programme.js";
 export * from "./work-graph.js";
+export * from "./model.js";

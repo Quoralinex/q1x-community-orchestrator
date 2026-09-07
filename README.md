@@ -26,9 +26,7 @@ Example domains include company formation, research programmes, digital R&D, pro
 
 ## Phase 1: public contract layer
 
-The first executable foundation is now the provider-neutral `v1` contract family under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK.
-
-Validated examples cover company formation, digital R&D and software delivery so the architecture is not centred on repository automation.
+The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery and model transport.
 
 ```bash
 npm ci
@@ -37,36 +35,42 @@ npm run check
 
 See [`docs/contracts.md`](docs/contracts.md) for the contract catalog and versioning rules.
 
+## Phase 2: Open Control Runtime
+
+The executable runtime under [`packages/runtime/`](packages/runtime/) uses Node.js 24+ built-in SQLite for missions, programmes, work graphs, execution lifecycle records and transactional checkpoints without requiring a hosted database or model provider.
+
+```bash
+node packages/runtime/dist/cli.js --home ./q1x-state init
+node packages/runtime/dist/cli.js --home ./q1x-state mission put --file examples/company-launch/mission.json
+```
+
+See [`docs/runtime.md`](docs/runtime.md).
+
 ## Phase 3: capability discovery and live registry
 
-The runtime can now discover host capabilities from provider-neutral discovery manifests using command, filesystem path, environment-key and HTTP probes. Results are persisted in the local SQLite registry and can be inspected with `q1x capabilities`. Vendor-specific discovery belongs in optional manifests/plugins rather than the core.
+Provider-neutral discovery manifests use command, filesystem path, environment-key and HTTP probes. Results persist in the local capability registry; vendor-specific detection belongs in optional manifests/plugins rather than Community core.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x discover --manifest examples/discovery
 node packages/runtime/dist/cli.js --home .q1x capabilities list
 ```
 
-See [`docs/discovery.md`](docs/discovery.md) for the discovery contract, security boundary and examples.
+See [`docs/discovery.md`](docs/discovery.md).
 
+## Phase 4: provider-neutral model transport
 
-## Phase 2: Open Control Runtime
-
-The first executable runtime now lives under [`packages/runtime/`](packages/runtime/). On Node.js 24+ it uses the built-in SQLite module to persist missions, programmes, work graphs, replanning records, execution requests/results and transactional programme checkpoints without requiring a hosted database or model provider.
-
-The JSON-first `q1x` CLI can initialize an isolated runtime, load Phase 1 contract documents, inspect current state and create or restore checkpoints:
+The runtime can now persist safe model endpoints and invoke local or hosted inference through pluggable wire-protocol transports. Built-ins cover OpenAI-compatible chat completions, Responses-compatible endpoints and Anthropic-compatible Messages endpoints; those are protocol formats, not mandatory providers.
 
 ```bash
-npm ci
-npm run build
-node packages/runtime/dist/cli.js --home ./q1x-state init
-node packages/runtime/dist/cli.js --home ./q1x-state mission put --file examples/company-launch/mission.json
+node packages/runtime/dist/cli.js --home .q1x endpoints put --file examples/model-endpoints/local-openai-chat.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x model invoke --file examples/model-endpoints/example.model-request.json
 ```
 
-See [`docs/runtime.md`](docs/runtime.md) for the command surface, recovery semantics and current pre-alpha boundaries.
+Local loopback HTTP is supported for zero-provider-bill inference. Remote endpoints require HTTPS. Credential values are resolved from environment variables at invocation time and are never persisted. See [`docs/model-transport.md`](docs/model-transport.md).
 
-## Planned capability fabric
+## Capability fabric
 
-The runtime is intended to support native provider APIs, generic HTTP model APIs, OpenAI- and Anthropic-compatible wire protocols, local inference servers, model gateways, MCP, A2A, CLI/TUI execution, browser and web control, desktop control, software/simulation adapters and edge/device bridges.
+Implemented foundations now cover durable orchestration state, capability discovery and provider-neutral model transport. The next adapter families are MCP, A2A and CLI/TUI, followed by browser/web control, desktop control, software/simulation adapters and edge/device bridges.
 
 ## Deployment profiles
 

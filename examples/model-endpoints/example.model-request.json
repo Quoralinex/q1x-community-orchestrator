@@ -1,0 +1,1 @@
+{"contractVersion":"1.0.0","id":"model.request.example","endpointId":"endpoint.local-chat","messages":[{"role":"system","content":"Be concise."},{"role":"user","content":"Summarize the mission."}],"temperature":0.2,"maxOutputTokens":256,"createdAt":"2026-09-06T03:30:00Z"}

@@ -6,6 +6,9 @@ import type {
   ExecutionResult,
   Mission,
   DiscoveryManifest,
+  ModelEndpoint,
+  ModelRequest,
+  ModelResponse,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -82,3 +85,18 @@ const discoveryManifest: DiscoveryManifest = {
   },
 };
 void discoveryManifest;
+
+const endpoint: ModelEndpoint = {
+  contractVersion: "1.0.0", id: "endpoint.local", name: "Local endpoint",
+  adapterKind: "local-inference", protocol: "openai-chat-completions",
+  url: "http://127.0.0.1:1234/v1/chat/completions", defaultModel: "local-model"
+};
+const modelRequest: ModelRequest = {
+  contractVersion: "1.0.0", id: "model.request.test", endpointId: endpoint.id,
+  messages: [{ role: "user", content: "Hello" }], createdAt: "2026-09-06T03:00:00Z"
+};
+const modelResponse: ModelResponse = {
+  contractVersion: "1.0.0", id: "model.response.test", requestId: modelRequest.id, endpointId: endpoint.id,
+  outputText: "Hello", startedAt: "2026-09-06T03:00:00Z", finishedAt: "2026-09-06T03:00:01Z"
+};
+void endpoint; void modelRequest; void modelResponse;

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { ExecutionRequest, ExecutionResult, Mission, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
@@ -54,6 +54,17 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
       const id = args.shift(); if (!id) throw new Error('adapters get requires an id');
       return required(runtime.getAdapterManifest(id), 'Adapter manifest', id);
     }
+  }
+  if (command === 'endpoints') {
+    if (action === 'put') return runtime.putModelEndpoint(readJsonFile(requiredOption(args, '--file')) as ModelEndpoint);
+    if (action === 'list') return runtime.listModelEndpoints();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('endpoints get requires an id');
+      return required(runtime.getModelEndpoint(id), 'Model endpoint', id);
+    }
+  }
+  if (command === 'model' && action === 'invoke') {
+    return runtime.invokeModel(readJsonFile(requiredOption(args, '--file')) as ModelRequest);
   }
   if (command === 'mission') {
     if (action === 'put') return runtime.putMission(readJsonFile(requiredOption(args, '--file')) as Mission);

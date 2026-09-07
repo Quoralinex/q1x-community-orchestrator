@@ -17,6 +17,14 @@ export const ADAPTER_KINDS = [
 
 export type AdapterKind = (typeof ADAPTER_KINDS)[number];
 
+export const MODEL_PROTOCOLS = [
+  "openai-chat-completions",
+  "openai-responses",
+  "anthropic-messages",
+] as const;
+
+export type BuiltInModelProtocol = (typeof MODEL_PROTOCOLS)[number];
+
 export const SCHEMA_IDS = {
   common: "urn:q1x:community:contracts:v1:common",
   mission: "urn:q1x:community:contracts:v1:mission",
@@ -33,4 +41,7 @@ export const SCHEMA_IDS = {
   checkpoint: "urn:q1x:community:contracts:v1:checkpoint",
   deploymentProfile: "urn:q1x:community:contracts:v1:deployment-profile",
   discoveryManifest: "urn:q1x:community:contracts:v1:discovery-manifest",
+  modelEndpoint: "urn:q1x:community:contracts:v1:model-endpoint",
+  modelRequest: "urn:q1x:community:contracts:v1:model-request",
+  modelResponse: "urn:q1x:community:contracts:v1:model-response",
 } as const;

@@ -1,0 +1,1 @@
+{"contractVersion":"1.0.0","id":"endpoint.local-messages","name":"Local Messages-compatible endpoint","adapterKind":"local-inference","protocol":"anthropic-messages","url":"http://127.0.0.1:1337/v1/messages","defaultModel":"local-model","timeoutMs":30000}

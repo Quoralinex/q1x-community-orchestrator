@@ -3,7 +3,7 @@ layout: default
 title: Contracts
 ---
 
-# Phase 1 public contracts
+# Public contracts
 
 The `v1` contract layer is the stable public language used to describe missions, programmes, work, capabilities and execution without binding the orchestrator to a particular AI provider, operating system or deployment platform.
 
@@ -25,6 +25,8 @@ The `v1` contract layer is the stable public language used to describe missions,
 | Checkpoint | Resumable programme state references |
 | Deployment profile | Personal, team or distributed runtime requirements |
 | Discovery manifest | OS-neutral command, path, environment and HTTP probes that produce live capabilities |
+| Model endpoint | Persistable local/hosted endpoint configuration with credential references, never credential values |
+| Model request / response | Provider-neutral text model invocation and normalized output envelopes |
 
 ## Adapter kinds
 
@@ -40,7 +42,7 @@ Backward-compatible additions may remain within a major contract version. Breaki
 
 ## Examples and validation
 
-The repository includes validated examples for company launch, digital R&D and software delivery. Run:
+The repository includes validated examples for company launch, digital R&D, software delivery, capability discovery and model transport. Run:
 
 ```bash
 npm ci
