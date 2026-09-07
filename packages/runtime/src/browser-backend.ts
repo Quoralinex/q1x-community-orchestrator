@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import type { BrowserEndpoint } from '@quoralinex/q1x-community-sdk';
+import type { BrowserActionBatch, BrowserBatchResult, BrowserEndpoint } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 
 export interface BrowserBackendSession {
@@ -10,6 +10,7 @@ export interface BrowserBackendSession {
 export interface BrowserBackend {
   readonly id: string;
   open(endpoint: BrowserEndpoint): Promise<BrowserBackendSession>;
+  execute(session: BrowserBackendSession, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>;
 }
 
 export interface BrowserSessionHandle {
@@ -58,6 +59,10 @@ export class BrowserSessionManager {
   }
   getSession(id: string): BrowserSessionHandle | undefined { return this.sessions.get(id)?.handle; }
   count(): number { return this.sessions.size; }
+  async execute(id: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
+    const record = this.requireRecord(id);
+    return record.backend.execute(record.session, batch, signal);
+  }
   async closeSession(id: string): Promise<void> {
     const record = this.sessions.get(id);
     if (!record) throw new RuntimeError('NOT_FOUND', `Browser session not found: ${id}`);

@@ -56,3 +56,23 @@ export async function launchCdpBrowser() {
   await rm(userDataDir, { recursive: true, force: true });
   throw new Error('CDP test browser did not become ready');
 }
+
+export async function startBrowserSite() {
+  const { createServer } = await import('node:http');
+  const { readFile } = await import('node:fs/promises');
+  const { dirname, join } = await import('node:path');
+  const { fileURLToPath } = await import('node:url');
+  const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'browser-site');
+  const server = createServer(async (req, res) => {
+    const pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
+    const file = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
+    try {
+      const body = await readFile(join(root, file));
+      res.statusCode = 200; res.setHeader('content-type', 'text/html; charset=utf-8'); res.end(body);
+    } catch { res.statusCode = 404; res.end('not found'); }
+  });
+  await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
+  const address = server.address();
+  if (!address || typeof address === 'string') throw new Error('Browser fixture server has no TCP address');
+  return { baseUrl: `http://127.0.0.1:${address.port}`, close: () => new Promise(resolve => server.close(resolve)) };
+}

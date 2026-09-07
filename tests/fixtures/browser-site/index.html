@@ -1,0 +1,14 @@
+<!doctype html><html><head><title>Q1X Browser Fixture</title></head><body>
+<h1>Browser Fixture</h1>
+<a id="next-link" href="/second.html">Second page</a>
+<button id="click-button" onclick="document.querySelector('#status').textContent='clicked'">Click me</button>
+<button id="double-button" ondblclick="document.querySelector('#status').textContent='double-clicked'">Double</button>
+<div id="hover-target" onmouseenter="this.dataset.hovered='yes'">Hover target</div>
+<p id="status">ready</p>
+<label>Name <input id="name" placeholder="Your name"></label>
+<label>Password <input id="password" type="password" value="super-secret"></label>
+<label>Choice <select id="choice"><option value="a">Alpha</option><option value="b">Beta</option></select></label>
+<label>Accept <input id="accept" type="checkbox"></label>
+<input id="key-input" aria-label="Key input" onkeydown="if(event.key==='Enter')document.querySelector('#status').textContent='entered'">
+<script>window.fixtureLoaded=(window.fixtureLoaded||0)+1;</script>
+</body></html>

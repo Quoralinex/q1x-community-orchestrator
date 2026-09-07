@@ -1,8 +1,9 @@
 import type { Browser, BrowserContext, BrowserType, Page } from 'playwright-core';
 import { chromium, firefox, webkit } from 'playwright-core';
-import type { BrowserEndpoint } from '@quoralinex/q1x-community-sdk';
+import type { BrowserActionBatch, BrowserBatchResult, BrowserEndpoint } from '@quoralinex/q1x-community-sdk';
 import { BrowserBackendRegistry, type BrowserBackend, type BrowserBackendSession } from './browser-backend.js';
 import { RuntimeError } from './errors.js';
+import { executePlaywrightBatch } from './browser-actions.js';
 
 export class PlaywrightBrowserSession implements BrowserBackendSession {
   constructor(
@@ -35,6 +36,10 @@ function browserType(engine: BrowserEndpoint['engine']): BrowserType {
 
 class PlaywrightBrowserBackend implements BrowserBackend {
   readonly id = 'playwright';
+  async execute(session: BrowserBackendSession, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
+    if (!(session instanceof PlaywrightBrowserSession)) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Playwright backend received an incompatible browser session');
+    return executePlaywrightBatch(session, batch, signal);
+  }
   async open(endpoint: BrowserEndpoint): Promise<PlaywrightBrowserSession> {
     const timeout = endpoint.timeoutMs ?? 30_000;
     if (endpoint.mode === 'cdp') {
