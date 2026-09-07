@@ -1,10 +1,20 @@
 import type { ContractVersion, Identifier, Platform } from './common.js';
 
 export type DesktopPlatform = Extract<Platform, 'macos' | 'windows' | 'linux'> | 'any';
+export type DesktopExecutionLocation = 'local' | 'private-network' | 'managed-cloud' | 'public-cloud';
 
 export interface DesktopEnvironmentMapping {
   name: string;
   environmentKey: string;
+}
+
+export interface DesktopStdioTransport {
+  command: string;
+  args?: string[];
+  cwd?: string;
+  timeoutMs?: number;
+  maxOutputBytes?: number;
+  environment?: DesktopEnvironmentMapping[];
 }
 
 export interface DesktopEndpoint {
@@ -13,14 +23,9 @@ export interface DesktopEndpoint {
   name: string;
   backend: string;
   platform: DesktopPlatform;
-  transport: {
-    command: string;
-    args?: string[];
-    cwd?: string;
-    timeoutMs?: number;
-    maxOutputBytes?: number;
-    environment?: DesktopEnvironmentMapping[];
-  };
+  executionLocation: DesktopExecutionLocation;
+  transport?: DesktopStdioTransport;
+  backendConfig?: Record<string, unknown>;
   applicationPolicy?: {
     allowedApplications?: string[];
     blockedApplications?: string[];
