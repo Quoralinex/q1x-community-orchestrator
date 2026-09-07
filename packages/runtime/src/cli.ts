@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
@@ -54,6 +54,22 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
       const id = args.shift(); if (!id) throw new Error('adapters get requires an id');
       return required(runtime.getAdapterManifest(id), 'Adapter manifest', id);
     }
+  }
+  if (command === 'adapter-endpoints') {
+    if (action === 'put') return runtime.putAdapterEndpoint(readJsonFile(requiredOption(args, '--file')) as AdapterEndpoint);
+    if (action === 'list') return runtime.listAdapterEndpoints();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('adapter-endpoints get requires an id');
+      return required(runtime.getAdapterEndpoint(id), 'Adapter endpoint', id);
+    }
+  }
+  if (command === 'adapter') {
+    const endpointId = args.shift();
+    if (!endpointId) throw new Error(`adapter ${action ?? ''}`.trim() + ' requires an endpoint id');
+    if (action === 'execute') {
+      return runtime.executeAdapter(endpointId, readJsonFile(requiredOption(args, '--file')) as ExecutionRequest);
+    }
+    if (action === 'discover') return runtime.discoverAdapterCapabilities(endpointId);
   }
   if (command === 'endpoints') {
     if (action === 'put') return runtime.putModelEndpoint(readJsonFile(requiredOption(args, '--file')) as ModelEndpoint);
