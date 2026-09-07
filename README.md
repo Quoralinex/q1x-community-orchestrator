@@ -79,9 +79,22 @@ node packages/runtime/dist/cli.js --home .q1x adapter discover adapter.mcp.local
 
 See [`docs/agent-cli-adapters.md`](docs/agent-cli-adapters.md).
 
+## Phase 6: browser/web and desktop/application adapters
+
+The runtime now adds standards-based browser control and a neutral desktop/application bridge without binding Community core to one browser or operating-system automation API.
+
+Browser control uses the W3C WebDriver HTTP model. Desktop control uses a direct JSON-over-stdio bridge that optional macOS, Windows, Linux or application-specific adapters can implement behind one Q1X execution boundary.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x adapter-endpoints put --file examples/adapter-endpoints/webdriver-local.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x adapter discover adapter.browser.webdriver-local
+```
+
+See [`docs/browser-desktop-adapters.md`](docs/browser-desktop-adapters.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport and MCP/A2A/CLI execution. The next adapter families are browser/web control and desktop/application control, followed by software/simulation adapters and edge/device bridges.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control and desktop/application control. The next delivery phase adds dynamic team formation and adaptive programme supervision, followed by packaging/deployment and hardening.
 
 ## Deployment profiles
 
