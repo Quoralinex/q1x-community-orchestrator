@@ -11,3 +11,10 @@ export * from './model-security.js';
 export * from './model-transport.js';
 
 export * from './model-protocols.js';
+export * from './adapter-security.js';
+export * from './adapter-transport.js';
+export * from './cli-adapter.js';
+export * from './a2a-adapter.js';
+
+export * from './mcp-adapter.js';
+export * from './adapter-protocols.js';

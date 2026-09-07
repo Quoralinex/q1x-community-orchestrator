@@ -16,12 +16,14 @@
     "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist",
     "test:types": "tsc --ignoreConfig --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts",
     "test:dist": "node --test tests/dist-contracts.test.mjs",
-    "test:runtime": "node --test tests/runtime-*.test.mjs"
+    "test:runtime": "node --test --test-concurrency=4 tests/runtime-*.test.mjs"
   },
   "devDependencies": {
+    "@modelcontextprotocol/server": "2.0.0",
     "@types/node": "^24.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "zod": "4.5.4"
   }
 }

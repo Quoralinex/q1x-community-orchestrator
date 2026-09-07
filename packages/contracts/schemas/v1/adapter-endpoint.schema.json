@@ -1,0 +1,90 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:adapter-endpoint",
+  "title": "Adapter Endpoint",
+  "type": "object",
+  "required": ["contractVersion", "id", "name", "adapterKind", "protocol", "transport"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "name": { "type": "string", "minLength": 1 },
+    "adapterKind": { "enum": ["mcp", "a2a", "cli-tui"] },
+    "protocol": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "capabilityIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" }
+    },
+    "transport": {
+      "oneOf": [
+        { "$ref": "#/$defs/stdioTransport" },
+        { "$ref": "#/$defs/httpTransport" }
+      ]
+    },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "environmentMapping": {
+      "type": "object",
+      "required": ["name", "environmentKey"],
+      "properties": {
+        "name": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+        "environmentKey": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" }
+      },
+      "additionalProperties": false
+    },
+    "credentialHeader": {
+      "type": "object",
+      "required": ["header", "environmentKey"],
+      "properties": {
+        "header": { "type": "string", "minLength": 1 },
+        "environmentKey": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+        "prefix": { "type": "string" }
+      },
+      "additionalProperties": false
+    },
+    "stdioTransport": {
+      "type": "object",
+      "required": ["kind", "command"],
+      "properties": {
+        "kind": { "const": "stdio" },
+        "command": { "type": "string", "minLength": 1 },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "cwd": { "type": "string", "minLength": 1 },
+        "timeoutMs": { "type": "integer", "minimum": 50, "maximum": 3600000 },
+        "maxOutputBytes": { "type": "integer", "minimum": 1024, "maximum": 104857600 },
+        "inputMode": { "enum": ["json", "text", "none"] },
+        "outputMode": { "enum": ["json", "text"] },
+        "environment": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/environmentMapping" }
+        }
+      },
+      "additionalProperties": false
+    },
+    "httpTransport": {
+      "type": "object",
+      "required": ["kind", "url"],
+      "properties": {
+        "kind": { "const": "http" },
+        "url": { "type": "string", "format": "uri" },
+        "timeoutMs": { "type": "integer", "minimum": 50, "maximum": 3600000 },
+        "staticHeaders": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        },
+        "credentials": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/credentialHeader" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

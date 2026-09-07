@@ -9,6 +9,7 @@ import type {
   ModelEndpoint,
   ModelRequest,
   ModelResponse,
+  AdapterEndpoint,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -100,3 +101,13 @@ const modelResponse: ModelResponse = {
   outputText: "Hello", startedAt: "2026-09-06T03:00:00Z", finishedAt: "2026-09-06T03:00:01Z"
 };
 void endpoint; void modelRequest; void modelResponse;
+
+const phase5Endpoint: AdapterEndpoint = {
+  contractVersion: "1.0.0",
+  id: "adapter.endpoint.test",
+  name: "Portable CLI",
+  adapterKind: "cli-tui",
+  protocol: "cli-json-stdio",
+  transport: { kind: "stdio", command: "node", args: ["worker.mjs"], inputMode: "json", outputMode: "json" }
+};
+void phase5Endpoint;

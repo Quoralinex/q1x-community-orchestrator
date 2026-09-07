@@ -37,3 +37,11 @@ Model transport separates endpoint location/adapter kind from wire protocol. The
 Remote endpoints require HTTPS. Credential values are injected from environment variables only at invocation time, redirects are not followed automatically, and model prompt/output content is not persisted by the transport layer. `ModelTransportRegistry` is the extension point for native provider or experimental transports without a provider switch statement in Community core.
 
 See [Provider-Neutral Model Transport](model-transport.md) for endpoint examples and CLI usage.
+
+## Phase 5 executable adapter boundary
+
+Executable adapters use persisted `AdapterEndpoint` documents plus a pluggable `AdapterTransportRegistry`. MCP, A2A and CLI/TUI all reuse the normative `ExecutionRequest` / `ExecutionResult` envelope instead of introducing protocol-specific orchestration state.
+
+MCP uses the official client over stdio or Streamable HTTP, A2A maps Agent Card skills into the live capability registry and executes JSON-RPC messages, and CLI/TUI tools are spawned directly with explicit argv and no shell. Runtime audit events remain metadata-only.
+
+See [MCP, A2A and CLI/TUI Adapters](agent-cli-adapters.md) for configuration and security boundaries.

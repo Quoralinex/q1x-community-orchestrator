@@ -1,0 +1,17 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.mcp.local-files",
+  "name": "Local MCP server",
+  "adapterKind": "mcp",
+  "protocol": "mcp-stdio-v2",
+  "transport": {
+    "kind": "stdio",
+    "command": "node",
+    "args": ["./path/to/mcp-server.mjs"],
+    "timeoutMs": 60000,
+    "maxOutputBytes": 1048576
+  },
+  "metadata": {
+    "purpose": "Example local MCP endpoint"
+  }
+}

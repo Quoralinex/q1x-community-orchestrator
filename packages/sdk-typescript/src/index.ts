@@ -9,3 +9,4 @@ export * from "./mission.js";
 export * from "./programme.js";
 export * from "./work-graph.js";
 export * from "./model.js";
+export * from "./adapter-endpoint.js";

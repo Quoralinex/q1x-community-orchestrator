@@ -1,0 +1,19 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.a2a.remote-agent",
+  "name": "Remote A2A agent",
+  "adapterKind": "a2a",
+  "protocol": "a2a-jsonrpc",
+  "transport": {
+    "kind": "http",
+    "url": "https://agent.example.com/",
+    "timeoutMs": 60000,
+    "credentials": [
+      {
+        "header": "Authorization",
+        "environmentKey": "Q1X_A2A_TOKEN",
+        "prefix": "Bearer "
+      }
+    ]
+  }
+}
