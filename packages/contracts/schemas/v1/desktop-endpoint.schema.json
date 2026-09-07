@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:desktop-endpoint",
+  "title": "Desktop Endpoint",
+  "type": "object",
+  "required": ["contractVersion", "id", "name", "backend", "platform", "transport"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "name": { "type": "string", "minLength": 1 },
+    "backend": { "type": "string", "minLength": 1, "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$" },
+    "platform": { "enum": ["macos", "windows", "linux", "any"] },
+    "transport": {
+      "type": "object",
+      "required": ["command"],
+      "properties": {
+        "command": { "type": "string", "minLength": 1 },
+        "args": { "type": "array", "items": { "type": "string" } },
+        "cwd": { "type": "string", "minLength": 1 },
+        "timeoutMs": { "type": "integer", "minimum": 50, "maximum": 3600000 },
+        "maxOutputBytes": { "type": "integer", "minimum": 1024, "maximum": 104857600 },
+        "environment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["name", "environmentKey"],
+            "properties": {
+              "name": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" },
+              "environmentKey": { "type": "string", "pattern": "^[A-Za-z_][A-Za-z0-9_]*$" }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "applicationPolicy": {
+      "type": "object",
+      "properties": {
+        "allowedApplications": {
+          "type": "array", "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "blockedApplications": {
+          "type": "array", "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputDir": { "type": "string", "minLength": 1 },
+    "fileAccessRoots": {
+      "type": "array", "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": false
+}
