@@ -1,0 +1,20 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.desktop.local-bridge",
+  "name": "Local desktop accessibility bridge",
+  "adapterKind": "desktop-control",
+  "protocol": "desktop-json-stdio-v1",
+  "transport": {
+    "kind": "stdio",
+    "command": "q1x-desktop-bridge",
+    "args": [],
+    "timeoutMs": 30000,
+    "maxOutputBytes": 4194304,
+    "inputMode": "json",
+    "outputMode": "json"
+  },
+  "metadata": {
+    "bridgeProtocol": "q1x-desktop-bridge/1",
+    "platform": "adapter-defined"
+  }
+}
