@@ -2,6 +2,7 @@
 import { createServer } from 'node:http';
 import { OpenControlRuntime } from './runtime.js';
 import './supervision-extension.js';
+import './security-extension.js';
 
 function integerEnv(name: string, fallback: number): number {
   const value = process.env[name];
@@ -14,6 +15,12 @@ function integerEnv(name: string, fallback: number): number {
 const host = process.env.Q1X_HOST ?? '127.0.0.1';
 const port = integerEnv('Q1X_PORT', 8787);
 const runtime = OpenControlRuntime.open();
+const auditVerification = runtime.verifyAuditChain();
+if (!auditVerification.valid) {
+  runtime.close();
+  throw new Error(`Audit integrity failure at sequence ${auditVerification.firstInvalidSequence ?? 'unknown'}`);
+}
+const recovery = runtime.reconcileInterruptedAssignments();
 let ready = false;
 let closing = false;
 
@@ -63,5 +70,5 @@ server.on('error', error => {
 
 server.listen(port, host, () => {
   ready = true;
-  process.stdout.write(`${JSON.stringify({ event: 'service.ready', host, port, home: runtime.home })}\n`);
+  process.stdout.write(`${JSON.stringify({ event: 'service.ready', host, port, home: runtime.home, recoveredAssignments: recovery.assignments.length, auditReceiptsVerified: auditVerification.checked })}\n`);
 });
