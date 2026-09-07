@@ -8,7 +8,7 @@
     "contractVersion": { "const": "1.0.0" },
     "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
     "name": { "type": "string", "minLength": 1 },
-    "adapterKind": { "enum": ["mcp", "a2a", "cli-tui"] },
+    "adapterKind": { "enum": ["mcp", "a2a", "cli-tui", "browser-control", "desktop-control"] },
     "protocol": {
       "type": "string",
       "minLength": 1,
