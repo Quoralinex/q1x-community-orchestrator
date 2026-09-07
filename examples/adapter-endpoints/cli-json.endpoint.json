@@ -1,0 +1,22 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.cli.local-json",
+  "name": "Local JSON CLI",
+  "adapterKind": "cli-tui",
+  "protocol": "cli-json-stdio",
+  "transport": {
+    "kind": "stdio",
+    "command": "node",
+    "args": ["./path/to/tool.mjs"],
+    "inputMode": "json",
+    "outputMode": "json",
+    "timeoutMs": 30000,
+    "maxOutputBytes": 1048576,
+    "environment": [
+      {
+        "name": "TOOL_TOKEN",
+        "environmentKey": "Q1X_TOOL_TOKEN"
+      }
+    ]
+  }
+}

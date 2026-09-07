@@ -12,7 +12,7 @@ const schemaNames = [
   "common", "mission", "programme", "work-graph", "replan-event", "capability",
   "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
   "approval", "checkpoint", "deployment-profile", "discovery-manifest",
-  "model-endpoint", "model-request", "model-response"
+  "model-endpoint", "model-request", "model-response", "adapter-endpoint"
 ];
 
 async function json(file) {
@@ -53,7 +53,10 @@ const examples = [
   ["model-endpoints/local-anthropic.endpoint.json", "model-endpoint"],
   ["model-endpoints/hosted-compatible.endpoint.json", "model-endpoint"],
   ["model-endpoints/example.model-request.json", "model-request"],
-  ["model-endpoints/example.model-response.json", "model-response"]
+  ["model-endpoints/example.model-response.json", "model-response"],
+  ["adapter-endpoints/mcp-stdio.endpoint.json", "adapter-endpoint"],
+  ["adapter-endpoints/a2a-https.endpoint.json", "adapter-endpoint"],
+  ["adapter-endpoints/cli-json.endpoint.json", "adapter-endpoint"]
 ];
 
 test("cross-domain examples validate against normative schemas", async () => {

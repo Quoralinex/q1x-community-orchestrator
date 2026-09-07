@@ -68,9 +68,20 @@ node packages/runtime/dist/cli.js --home .q1x model invoke --file examples/model
 
 Local loopback HTTP is supported for zero-provider-bill inference. Remote endpoints require HTTPS. Credential values are resolved from environment variables at invocation time and are never persisted. See [`docs/model-transport.md`](docs/model-transport.md).
 
+## Phase 5: MCP, A2A and CLI/TUI adapters
+
+The runtime now persists executable adapter endpoints and dispatches MCP, A2A and local CLI/TUI work through one provider-neutral adapter registry. MCP uses the official TypeScript client for stdio and Streamable HTTP; A2A supports Agent Card discovery and JSON-RPC `message/send`; CLI tools are spawned directly without a shell.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x adapter-endpoints put --file examples/adapter-endpoints/mcp-stdio.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x adapter discover adapter.mcp.local-files
+```
+
+See [`docs/agent-cli-adapters.md`](docs/agent-cli-adapters.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery and provider-neutral model transport. The next adapter families are MCP, A2A and CLI/TUI, followed by browser/web control, desktop control, software/simulation adapters and edge/device bridges.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport and MCP/A2A/CLI execution. The next adapter families are browser/web control and desktop/application control, followed by software/simulation adapters and edge/device bridges.
 
 ## Deployment profiles
 
