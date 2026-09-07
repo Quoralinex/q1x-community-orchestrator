@@ -110,4 +110,23 @@ const phase5Endpoint: AdapterEndpoint = {
   protocol: "cli-json-stdio",
   transport: { kind: "stdio", command: "node", args: ["worker.mjs"], inputMode: "json", outputMode: "json" }
 };
-void phase5Endpoint;
+
+const browserEndpoint: AdapterEndpoint = {
+  contractVersion: "1.0.0",
+  id: "adapter.browser.webdriver",
+  name: "Local WebDriver",
+  adapterKind: "browser-control",
+  protocol: "webdriver-http-v1",
+  transport: { kind: "http", url: "http://127.0.0.1:4444" }
+};
+
+const desktopEndpoint: AdapterEndpoint = {
+  contractVersion: "1.0.0",
+  id: "adapter.desktop.bridge",
+  name: "Desktop bridge",
+  adapterKind: "desktop-control",
+  protocol: "desktop-json-stdio-v1",
+  transport: { kind: "stdio", command: "desktop-bridge", inputMode: "json", outputMode: "json" }
+};
+
+void phase5Endpoint; void browserEndpoint; void desktopEndpoint;
