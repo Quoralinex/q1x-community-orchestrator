@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:desktop-endpoint",
+  "title": "Desktop Endpoint",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "name",
+    "backend",
+    "platforms",
+    "allowedApplications"
+  ],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "name": { "type": "string", "minLength": 1 },
+    "backend": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["macos", "windows", "linux"] }
+    },
+    "allowedApplications": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/application" }
+    },
+    "screenshotDir": { "type": "string", "minLength": 1 },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 3600000
+    },
+    "policy": {
+      "type": "object",
+      "properties": {
+        "allowLaunch": { "type": "boolean" },
+        "allowQuit": { "type": "boolean" },
+        "allowInput": { "type": "boolean" },
+        "allowCapture": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "additionalProperties": false,
+  "$defs": {
+    "selector": {
+      "oneOf": [
+        {
+          "type": "object",
+          "required": ["platform", "kind", "value"],
+          "properties": {
+            "platform": { "const": "macos" },
+            "kind": { "enum": ["bundle-id", "application-name"] },
+            "value": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["platform", "kind", "value"],
+          "properties": {
+            "platform": { "const": "windows" },
+            "kind": {
+              "enum": [
+                "app-user-model-id",
+                "process-name",
+                "executable-path"
+              ]
+            },
+            "value": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": ["platform", "kind", "value"],
+          "properties": {
+            "platform": { "const": "linux" },
+            "kind": {
+              "enum": ["desktop-id", "process-name", "command"]
+            },
+            "value": { "type": "string", "minLength": 1 }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "application": {
+      "type": "object",
+      "required": ["id", "name", "selectors"],
+      "properties": {
+        "id": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+        },
+        "name": { "type": "string", "minLength": 1 },
+        "selectors": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "$ref": "#/$defs/selector" }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

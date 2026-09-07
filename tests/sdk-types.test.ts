@@ -13,6 +13,9 @@ import type {
   BrowserEndpoint,
   BrowserActionBatch,
   BrowserBatchResult,
+  DesktopEndpoint,
+  DesktopActionBatch,
+  DesktopBatchResult,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -144,3 +147,40 @@ const browserResult: BrowserBatchResult = {
   actions: [{ id: "navigate", status: "succeeded", durationMs: 10 }]
 };
 void browserEndpoint; void browserBatch; void browserResult;
+
+const desktopEndpoint: DesktopEndpoint = {
+  contractVersion: "1.0.0",
+  id: "desktop.endpoint.test",
+  name: "Desktop control",
+  backend: "test-desktop",
+  platforms: ["macos", "windows", "linux"],
+  allowedApplications: [{
+    id: "app.editor",
+    name: "Editor",
+    selectors: [
+      { platform: "macos", kind: "bundle-id", value: "com.example.Editor" },
+      { platform: "windows", kind: "process-name", value: "editor.exe" },
+      { platform: "linux", kind: "desktop-id", value: "editor.desktop" }
+    ]
+  }],
+  policy: { allowLaunch: true, allowQuit: true, allowInput: true, allowCapture: true },
+  timeoutMs: 30000
+};
+const desktopBatch: DesktopActionBatch = {
+  contractVersion: "1.0.0",
+  id: "desktop.batch.test",
+  actions: [
+    { id: "launch", kind: "launch", applicationId: "app.editor" },
+    { id: "activate", kind: "activate", applicationId: "app.editor" },
+    { id: "type", kind: "type", text: "Hello" },
+    { id: "capture", kind: "screenshot", outputPath: "desktop.png" }
+  ]
+};
+const desktopResult: DesktopBatchResult = {
+  contractVersion: "1.0.0",
+  id: "desktop.batch.test.result",
+  batchId: desktopBatch.id,
+  status: "succeeded",
+  actions: [{ id: "launch", status: "succeeded", durationMs: 10 }]
+};
+void desktopEndpoint; void desktopBatch; void desktopResult;
