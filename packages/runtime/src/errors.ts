@@ -13,7 +13,11 @@ export type RuntimeErrorCode =
   | 'MISSING_CREDENTIAL'
   | 'TRANSPORT_NOT_FOUND'
   | 'MODEL_TRANSPORT_ERROR'
-  | 'ADAPTER_TRANSPORT_ERROR';
+  | 'ADAPTER_TRANSPORT_ERROR'
+  | 'UNSUPPORTED_OPERATION'
+  | 'CANCELLED'
+  | 'DESKTOP_TIMEOUT'
+  | 'DESKTOP_PROCESS_ERROR';
 
 export class RuntimeError extends Error {
   readonly code: RuntimeErrorCode;
