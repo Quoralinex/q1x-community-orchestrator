@@ -1,8 +1,9 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, DesktopEndpoint, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import { assertSafeBrowserEndpoint } from './browser-security.js';
+import { assertSafeDesktopEndpoint } from './desktop-security.js';
 import { BrowserSessionManager, type BrowserBackend, type BrowserSessionHandle } from './browser-backend.js';
 import { createDefaultBrowserBackendRegistry } from './playwright-browser.js';
 import type { AdapterTransport } from './adapter-transport.js';
@@ -41,6 +42,7 @@ export interface RuntimeStatus {
     modelEndpoints: number;
     adapterEndpoints: number;
     browserEndpoints: number;
+    desktopEndpoints: number;
   };
 }
 
@@ -217,6 +219,22 @@ export class OpenControlRuntime {
 
   listBrowserEndpoints(): BrowserEndpoint[] {
     return this.store.listDocuments<BrowserEndpoint>('browser-endpoint');
+  }
+
+  putDesktopEndpoint(endpoint: DesktopEndpoint): DesktopEndpoint {
+    validateContract(SCHEMA_IDS.desktopEndpoint, endpoint);
+    assertSafeDesktopEndpoint(endpoint);
+    this.store.putDocument({ kind: 'desktop-endpoint', id: endpoint.id, scopeId: null, document: endpoint });
+    this.store.appendEvent('desktop.endpoint.put', 'desktop-endpoint', endpoint.id, null, { backend: endpoint.backend, platforms: endpoint.platforms });
+    return endpoint;
+  }
+
+  getDesktopEndpoint(id: string): DesktopEndpoint | undefined {
+    return this.store.getDocument<DesktopEndpoint>('desktop-endpoint', id);
+  }
+
+  listDesktopEndpoints(): DesktopEndpoint[] {
+    return this.store.listDocuments<DesktopEndpoint>('desktop-endpoint');
   }
 
   registerBrowserBackend(backend: BrowserBackend): void {
@@ -500,7 +518,8 @@ export class OpenControlRuntime {
         adapters: this.listAdapterManifests().length,
         modelEndpoints: this.listModelEndpoints().length,
         adapterEndpoints: this.listAdapterEndpoints().length,
-        browserEndpoints: this.listBrowserEndpoints().length
+        browserEndpoints: this.listBrowserEndpoints().length,
+        desktopEndpoints: this.listDesktopEndpoints().length
       }
     };
   }

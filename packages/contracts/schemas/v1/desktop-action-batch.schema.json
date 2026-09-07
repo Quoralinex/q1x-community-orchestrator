@@ -3,9 +3,15 @@
   "$id": "urn:q1x:community:contracts:v1:desktop-action-batch",
   "title": "Desktop Action Batch",
   "type": "object",
-  "required": ["contractVersion", "id", "actions"],
+  "required": [
+    "contractVersion",
+    "id",
+    "actions"
+  ],
   "properties": {
-    "contractVersion": { "const": "1.0.0" },
+    "contractVersion": {
+      "const": "1.0.0"
+    },
     "id": {
       "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
     },
@@ -13,15 +19,22 @@
       "type": "array",
       "minItems": 1,
       "maxItems": 256,
-      "items": { "$ref": "#/$defs/action" }
+      "items": {
+        "$ref": "#/$defs/action"
+      }
     },
-    "stopOnError": { "type": "boolean" },
+    "stopOnError": {
+      "type": "boolean"
+    },
     "timeoutMs": {
       "type": "integer",
       "minimum": 50,
       "maximum": 3600000
     },
-    "metadata": { "type": "object", "additionalProperties": true }
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
   },
   "additionalProperties": false,
   "$defs": {
@@ -29,9 +42,14 @@
       "oneOf": [
         {
           "type": "object",
-          "required": ["by", "applicationId"],
+          "required": [
+            "by",
+            "applicationId"
+          ],
           "properties": {
-            "by": { "const": "application" },
+            "by": {
+              "const": "application"
+            },
             "applicationId": {
               "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
             }
@@ -40,90 +58,156 @@
         },
         {
           "type": "object",
-          "required": ["by", "x", "y"],
+          "required": [
+            "by",
+            "x",
+            "y"
+          ],
           "properties": {
-            "by": { "const": "coordinates" },
-            "x": { "type": "number" },
-            "y": { "type": "number" }
+            "by": {
+              "const": "coordinates"
+            },
+            "x": {
+              "type": "number"
+            },
+            "y": {
+              "type": "number"
+            }
           },
           "additionalProperties": false
         },
         {
           "type": "object",
-          "required": ["by"],
+          "required": [
+            "by"
+          ],
           "properties": {
-            "by": { "const": "window" },
+            "by": {
+              "const": "window"
+            },
             "applicationId": {
               "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
             },
-            "title": { "type": "string", "minLength": 1 }
+            "title": {
+              "type": "string",
+              "minLength": 1
+            }
           },
-          "anyOf": [
-            { "required": ["applicationId"] },
-            { "required": ["title"] }
-          ],
           "additionalProperties": false
         },
         {
           "type": "object",
-          "required": ["by", "applicationId"],
+          "required": [
+            "by",
+            "applicationId"
+          ],
           "properties": {
-            "by": { "const": "accessibility" },
+            "by": {
+              "const": "accessibility"
+            },
             "applicationId": {
               "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
             },
-            "role": { "type": "string", "minLength": 1 },
-            "name": { "type": "string", "minLength": 1 },
-            "identifier": { "type": "string", "minLength": 1 }
+            "role": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": "string",
+              "minLength": 1
+            },
+            "identifier": {
+              "type": "string",
+              "minLength": 1
+            }
           },
-          "anyOf": [
-            { "required": ["role"] },
-            { "required": ["name"] },
-            { "required": ["identifier"] }
-          ],
           "additionalProperties": false
         }
       ]
     },
     "action": {
       "type": "object",
-      "required": ["id", "kind"],
+      "required": [
+        "id",
+        "kind"
+      ],
       "properties": {
         "id": {
           "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
         },
         "kind": {
           "enum": [
-            "launch", "activate", "quit", "inspect",
-            "click", "double-click", "mouse-move", "mouse-down",
-            "mouse-up", "wheel", "drag", "type", "press",
-            "hotkey", "wait", "screenshot"
+            "launch",
+            "activate",
+            "quit",
+            "inspect",
+            "click",
+            "double-click",
+            "mouse-move",
+            "mouse-down",
+            "mouse-up",
+            "wheel",
+            "drag",
+            "type",
+            "press",
+            "hotkey",
+            "wait",
+            "screenshot"
           ]
         },
         "applicationId": {
           "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
         },
-        "target": { "$ref": "#/$defs/target" },
-        "source": { "$ref": "#/$defs/target" },
-        "x": { "type": "number" },
-        "y": { "type": "number" },
-        "deltaX": { "type": "number" },
-        "deltaY": { "type": "number" },
-        "button": { "enum": ["left", "middle", "right"] },
-        "text": { "type": "string" },
-        "key": { "type": "string", "minLength": 1 },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "source": {
+          "$ref": "#/$defs/target"
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "deltaX": {
+          "type": "number"
+        },
+        "deltaY": {
+          "type": "number"
+        },
+        "button": {
+          "enum": [
+            "left",
+            "middle",
+            "right"
+          ]
+        },
+        "text": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
         "keys": {
           "type": "array",
           "minItems": 1,
           "maxItems": 16,
-          "items": { "type": "string", "minLength": 1 }
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
         },
         "milliseconds": {
           "type": "integer",
           "minimum": 0,
           "maximum": 3600000
         },
-        "outputPath": { "type": "string", "minLength": 1 },
+        "outputPath": {
+          "type": "string",
+          "minLength": 1
+        },
         "timeoutMs": {
           "type": "integer",
           "minimum": 50,
@@ -132,9 +216,17 @@
       },
       "allOf": [
         {
-          "if": { "properties": { "kind": { "const": "launch" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "launch"
+              }
+            }
+          },
           "then": {
-            "required": ["applicationId"],
+            "required": [
+              "applicationId"
+            ],
             "properties": {
               "applicationId": {
                 "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
@@ -143,9 +235,17 @@
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "activate" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "activate"
+              }
+            }
+          },
           "then": {
-            "required": ["applicationId"],
+            "required": [
+              "applicationId"
+            ],
             "properties": {
               "applicationId": {
                 "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
@@ -154,9 +254,17 @@
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "quit" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "quit"
+              }
+            }
+          },
           "then": {
-            "required": ["applicationId"],
+            "required": [
+              "applicationId"
+            ],
             "properties": {
               "applicationId": {
                 "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
@@ -165,71 +273,172 @@
           }
         },
         {
-          "if": { "properties": { "kind": { "enum": ["click", "double-click"] } } },
-          "then": {
-            "required": ["target"],
-            "properties": { "target": { "$ref": "#/$defs/target" } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "mouse-move" } } },
-          "then": {
-            "required": ["x", "y"],
-            "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "wheel" } } },
-          "then": {
-            "required": ["deltaX", "deltaY"],
+          "if": {
             "properties": {
-              "deltaX": { "type": "number" },
-              "deltaY": { "type": "number" }
+              "kind": {
+                "enum": [
+                  "click",
+                  "double-click"
+                ]
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "drag" } } },
-          "then": {
-            "required": ["source", "target"],
+          "if": {
             "properties": {
-              "source": { "$ref": "#/$defs/target" },
-              "target": { "$ref": "#/$defs/target" }
+              "kind": {
+                "const": "mouse-move"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "type" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wheel"
+              }
+            }
+          },
           "then": {
-            "required": ["text"],
-            "properties": { "text": { "type": "string" } }
+            "required": [
+              "deltaX",
+              "deltaY"
+            ],
+            "properties": {
+              "deltaX": {
+                "type": "number"
+              },
+              "deltaY": {
+                "type": "number"
+              }
+            }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "press" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "drag"
+              }
+            }
+          },
           "then": {
-            "required": ["key"],
-            "properties": { "key": { "type": "string", "minLength": 1 } }
+            "required": [
+              "source",
+              "target"
+            ],
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/target"
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "hotkey" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "type"
+              }
+            }
+          },
           "then": {
-            "required": ["keys"],
+            "required": [
+              "text"
+            ],
+            "properties": {
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "press"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "hotkey"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "keys"
+            ],
             "properties": {
               "keys": {
                 "type": "array",
                 "minItems": 1,
                 "maxItems": 16,
-                "items": { "type": "string", "minLength": 1 }
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
               }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "wait" } } },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wait"
+              }
+            }
+          },
           "then": {
-            "required": ["milliseconds"],
+            "required": [
+              "milliseconds"
+            ],
             "properties": {
               "milliseconds": {
                 "type": "integer",
@@ -240,11 +449,22 @@
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "screenshot" } } },
-          "then": {
-            "required": ["outputPath"],
+          "if": {
             "properties": {
-              "outputPath": { "type": "string", "minLength": 1 }
+              "kind": {
+                "const": "screenshot"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "outputPath"
+            ],
+            "properties": {
+              "outputPath": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         }

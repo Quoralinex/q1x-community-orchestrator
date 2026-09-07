@@ -22,3 +22,4 @@ export * from './browser-security.js';
 export * from './browser-backend.js';
 export * from './playwright-browser.js';
 export * from './browser-actions.js';
+export * from './desktop-security.js';
