@@ -29,6 +29,7 @@ A persisted `DesktopEndpoint` declares the backend, target platform and bridge p
   "backend": "stdio-bridge",
   "platform": "any",
   "executionLocation": "local",
+  "supportedActions": ["focus-application", "inspect", "find"],
   "transport": {
     "command": "q1x-desktop-bridge",
     "args": [],
@@ -44,7 +45,7 @@ A persisted `DesktopEndpoint` declares the backend, target platform and bridge p
 
 `platform` may be `macos`, `windows`, `linux` or `any`. Platform-specific endpoints are refused on incompatible hosts, and unrecognized host operating systems are not silently treated as Linux. `executionLocation` declares where application data is actually processed (`local`, `private-network`, `managed-cloud` or `public-cloud`) and is propagated into capability privacy metadata.
 
-Only the built-in `stdio-bridge` backend requires `transport`. Custom native or remote backends can instead use validated endpoint identity/platform fields plus `backendConfig`, without supplying a fake executable.
+Only the built-in `stdio-bridge` backend requires `transport`. Custom native or remote backends can instead use validated endpoint identity/platform fields plus `backendConfig`, without supplying a fake executable. Every endpoint declares `supportedActions`; discovery advertises exactly that set and execution rejects undeclared actions rather than assuming every backend implements the full desktop surface.
 
 Environment mappings store only the bridge-visible variable name and the host environment key. Values are resolved at execution time and are not stored in endpoint configuration.
 

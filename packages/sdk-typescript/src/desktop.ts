@@ -24,6 +24,7 @@ export interface DesktopEndpoint {
   backend: string;
   platform: DesktopPlatform;
   executionLocation: DesktopExecutionLocation;
+  supportedActions: DesktopActionKind[];
   transport?: DesktopStdioTransport;
   backendConfig?: Record<string, unknown>;
   applicationPolicy?: {

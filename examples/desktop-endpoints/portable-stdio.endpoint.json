@@ -12,10 +12,17 @@
     "maxOutputBytes": 4194304
   },
   "applicationPolicy": {
-    "allowedApplications": ["example.app"]
+    "allowedApplications": [
+      "example.app"
+    ]
   },
   "outputDir": "./desktop-output",
   "metadata": {
     "protocol": "q1x-desktop-bridge/1"
-  }
+  },
+  "supportedActions": [
+    "focus-application",
+    "inspect",
+    "find"
+  ]
 }

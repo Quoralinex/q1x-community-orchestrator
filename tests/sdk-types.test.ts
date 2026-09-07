@@ -155,6 +155,7 @@ const desktopEndpoint: DesktopEndpoint = {
   backend: "stdio-bridge",
   platform: "any",
   executionLocation: "local",
+  supportedActions: ["focus-application", "inspect", "click"],
   transport: { command: "node", args: ["bridge.mjs"], timeoutMs: 30000 },
   applicationPolicy: { allowedApplications: ["example.app"] },
   outputDir: "./desktop-output"

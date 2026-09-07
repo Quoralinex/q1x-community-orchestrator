@@ -22,6 +22,7 @@ A normative `DesktopEndpoint` persists configuration but no live application sta
 - id, name and backend id;
 - target platform (`macos`, `windows`, `linux` or `any`);
 - explicit execution location (`local`, `private-network`, `managed-cloud` or `public-cloud`);
+- explicit normalized supported-action set used for capability advertisement and execution enforcement;
 - backend-specific configuration; the built-in `stdio-bridge` uses a direct executable command and argument array, while custom backends do not need a fake stdio transport;
 - optional working directory for stdio transport;
 - timeout and bounded-output limits;
@@ -104,7 +105,7 @@ Raw desktop state is not persisted. Screenshots are written only beneath an expl
 - Endpoint configuration may not contain secret values by design; environment mappings carry key names only.
 - Application allow/block policy is enforced in Q1X before bridge invocation.
 - Restricted endpoints require each action to be bound to an application before bridge invocation, then enforce allow/block policy.
-- `find` requires an explicit target.
+- `find` requires an explicit target and `wait` requires an explicit millisecond duration.
 - Screenshot output paths must resolve beneath the configured output directory, including across Windows volume boundaries.
 - Optional file paths supplied by future bridge actions must resolve beneath configured file-access roots.
 - Output capture is bounded with linear chunk collection; bridge execution is time limited/cancellable and escalates to forced termination when a bridge ignores graceful termination.

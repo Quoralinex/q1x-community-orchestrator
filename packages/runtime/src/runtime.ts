@@ -318,11 +318,11 @@ export class OpenControlRuntime {
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
     const started = Date.now();
     try {
-      assertSafeDesktopBatch(endpoint, batch);
-      if (!isDesktopEndpointPlatformCompatible(endpoint)) {
+      const preparedBatch = assertSafeDesktopBatch(endpoint, batch);
+      if (endpoint.executionLocation === 'local' && !isDesktopEndpointPlatformCompatible(endpoint)) {
         throw new RuntimeError('TRANSPORT_NOT_FOUND', `Desktop endpoint platform is not compatible with this host: ${endpoint.platform}`);
       }
-      const result = await this.desktopBackends.execute(endpoint, batch, signal);
+      const result = await this.desktopBackends.execute(endpoint, preparedBatch, signal);
       if (result.contractVersion !== CONTRACT_VERSION || result.batchId !== batch.id) {
         throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop backend returned mismatched batch references');
       }
@@ -345,19 +345,20 @@ export class OpenControlRuntime {
     const endpoint = this.getDesktopEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
     const hostPlatform = desktopPlatformForHost();
-    const available = this.desktopBackends.has(endpoint.backend) && hostPlatform !== undefined && isDesktopEndpointPlatformCompatible(endpoint);
+    const platformCompatible = endpoint.executionLocation !== 'local' || (hostPlatform !== undefined && isDesktopEndpointPlatformCompatible(endpoint));
+    const available = this.desktopBackends.has(endpoint.backend) && platformCompatible;
     const capability: CapabilityDescriptor = {
       contractVersion: CONTRACT_VERSION,
       id: `capability.desktop.${endpoint.id}`,
       name: `${endpoint.name} desktop control`,
       adapterKind: 'desktop-control',
-      operations: ['applications','windows','inspect','find','click','type','keyboard','mouse','screenshot'],
+      operations: [...endpoint.supportedActions],
       modalities: { input: ['text','structured-data','control'], output: ['text','image','structured-data'] },
       availability: { state: available ? 'available' : 'offline', checkedAt: new Date().toISOString() },
       cost: { class: 'no-usage-fee' },
       privacy: { executionLocation: endpoint.executionLocation, dataRetention: 'none' },
       trust: { level: 'configured', source: `desktop-endpoint:${endpoint.id}` },
-      platforms: [endpoint.platform === 'any' ? (hostPlatform ?? 'any') : endpoint.platform]
+      platforms: [endpoint.executionLocation === 'local' && endpoint.platform === 'any' ? (hostPlatform ?? 'any') : endpoint.platform]
     };
     this.putCapability(capability);
     this.store.appendEvent('desktop.discover', 'desktop-endpoint', endpoint.id, null, {

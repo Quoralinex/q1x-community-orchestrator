@@ -3,224 +3,668 @@
   "$id": "urn:q1x:community:contracts:v1:desktop-action-batch",
   "title": "Desktop Action Batch",
   "type": "object",
-  "required": ["contractVersion", "id", "actions"],
+  "required": [
+    "contractVersion",
+    "id",
+    "actions"
+  ],
   "properties": {
-    "contractVersion": { "const": "1.0.0" },
-    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
-    "actions": {
-      "type": "array", "minItems": 1, "maxItems": 256,
-      "items": { "$ref": "#/$defs/action" }
+    "contractVersion": {
+      "const": "1.0.0"
     },
-    "stopOnError": { "type": "boolean" },
-    "timeoutMs": { "type": "integer", "minimum": 50, "maximum": 3600000 },
-    "metadata": { "type": "object", "additionalProperties": true }
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "actions": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 256,
+      "items": {
+        "$ref": "#/$defs/action"
+      }
+    },
+    "stopOnError": {
+      "type": "boolean"
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 3600000
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
   },
   "additionalProperties": false,
   "$defs": {
     "target": {
       "oneOf": [
         {
-          "type": "object", "required": ["by", "value"],
+          "type": "object",
+          "required": [
+            "by",
+            "value"
+          ],
           "properties": {
-            "by": { "const": "accessibility-id" },
-            "value": { "type": "string", "minLength": 1 }
-          }, "additionalProperties": false
-        },
-        {
-          "type": "object", "required": ["by", "role"],
-          "properties": {
-            "by": { "const": "role" },
-            "role": { "type": "string", "minLength": 1 },
-            "name": { "type": "string" },
-            "exact": { "type": "boolean" }
-          }, "additionalProperties": false
-        },
-        {
-          "type": "object", "required": ["by", "value"],
-          "properties": {
-            "by": { "const": "name" },
-            "value": { "type": "string", "minLength": 1 },
-            "exact": { "type": "boolean" }
-          }, "additionalProperties": false
-        },
-        {
-          "type": "object", "required": ["by", "value"],
-          "properties": {
-            "by": { "const": "text" },
-            "value": { "type": "string", "minLength": 1 },
-            "exact": { "type": "boolean" }
-          }, "additionalProperties": false
-        },
-        {
-          "type": "object", "required": ["by", "value"],
-          "properties": {
-            "by": { "const": "path" },
+            "by": {
+              "const": "accessibility-id"
+            },
             "value": {
-              "type": "array", "minItems": 1,
-              "items": { "type": "string", "minLength": 1 }
+              "type": "string",
+              "minLength": 1
             }
-          }, "additionalProperties": false
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "by",
+            "role"
+          ],
+          "properties": {
+            "by": {
+              "const": "role"
+            },
+            "role": {
+              "type": "string",
+              "minLength": 1
+            },
+            "name": {
+              "type": "string"
+            },
+            "exact": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "by",
+            "value"
+          ],
+          "properties": {
+            "by": {
+              "const": "name"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exact": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "by",
+            "value"
+          ],
+          "properties": {
+            "by": {
+              "const": "text"
+            },
+            "value": {
+              "type": "string",
+              "minLength": 1
+            },
+            "exact": {
+              "type": "boolean"
+            }
+          },
+          "additionalProperties": false
+        },
+        {
+          "type": "object",
+          "required": [
+            "by",
+            "value"
+          ],
+          "properties": {
+            "by": {
+              "const": "path"
+            },
+            "value": {
+              "type": "array",
+              "minItems": 1,
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "additionalProperties": false
         }
       ]
     },
     "action": {
       "type": "object",
-      "required": ["id", "kind"],
+      "required": [
+        "id",
+        "kind"
+      ],
       "properties": {
-        "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+        "id": {
+          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+        },
         "kind": {
           "enum": [
-            "list-applications", "launch-application", "focus-application", "close-application",
-            "list-windows", "focus-window", "move-window", "resize-window",
-            "inspect", "find", "click", "double-click", "hover", "type", "press",
-            "set-value", "select", "toggle", "mouse-move", "mouse-down", "mouse-up",
-            "wheel", "drag", "wait", "screenshot"
+            "list-applications",
+            "launch-application",
+            "focus-application",
+            "close-application",
+            "list-windows",
+            "focus-window",
+            "move-window",
+            "resize-window",
+            "inspect",
+            "find",
+            "click",
+            "double-click",
+            "hover",
+            "type",
+            "press",
+            "set-value",
+            "select",
+            "toggle",
+            "mouse-move",
+            "mouse-down",
+            "mouse-up",
+            "wheel",
+            "drag",
+            "wait",
+            "screenshot"
           ]
         },
-        "application": { "type": "string", "minLength": 1 },
-        "arguments": { "type": "array", "items": { "type": "string" } },
-        "windowId": { "type": "string", "minLength": 1 },
-        "target": { "$ref": "#/$defs/target" },
-        "source": { "$ref": "#/$defs/target" },
-        "text": { "type": "string" },
-        "key": { "type": "string", "minLength": 1 },
+        "application": {
+          "type": "string",
+          "minLength": 1
+        },
+        "arguments": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "windowId": {
+          "type": "string",
+          "minLength": 1
+        },
+        "target": {
+          "$ref": "#/$defs/target"
+        },
+        "source": {
+          "$ref": "#/$defs/target"
+        },
+        "text": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string",
+          "minLength": 1
+        },
         "value": {
           "oneOf": [
-            { "type": "string" },
-            { "type": "number" },
-            { "type": "boolean" },
-            { "type": "null" }
+            {
+              "type": "string"
+            },
+            {
+              "type": "number"
+            },
+            {
+              "type": "boolean"
+            },
+            {
+              "type": "null"
+            }
           ]
         },
-        "values": { "type": "array", "minItems": 1, "items": { "type": "string" } },
-        "x": { "type": "number" },
-        "y": { "type": "number" },
-        "width": { "type": "number", "minimum": 1 },
-        "height": { "type": "number", "minimum": 1 },
-        "deltaX": { "type": "number" },
-        "deltaY": { "type": "number" },
-        "button": { "enum": ["left", "middle", "right"] },
-        "outputPath": { "type": "string", "minLength": 1 },
-        "milliseconds": { "type": "integer", "minimum": 0, "maximum": 3600000 },
-        "timeoutMs": { "type": "integer", "minimum": 50, "maximum": 3600000 }
+        "values": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        },
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number",
+          "minimum": 1
+        },
+        "height": {
+          "type": "number",
+          "minimum": 1
+        },
+        "deltaX": {
+          "type": "number"
+        },
+        "deltaY": {
+          "type": "number"
+        },
+        "button": {
+          "enum": [
+            "left",
+            "middle",
+            "right"
+          ]
+        },
+        "outputPath": {
+          "type": "string",
+          "minLength": 1
+        },
+        "milliseconds": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 3600000
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 3600000
+        }
       },
       "allOf": [
         {
-          "if": { "properties": { "kind": { "enum": ["launch-application", "focus-application", "close-application"] } }, "required": ["kind"] },
-          "then": {
-            "required": ["application"],
-            "properties": { "application": { "type": "string", "minLength": 1 } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "enum": ["focus-window", "move-window", "resize-window"] } }, "required": ["kind"] },
-          "then": {
-            "required": ["windowId"],
-            "properties": { "windowId": { "type": "string", "minLength": 1 } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "enum": ["find", "click", "double-click", "hover", "type", "set-value", "select", "toggle"] } }, "required": ["kind"] },
-          "then": {
-            "required": ["target"],
-            "properties": { "target": { "$ref": "#/$defs/target" } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "type" } }, "required": ["kind"] },
-          "then": {
-            "required": ["target", "text"],
+          "if": {
             "properties": {
-              "target": { "$ref": "#/$defs/target" },
-              "text": { "type": "string" }
+              "kind": {
+                "enum": [
+                  "launch-application",
+                  "focus-application",
+                  "close-application"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "application"
+            ],
+            "properties": {
+              "application": {
+                "type": "string",
+                "minLength": 1
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "press" } }, "required": ["kind"] },
+          "if": {
+            "properties": {
+              "kind": {
+                "enum": [
+                  "focus-window",
+                  "move-window",
+                  "resize-window"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
           "then": {
-            "required": ["key"],
-            "properties": { "key": { "type": "string", "minLength": 1 } }
+            "required": [
+              "windowId"
+            ],
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "set-value" } }, "required": ["kind"] },
-          "then": {
-            "required": ["target", "value"],
+          "if": {
             "properties": {
-              "target": { "$ref": "#/$defs/target" },
+              "kind": {
+                "enum": [
+                  "find",
+                  "click",
+                  "double-click",
+                  "hover",
+                  "type",
+                  "set-value",
+                  "select",
+                  "toggle"
+                ]
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "target"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "type"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "text"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "press"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "key"
+            ],
+            "properties": {
+              "key": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "set-value"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "value"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
               "value": {
                 "oneOf": [
-                  { "type": "string" },
-                  { "type": "number" },
-                  { "type": "boolean" },
-                  { "type": "null" }
+                  {
+                    "type": "string"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "null"
+                  }
                 ]
               }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "select" } }, "required": ["kind"] },
-          "then": {
-            "required": ["target", "values"],
+          "if": {
             "properties": {
-              "target": { "$ref": "#/$defs/target" },
-              "values": { "type": "array", "minItems": 1, "items": { "type": "string" } }
+              "kind": {
+                "const": "select"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "target",
+              "values"
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "mouse-move" } }, "required": ["kind"] },
-          "then": {
-            "required": ["x", "y"],
-            "properties": { "x": { "type": "number" }, "y": { "type": "number" } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "wheel" } }, "required": ["kind"] },
-          "then": {
-            "required": ["deltaX", "deltaY"],
-            "properties": { "deltaX": { "type": "number" }, "deltaY": { "type": "number" } }
-          }
-        },
-        {
-          "if": { "properties": { "kind": { "const": "drag" } }, "required": ["kind"] },
-          "then": {
-            "required": ["source", "target"],
+          "if": {
             "properties": {
-              "source": { "$ref": "#/$defs/target" },
-              "target": { "$ref": "#/$defs/target" }
+              "kind": {
+                "const": "mouse-move"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "x",
+              "y"
+            ],
+            "properties": {
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "move-window" } }, "required": ["kind"] },
-          "then": {
-            "required": ["windowId", "x", "y"],
+          "if": {
             "properties": {
-              "windowId": { "type": "string", "minLength": 1 },
-              "x": { "type": "number" },
-              "y": { "type": "number" }
+              "kind": {
+                "const": "wheel"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "deltaX",
+              "deltaY"
+            ],
+            "properties": {
+              "deltaX": {
+                "type": "number"
+              },
+              "deltaY": {
+                "type": "number"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "resize-window" } }, "required": ["kind"] },
-          "then": {
-            "required": ["windowId", "width", "height"],
+          "if": {
             "properties": {
-              "windowId": { "type": "string", "minLength": 1 },
-              "width": { "type": "number", "minimum": 1 },
-              "height": { "type": "number", "minimum": 1 }
+              "kind": {
+                "const": "drag"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "source",
+              "target"
+            ],
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/target"
+              },
+              "target": {
+                "$ref": "#/$defs/target"
+              }
             }
           }
         },
         {
-          "if": { "properties": { "kind": { "const": "screenshot" } }, "required": ["kind"] },
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "move-window"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
           "then": {
-            "required": ["outputPath"],
-            "properties": { "outputPath": { "type": "string", "minLength": 1 } }
+            "required": [
+              "windowId",
+              "x",
+              "y"
+            ],
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "resize-window"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "windowId",
+              "width",
+              "height"
+            ],
+            "properties": {
+              "windowId": {
+                "type": "string",
+                "minLength": 1
+              },
+              "width": {
+                "type": "number",
+                "minimum": 1
+              },
+              "height": {
+                "type": "number",
+                "minimum": 1
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "wait"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "milliseconds"
+            ],
+            "properties": {
+              "milliseconds": {
+                "type": "integer",
+                "minimum": 0,
+                "maximum": 3600000
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "kind": {
+                "const": "screenshot"
+              }
+            },
+            "required": [
+              "kind"
+            ]
+          },
+          "then": {
+            "required": [
+              "outputPath"
+            ],
+            "properties": {
+              "outputPath": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       ],

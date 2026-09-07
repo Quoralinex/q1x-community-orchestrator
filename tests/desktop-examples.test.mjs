@@ -53,7 +53,7 @@ test('custom desktop backend endpoint does not require stdio transport', async (
   assert.ok(validate);
   const document = {
     contractVersion: '1.0.0', id: 'desktop.native', name: 'Native backend', backend: 'native-test',
-    platform: 'any', executionLocation: 'local', backendConfig: { channel: 'accessibility' }
+    platform: 'any', executionLocation: 'local', supportedActions: ['list-applications'], backendConfig: { channel: 'accessibility' }
   };
   assert.equal(validate(document), true, ajv.errorsText(validate.errors));
 });
@@ -64,7 +64,7 @@ test('stdio desktop backend endpoint requires transport', async () => {
   assert.ok(validate);
   const document = {
     contractVersion: '1.0.0', id: 'desktop.bad-stdio', name: 'Missing transport', backend: 'stdio-bridge',
-    platform: 'any', executionLocation: 'local'
+    platform: 'any', executionLocation: 'local', supportedActions: ['list-applications']
   };
   assert.equal(validate(document), false);
 });
@@ -84,6 +84,13 @@ test('desktop find action validates', async () => {
 test('desktop find action without a target is rejected', async () => {
   const { validate } = await desktopBatchValidator();
   const document = { contractVersion: '1.0.0', id: 'desktop.batch.find-missing', actions: [{ id: 'find', kind: 'find' }] };
+  assert.equal(validate(document), false);
+});
+
+
+test('desktop wait action without a duration is rejected', async () => {
+  const { validate } = await desktopBatchValidator();
+  const document = { contractVersion: '1.0.0', id: 'desktop.batch.wait-missing', actions: [{ id: 'pause', kind: 'wait' }] };
   assert.equal(validate(document), false);
 });
 

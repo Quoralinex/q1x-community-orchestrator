@@ -54,9 +54,12 @@ function hasApplicationRestriction(endpoint: DesktopEndpoint): boolean {
   return Boolean((policy?.allowedApplications?.length ?? 0) > 0 || (policy?.blockedApplications?.length ?? 0) > 0);
 }
 
-export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: DesktopActionBatch): void {
+export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: DesktopActionBatch): DesktopActionBatch {
   const restricted = hasApplicationRestriction(endpoint);
-  for (const action of batch.actions) {
+  const actions = batch.actions.map(action => {
+    if (!endpoint.supportedActions.includes(action.kind)) {
+      throw new RuntimeError('INSECURE_ENDPOINT', `Desktop action is not declared supported by endpoint: ${action.kind}`);
+    }
     if (restricted && !action.application) {
       throw new RuntimeError('INSECURE_ENDPOINT', `Desktop action must identify an application under endpoint policy: ${action.id}`);
     }
@@ -66,8 +69,11 @@ export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: Desktop
       if (!action.outputPath || !isDesktopPathWithin(endpoint.outputDir, action.outputPath)) {
         throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop screenshot output must remain beneath endpoint outputDir');
       }
+      return { ...action, outputPath: resolve(action.outputPath) };
     }
-  }
+    return action;
+  });
+  return { ...batch, actions };
 }
 
 export function resolveDesktopEnvironment(endpoint: DesktopEndpoint, env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {

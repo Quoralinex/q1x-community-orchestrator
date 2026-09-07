@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   OpenControlRuntime,
   RuntimeError,
+  assertSafeDesktopBatch,
   desktopPlatformForHost,
   isDesktopPathWithin
 } from '../packages/runtime/dist/index.js';
@@ -21,6 +22,7 @@ function endpoint(home, overrides = {}) {
     backend: 'stdio-bridge',
     platform: 'any',
     executionLocation: 'local',
+    supportedActions: ['list-applications','launch-application','focus-application','close-application','list-windows','focus-window','move-window','resize-window','inspect','find','click','double-click','hover','type','press','set-value','select','toggle','mouse-move','mouse-down','mouse-up','wheel','drag','wait','screenshot'],
     transport: {
       command: process.execPath,
       args: [bridge],
@@ -123,6 +125,8 @@ test('desktop platform and path helpers reject unsupported hosts and Windows cro
   assert.equal(desktopPlatformForHost('aix'), undefined);
   assert.equal(isDesktopPathWithin('C:\\safe', 'D:\\escape.png', 'win32'), false);
   assert.equal(isDesktopPathWithin('C:\\safe', 'C:\\safe\\capture.png', 'win32'), true);
+  const prepared = assertSafeDesktopBatch({ contractVersion: '1.0.0', id: 'desktop.path', name: 'Path', backend: 'stdio-bridge', platform: 'any', executionLocation: 'local', supportedActions: ['screenshot'], transport: { command: 'bridge' }, outputDir: './desktop-output' }, batch('desktop.batch.path', [{ id: 'shot', kind: 'screenshot', outputPath: './desktop-output/capture.png' }]));
+  assert.equal(prepared.actions[0].outputPath, resolve('./desktop-output/capture.png'));
 });
 
 test('desktop bridge bounds execution, force-stops stubborn processes and rejects malformed results', async t => {
@@ -163,6 +167,23 @@ test('desktop bridge bounds execution, force-stops stubborn processes and reject
   );
 });
 
+test('desktop execution rejects an already-aborted signal before spawning the bridge', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-desktop-aborted-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const runtime = OpenControlRuntime.open({ home });
+  t.after(() => runtime.close());
+  runtime.putDesktopEndpoint(unrestrictedEndpoint(home, {
+    id: 'desktop.aborted',
+    transport: { command: join(home, 'does-not-exist'), timeoutMs: 1000, maxOutputBytes: 4096 }
+  }));
+  const controller = new AbortController();
+  controller.abort();
+  await assert.rejects(
+    () => runtime.runDesktopBatch('desktop.aborted', batch('desktop.batch.aborted', [{ id: 'list', kind: 'list-applications' }]), controller.signal),
+    error => error instanceof RuntimeError && error.code === 'ADAPTER_TRANSPORT_ERROR' && /cancelled/i.test(error.message)
+  );
+});
+
 test('desktop bridge stdin closure is normalized instead of crashing the host', async t => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-desktop-stdin-'));
   t.after(() => rm(home, { recursive: true, force: true }));
@@ -191,7 +212,8 @@ test('desktop discovery namespaces capabilities and preserves configured executi
   assert.equal(capability.adapterKind, 'desktop-control');
   assert.equal(capability.availability.state, 'available');
   assert.equal(capability.privacy.executionLocation, 'private-network');
-  assert.ok(capability.operations.includes('windows'));
+  assert.ok(capability.operations.includes('focus-window'));
+  assert.deepEqual(capability.operations, runtime.getDesktopEndpoint('desktop.runtime').supportedActions);
   assert.equal(runtime.getCapability(capability.id).id, capability.id);
 });
 
@@ -211,8 +233,11 @@ test('custom desktop backends can persist and execute without stdio transport co
   });
   runtime.putDesktopEndpoint({
     contractVersion: '1.0.0', id: 'desktop.native', name: 'Native test backend', backend: 'native-test',
-    platform: 'any', executionLocation: 'local', backendConfig: { channel: 'accessibility' }
+    platform: 'windows', executionLocation: 'private-network', supportedActions: ['list-applications'], backendConfig: { channel: 'accessibility' }
   });
   const result = await runtime.runDesktopBatch('desktop.native', batch('desktop.batch.native', [{ id: 'list', kind: 'list-applications' }]));
   assert.equal(result.status, 'succeeded');
+  const capability = runtime.discoverDesktopCapability('desktop.native');
+  assert.deepEqual(capability.operations, ['list-applications']);
+  assert.equal(capability.availability.state, 'available');
 });

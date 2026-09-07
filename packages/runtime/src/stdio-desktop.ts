@@ -211,6 +211,7 @@ class StdioDesktopBridgeBackend implements DesktopBackend {
   readonly id = 'stdio-bridge';
 
   async execute(endpoint: DesktopEndpoint, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult> {
+    if (signal?.aborted) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop bridge execution was cancelled');
     const outcome = await runBridge(endpoint, batch, signal);
     if (outcome.timedOut) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop bridge timed out');
     if (outcome.aborted) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop bridge execution was cancelled');
