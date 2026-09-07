@@ -1,0 +1,20 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:audit-receipt",
+  "title": "Audit Receipt",
+  "type": "object",
+  "required": ["contractVersion", "id", "sequence", "eventType", "subject", "digest", "occurredAt"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "eventType": { "type": "string", "minLength": 1 },
+    "subject": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/reference" },
+    "scopeId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "metadata": { "type": "object", "additionalProperties": true },
+    "previousDigest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "digest": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "occurredAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
+  },
+  "additionalProperties": false
+}
