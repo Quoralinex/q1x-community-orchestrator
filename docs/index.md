@@ -34,6 +34,7 @@ Software delivery is only one workload. The project is designed for research, co
 - [MCP, A2A and CLI/TUI adapters](agent-cli-adapters.md) — executable adapter endpoints, discovery, execution and security boundaries.
 - [Browser and web control](browser-control.md) — real browser sessions, web-chat control, security boundaries and CLI usage.
 - [Desktop and application control](desktop-control.md) — OS-neutral desktop actions, bridge backends, application policy and CLI usage.
+- [Dynamic teams and programme supervision](supervision.md) — capability routing, durable assignments, supervision cycles, budgets, approvals and replanning.
 - [Open Control Runtime](runtime.md) — SQLite state, semantic validation, CLI commands and checkpoint recovery.
 - [Use cases](use-cases.md) — business, research, R&D, product, infrastructure and software examples.
 - [Deployment model](deployment.md) — zero-cost personal, team and distributed profiles.
