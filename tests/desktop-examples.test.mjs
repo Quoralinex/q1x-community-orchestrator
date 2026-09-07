@@ -17,7 +17,7 @@ async function validator() {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   for (const name of ['common', 'desktop-endpoint', 'desktop-action-batch']) {
-    ajv.addSchema(await json(path.join(schemaDir, `${name}.schema.json`));
+    ajv.addSchema(await json(path.join(schemaDir, `${name}.schema.json`)));
   }
   return ajv;
 }
