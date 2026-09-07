@@ -3,66 +3,35 @@
   "$id": "urn:q1x:community:contracts:v1:evidence",
   "title": "Evidence",
   "type": "object",
-  "required": [
-    "contractVersion",
-    "id",
-    "kind",
-    "summary",
-    "collectedAt"
-  ],
+  "required": ["contractVersion", "id", "kind", "summary", "collectedAt"],
   "properties": {
-    "contractVersion": {
-      "const": "1.0.0"
-    },
-    "id": {
-      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
-    },
-    "kind": {
-      "enum": [
-        "source",
-        "observation",
-        "test-result",
-        "simulation-result",
-        "review",
-        "measurement",
-        "citation",
-        "other"
-      ]
-    },
-    "summary": {
-      "type": "string",
-      "minLength": 1
-    },
-    "sourceUri": {
-      "type": "string",
-      "format": "uri"
-    },
-    "artifactRef": {
-      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
-    },
-    "claims": {
-      "type": "array",
-      "items": {
-        "type": "string",
-        "minLength": 1
-      }
-    },
-    "provenance": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "kind": { "enum": ["source", "observation", "test-result", "simulation-result", "review", "measurement", "citation", "other"] },
+    "summary": { "type": "string", "minLength": 1 },
+    "sourceUri": { "type": "string", "format": "uri" },
+    "artifactRef": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "executionRef": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "resultRef": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "contentDigest": {
       "type": "object",
+      "required": ["algorithm", "value"],
       "properties": {
-        "actor": {
-          "$ref": "urn:q1x:community:contracts:v1:common#/$defs/actor"
-        },
-        "method": {
-          "type": "string",
-          "minLength": 1
-        }
+        "algorithm": { "enum": ["sha256", "sha512"] },
+        "value": { "type": "string", "minLength": 1 }
       },
       "additionalProperties": false
     },
-    "collectedAt": {
-      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp"
-    }
+    "claims": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+    "provenance": {
+      "type": "object",
+      "properties": {
+        "actor": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/actor" },
+        "method": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "collectedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
   },
   "additionalProperties": false
 }
