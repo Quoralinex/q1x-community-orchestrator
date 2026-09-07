@@ -1,0 +1,16 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "adapter.browser.webdriver-local",
+  "name": "Local WebDriver browser control",
+  "adapterKind": "browser-control",
+  "protocol": "webdriver-http-v1",
+  "transport": {
+    "kind": "http",
+    "url": "http://127.0.0.1:4444",
+    "timeoutMs": 30000
+  },
+  "metadata": {
+    "standard": "W3C WebDriver",
+    "deployment": "local-example"
+  }
+}
