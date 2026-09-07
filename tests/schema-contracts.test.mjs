@@ -17,7 +17,9 @@ const required = [
   "discovery-manifest.schema.json", "model-endpoint.schema.json",
   "model-request.schema.json", "model-response.schema.json", "adapter-endpoint.schema.json",
   "browser-endpoint.schema.json", "browser-action-batch.schema.json",
-  "desktop-endpoint.schema.json", "desktop-action-batch.schema.json"
+  "desktop-endpoint.schema.json", "desktop-action-batch.schema.json",
+  "execution-binding.schema.json", "team-plan.schema.json", "work-assignment.schema.json",
+  "programme-proposal.schema.json", "supervision-policy.schema.json", "supervision-cycle.schema.json"
 ];
 
 async function load(name) {

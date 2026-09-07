@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:supervision-cycle",
+  "title": "Supervision Cycle",
+  "type": "object",
+  "required": ["contractVersion", "id", "programmeId", "workGraphId", "workGraphRevision", "sequence", "status", "readyWorkItemIds", "assignmentIds", "completedWorkItemIds", "failedWorkItemIds", "startedAt"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "programmeId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphRevision": { "type": "integer", "minimum": 1 },
+    "sequence": { "type": "integer", "minimum": 1 },
+    "status": { "enum": ["running", "completed", "failed", "cancelled"] },
+    "readyWorkItemIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" } },
+    "assignmentIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" } },
+    "completedWorkItemIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" } },
+    "failedWorkItemIds": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" } },
+    "stopReason": { "enum": ["completed", "idle", "blocked", "approval-required", "budget-exhausted", "deadline-reached", "replan-required", "max-cycles", "cancelled"] },
+    "checkpointId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "startedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" },
+    "finishedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
+  },
+  "additionalProperties": false
+}

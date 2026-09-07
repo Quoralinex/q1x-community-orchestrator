@@ -1,0 +1,47 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:team-plan",
+  "title": "Team Plan",
+  "type": "object",
+  "required": ["contractVersion", "id", "programmeId", "workGraphId", "workGraphRevision", "members", "status", "createdAt", "updatedAt"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "programmeId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphRevision": { "type": "integer", "minimum": 1 },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "role", "capabilityId", "bindingId", "operations", "workItemIds", "state"],
+        "properties": {
+          "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+          "role": { "type": "string", "minLength": 1 },
+          "capabilityId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+          "bindingId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+          "operations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+          "workItemIds": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" } },
+          "state": { "enum": ["planned", "ready", "running", "blocked", "completed", "failed"] },
+          "alternates": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["capabilityId", "bindingId"],
+              "properties": {
+                "capabilityId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+                "bindingId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" }
+              },
+              "additionalProperties": false
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "status": { "enum": ["planned", "active", "completed", "cancelled"] },
+    "createdAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" },
+    "updatedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
+  },
+  "additionalProperties": false
+}
