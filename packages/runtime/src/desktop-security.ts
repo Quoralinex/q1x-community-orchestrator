@@ -1,28 +1,34 @@
-import { relative, resolve } from 'node:path';
-import type { DesktopActionBatch, DesktopEndpoint } from '@quoralinex/q1x-community-sdk';
+import { isAbsolute, relative, resolve, sep, win32 } from 'node:path';
+import type { DesktopActionBatch, DesktopEndpoint, DesktopPlatform } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 
-function platformName(): 'macos' | 'windows' | 'linux' {
-  if (process.platform === 'darwin') return 'macos';
-  if (process.platform === 'win32') return 'windows';
-  return 'linux';
+export function desktopPlatformForHost(hostPlatform: NodeJS.Platform = process.platform): Exclude<DesktopPlatform, 'any'> | undefined {
+  if (hostPlatform === 'darwin') return 'macos';
+  if (hostPlatform === 'win32') return 'windows';
+  if (hostPlatform === 'linux') return 'linux';
+  return undefined;
 }
 
-export function isDesktopEndpointPlatformCompatible(endpoint: DesktopEndpoint): boolean {
-  return endpoint.platform === 'any' || endpoint.platform === platformName();
+export function isDesktopEndpointPlatformCompatible(endpoint: DesktopEndpoint, hostPlatform: NodeJS.Platform = process.platform): boolean {
+  const host = desktopPlatformForHost(hostPlatform);
+  return host !== undefined && (endpoint.platform === 'any' || endpoint.platform === host);
 }
 
-function within(root: string, candidate: string): boolean {
-  const base = resolve(root);
-  const target = resolve(candidate);
-  const rel = relative(base, target);
-  return rel === '' || (!rel.startsWith('..') && !rel.includes(`..${process.platform === 'win32' ? '\\' : '/'}`));
+export function isDesktopPathWithin(root: string, candidate: string, style: 'native' | 'win32' = 'native'): boolean {
+  const base = style === 'win32' ? win32.resolve(root) : resolve(root);
+  const target = style === 'win32' ? win32.resolve(candidate) : resolve(candidate);
+  const rel = style === 'win32' ? win32.relative(base, target) : relative(base, target);
+  const absolute = style === 'win32' ? win32.isAbsolute(rel) : isAbsolute(rel);
+  const separator = style === 'win32' ? win32.sep : sep;
+  return rel === '' || (!absolute && rel !== '..' && !rel.startsWith(`..${separator}`));
 }
 
 export function assertSafeDesktopEndpoint(endpoint: DesktopEndpoint): void {
-  if (!endpoint.transport.command.trim()) throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop bridge command is required');
+  if (endpoint.backend === 'stdio-bridge') {
+    if (!endpoint.transport?.command.trim()) throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop stdio bridge command is required');
+  }
   const names = new Set<string>();
-  for (const mapping of endpoint.transport.environment ?? []) {
+  for (const mapping of endpoint.transport?.environment ?? []) {
     if (names.has(mapping.name)) throw new RuntimeError('INSECURE_ENDPOINT', `Desktop environment mapping is duplicated: ${mapping.name}`);
     names.add(mapping.name);
   }
@@ -43,12 +49,21 @@ function assertApplicationAllowed(endpoint: DesktopEndpoint, application: string
   }
 }
 
+function hasApplicationRestriction(endpoint: DesktopEndpoint): boolean {
+  const policy = endpoint.applicationPolicy;
+  return Boolean((policy?.allowedApplications?.length ?? 0) > 0 || (policy?.blockedApplications?.length ?? 0) > 0);
+}
+
 export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: DesktopActionBatch): void {
+  const restricted = hasApplicationRestriction(endpoint);
   for (const action of batch.actions) {
+    if (restricted && !action.application) {
+      throw new RuntimeError('INSECURE_ENDPOINT', `Desktop action must identify an application under endpoint policy: ${action.id}`);
+    }
     if (action.application) assertApplicationAllowed(endpoint, action.application);
     if (action.kind === 'screenshot') {
       if (!endpoint.outputDir) throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop screenshots require an endpoint outputDir');
-      if (!action.outputPath || !within(endpoint.outputDir, action.outputPath)) {
+      if (!action.outputPath || !isDesktopPathWithin(endpoint.outputDir, action.outputPath)) {
         throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop screenshot output must remain beneath endpoint outputDir');
       }
     }
@@ -56,6 +71,7 @@ export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: Desktop
 }
 
 export function resolveDesktopEnvironment(endpoint: DesktopEndpoint, env: NodeJS.ProcessEnv = process.env): NodeJS.ProcessEnv {
+  if (!endpoint.transport) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop stdio transport configuration is missing');
   const result: NodeJS.ProcessEnv = {};
   for (const key of ['PATH', 'HOME', 'USERPROFILE', 'TMPDIR', 'TEMP', 'TMP']) {
     if (env[key] !== undefined) result[key] = env[key];
