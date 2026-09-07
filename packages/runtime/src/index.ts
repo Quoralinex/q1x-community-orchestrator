@@ -19,3 +19,5 @@ export * from './a2a-adapter.js';
 export * from './mcp-adapter.js';
 export * from './adapter-protocols.js';
 export * from './browser-security.js';
+export * from './browser-backend.js';
+export * from './playwright-browser.js';
