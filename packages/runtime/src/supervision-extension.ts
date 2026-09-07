@@ -6,7 +6,6 @@ import type {
   CapabilityRoutingRequirements,
   DesktopActionBatch,
   ExecutionBinding,
-  ExecutionRequirements,
   ModelRequest,
   ProgrammeProposal,
   ProgrammeProposalValidation,
@@ -215,8 +214,9 @@ function stopReasonForGraph(runtime: OpenControlRuntime, graph: WorkGraph, polic
   if (graph.nodes.some(node => node.approvalRequired && !['completed', 'cancelled'].includes(node.status))) return 'approval-required';
   if (policy.deadlineAt && Date.now() >= Date.parse(policy.deadlineAt)) return 'deadline-reached';
   if (policy.maxKnownCost !== undefined && currentKnownSpend(runtime, graph.programmeId, policy) >= policy.maxKnownCost) return 'budget-exhausted';
-  const exhausted = graph.nodes.some(node => node.status === 'failed' && previousAttempts(runtime, graph.programmeId, node.id).length >= policy.maxAttemptsPerWorkItem);
-  if (exhausted) return 'replan-required';
+  const attemptsExhausted = graph.nodes.some(node => node.status === 'failed' && previousAttempts(runtime, graph.programmeId, node.id).length >= policy.maxAttemptsPerWorkItem);
+  const failureThresholdReached = policy.failureThresholdBeforeReplan !== undefined && runtime.listWorkAssignments(graph.programmeId).filter(assignment => assignment.status === 'failed').length >= policy.failureThresholdBeforeReplan;
+  if (attemptsExhausted || failureThresholdReached) return 'replan-required';
   return undefined;
 }
 
@@ -430,11 +430,9 @@ function acceptProgrammeProposal(this: OpenControlRuntime, proposal: ProgrammePr
       contractVersion: CONTRACT_VERSION,
       id: `replan.${proposal.id}`,
       programmeId: programme.id,
-      fromRevision: existing.revision,
-      toRevision: programme.revision,
       trigger: 'other',
       rationale: proposal.rationale,
-      createdAt: new Date().toISOString()
+      occurredAt: new Date().toISOString()
     });
   }
   return { proposalId: proposal.id, programme, workGraph, ...(checkpoint ? { checkpointId: checkpoint.id } : {}) };
@@ -475,7 +473,7 @@ async function executeBoundWork(runtime: OpenControlRuntime, assignment: WorkAss
         createdAt: new Date().toISOString()
       };
       const result = await runtime.executeAdapter(binding.endpointId, request);
-      return { status: result.status, resultRef: result.id, usage: { ...result.usage, durationMs: result.usage?.durationMs ?? Date.now() - started }, errorCode: result.error?.code };
+      return { status: result.status, resultRef: result.id, usage: { cost: result.usage?.cost, currency: result.usage?.currency, durationMs: result.usage?.durationMs ?? Date.now() - started }, errorCode: result.error?.code };
     }
     if (binding.executorKind === 'model-endpoint') {
       const inputRecord = typeof input === 'object' && input !== null ? input as Record<string, unknown> : {};
@@ -549,7 +547,8 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   }
 
   const assignmentIds = assignments.map(assignment => assignment.id);
-  graph = updateGraph(this, graph, graph.nodes.map(node => assignmentIds.some(id => this.getWorkAssignment(id)?.workItemId === node.id) ? { ...node, status: 'running' as const } : node));
+  const assignedWorkItemIds = new Set(assignments.map(assignment => assignment.workItemId));
+  graph = updateGraph(this, graph, graph.nodes.map(node => assignedWorkItemIds.has(node.id) ? { ...node, status: 'running' as const } : node));
   const running = assignments.map(assignment => putAssignment(this, { ...assignment, status: 'running', workGraphRevision: graph.revision, updatedAt: new Date().toISOString() }));
   const outcomes = new Map<string, WorkExecutionOutcome>();
   const concurrency = Math.max(1, policy.maxConcurrentAssignments);
@@ -564,12 +563,13 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   for (const assignment of running) {
     const outcome = outcomes.get(assignment.id)!;
     const status = outcome.status === 'succeeded' ? 'succeeded' : outcome.status === 'cancelled' ? 'cancelled' : 'failed';
+    const usage = outcome.usage ? Object.fromEntries(Object.entries(outcome.usage).filter(([, value]) => value !== undefined)) as WorkAssignment['usage'] : undefined;
     putAssignment(this, {
       ...assignment,
       status,
-      resultRef: outcome.resultRef,
-      usage: outcome.usage,
-      errorCode: outcome.errorCode,
+      ...(outcome.resultRef ? { resultRef: outcome.resultRef } : {}),
+      ...(usage && Object.keys(usage).length > 0 ? { usage } : {}),
+      ...(outcome.errorCode ? { errorCode: outcome.errorCode } : {}),
       updatedAt: new Date().toISOString()
     });
     if (status === 'succeeded') completedWorkItemIds.push(assignment.workItemId); else failedWorkItemIds.push(assignment.workItemId);
