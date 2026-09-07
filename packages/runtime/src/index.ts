@@ -17,3 +17,4 @@ export * from './cli-adapter.js';
 export * from './a2a-adapter.js';
 
 export * from './mcp-adapter.js';
+export * from './adapter-protocols.js';

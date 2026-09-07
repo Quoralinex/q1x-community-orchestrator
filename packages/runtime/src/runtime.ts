@@ -4,6 +4,8 @@ import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import type { AdapterTransport } from './adapter-transport.js';
 import { AdapterTransportRegistry } from './adapter-transport.js';
+import type { AdapterTransportContext } from './adapter-transport.js';
+import { createDefaultAdapterTransportRegistry } from './adapter-protocols.js';
 import { discoverManifest, type DiscoveryContext, type DiscoveryResult } from './discovery.js';
 import { assertSafeEndpointConfiguration } from './model-security.js';
 import { createDefaultModelTransportRegistry } from './model-protocols.js';
@@ -54,7 +56,7 @@ export class OpenControlRuntime {
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
-    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), new AdapterTransportRegistry());
+    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry());
   }
 
   close(): void {
@@ -213,6 +215,41 @@ export class OpenControlRuntime {
 
   registerAdapterTransport(transport: AdapterTransport): void {
     this.adapterTransports.register(transport);
+  }
+
+  async executeAdapter(endpointId: string, request: ExecutionRequest, context: AdapterTransportContext = {}): Promise<ExecutionResult> {
+    validateContract(SCHEMA_IDS.executionRequest, request);
+    const endpoint = this.getAdapterEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Adapter endpoint not found: ${endpointId}`);
+    const startedAt = Date.now();
+    try {
+      const result = await this.adapterTransports.execute(endpoint, request, context);
+      validateContract(SCHEMA_IDS.executionResult, result);
+      if (result.requestId !== request.id || result.workItemId !== request.workItemId) {
+        throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Adapter transport returned mismatched execution references');
+      }
+      this.store.appendEvent('adapter.execute', 'adapter-endpoint', endpoint.id, null, {
+        protocol: endpoint.protocol, status: result.status, durationMs: Date.now() - startedAt
+      });
+      return result;
+    } catch (error) {
+      this.store.appendEvent('adapter.execute', 'adapter-endpoint', endpoint.id, null, {
+        protocol: endpoint.protocol, status: 'failed', durationMs: Date.now() - startedAt,
+        errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
+      });
+      throw error;
+    }
+  }
+
+  async discoverAdapterCapabilities(endpointId: string, context: AdapterTransportContext = {}): Promise<CapabilityDescriptor[]> {
+    const endpoint = this.getAdapterEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Adapter endpoint not found: ${endpointId}`);
+    const capabilities = [...await this.adapterTransports.discover(endpoint, context)];
+    for (const capability of capabilities) this.putCapability(capability);
+    this.store.appendEvent('adapter.discover', 'adapter-endpoint', endpoint.id, null, {
+      protocol: endpoint.protocol, capabilityCount: capabilities.length
+    });
+    return capabilities;
   }
 
   registerModelTransport(transport: ModelTransport): void {
