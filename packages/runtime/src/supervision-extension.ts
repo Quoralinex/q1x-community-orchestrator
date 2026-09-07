@@ -134,6 +134,21 @@ function currentKnownSpend(runtime: OpenControlRuntime, programmeId: string, pol
     }, 0);
 }
 
+function budgetBlocksReadyWork(runtime: OpenControlRuntime, graph: WorkGraph, readyIds: string[], policy: SupervisionPolicy): boolean {
+  if (policy.maxKnownCost === undefined) return false;
+  const remaining = policy.maxKnownCost - currentKnownSpend(runtime, graph.programmeId, policy);
+  return readyIds.some(workItemId => {
+    const node = graph.nodes.find(candidate => candidate.id === workItemId);
+    if (!node) return false;
+    const candidates = runtime.rankCapabilities(requirementsForNode(node), policy);
+    if (candidates.length === 0) return false;
+    return candidates.every(candidate => {
+      const cost = knownCapabilityCost(candidate.capability);
+      return cost !== undefined && cost > remaining;
+    });
+  });
+}
+
 function putTeamPlan(runtime: OpenControlRuntime, plan: TeamPlan): TeamPlan {
   validateContract(SCHEMA_IDS.teamPlan, plan);
   withStore(runtime, store => {
@@ -541,7 +556,7 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
     return putCycle(this, {
       contractVersion: CONTRACT_VERSION, id: cycleId, programmeId, workGraphId: graph.id, workGraphRevision: graph.revision,
       sequence, status: 'failed', readyWorkItemIds: readyIds, assignmentIds: [], completedWorkItemIds: [], failedWorkItemIds: [],
-      stopReason: currentKnownSpend(this, programmeId, policy) >= (policy.maxKnownCost ?? Number.POSITIVE_INFINITY) ? 'budget-exhausted' : 'blocked',
+      stopReason: budgetBlocksReadyWork(this, graph, readyIds, policy) ? 'budget-exhausted' : 'blocked',
       startedAt, finishedAt: new Date().toISOString()
     });
   }
