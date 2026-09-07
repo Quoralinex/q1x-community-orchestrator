@@ -5,7 +5,7 @@ import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import { assertSafeBrowserEndpoint } from './browser-security.js';
 import { BrowserSessionManager, type BrowserBackend, type BrowserSessionHandle } from './browser-backend.js';
 import { createDefaultBrowserBackendRegistry } from './playwright-browser.js';
-import { assertSafeDesktopBatch, assertSafeDesktopEndpoint, isDesktopEndpointPlatformCompatible } from './desktop-security.js';
+import { assertSafeDesktopBatch, assertSafeDesktopEndpoint, desktopPlatformForHost, isDesktopEndpointPlatformCompatible } from './desktop-security.js';
 import { DesktopBackendRegistry, type DesktopBackend } from './desktop-backend.js';
 import { createDefaultDesktopBackendRegistry } from './stdio-desktop.js';
 import type { AdapterTransport } from './adapter-transport.js';
@@ -316,12 +316,12 @@ export class OpenControlRuntime {
     validateContract(SCHEMA_IDS.desktopActionBatch, batch);
     const endpoint = this.getDesktopEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
-    assertSafeDesktopBatch(endpoint, batch);
-    if (!isDesktopEndpointPlatformCompatible(endpoint)) {
-      throw new RuntimeError('TRANSPORT_NOT_FOUND', `Desktop endpoint platform is not compatible with this host: ${endpoint.platform}`);
-    }
     const started = Date.now();
     try {
+      assertSafeDesktopBatch(endpoint, batch);
+      if (!isDesktopEndpointPlatformCompatible(endpoint)) {
+        throw new RuntimeError('TRANSPORT_NOT_FOUND', `Desktop endpoint platform is not compatible with this host: ${endpoint.platform}`);
+      }
       const result = await this.desktopBackends.execute(endpoint, batch, signal);
       if (result.contractVersion !== CONTRACT_VERSION || result.batchId !== batch.id) {
         throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop backend returned mismatched batch references');
@@ -344,20 +344,20 @@ export class OpenControlRuntime {
   discoverDesktopCapability(endpointId: string): CapabilityDescriptor {
     const endpoint = this.getDesktopEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
-    const hostPlatform = process.platform === 'darwin' ? 'macos' : process.platform === 'win32' ? 'windows' : 'linux';
-    const available = this.desktopBackends.has(endpoint.backend) && isDesktopEndpointPlatformCompatible(endpoint);
+    const hostPlatform = desktopPlatformForHost();
+    const available = this.desktopBackends.has(endpoint.backend) && hostPlatform !== undefined && isDesktopEndpointPlatformCompatible(endpoint);
     const capability: CapabilityDescriptor = {
       contractVersion: CONTRACT_VERSION,
-      id: `capability.${endpoint.id}`,
+      id: `capability.desktop.${endpoint.id}`,
       name: `${endpoint.name} desktop control`,
       adapterKind: 'desktop-control',
       operations: ['applications','windows','inspect','find','click','type','keyboard','mouse','screenshot'],
       modalities: { input: ['text','structured-data','control'], output: ['text','image','structured-data'] },
       availability: { state: available ? 'available' : 'offline', checkedAt: new Date().toISOString() },
       cost: { class: 'no-usage-fee' },
-      privacy: { executionLocation: 'local', dataRetention: 'none' },
+      privacy: { executionLocation: endpoint.executionLocation, dataRetention: 'none' },
       trust: { level: 'configured', source: `desktop-endpoint:${endpoint.id}` },
-      platforms: [endpoint.platform === 'any' ? hostPlatform : endpoint.platform]
+      platforms: [endpoint.platform === 'any' ? (hostPlatform ?? 'any') : endpoint.platform]
     };
     this.putCapability(capability);
     this.store.appendEvent('desktop.discover', 'desktop-endpoint', endpoint.id, null, {

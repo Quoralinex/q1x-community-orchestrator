@@ -33,7 +33,7 @@ test('q1x CLI persists, discovers and executes a desktop endpoint', async t => {
   const endpointPath = join(home, 'desktop-endpoint.json');
   const batchPath = join(home, 'desktop-batch.json');
   await writeFile(endpointPath, JSON.stringify({
-    contractVersion: '1.0.0', id: 'desktop.cli', name: 'CLI desktop', backend: 'stdio-bridge', platform: 'any',
+    contractVersion: '1.0.0', id: 'desktop.cli', name: 'CLI desktop', backend: 'stdio-bridge', platform: 'any', executionLocation: 'local',
     transport: { command: process.execPath, args: [bridge], timeoutMs: 1000, environment: [{ name: 'Q1X_BRIDGE_TEST', environmentKey: 'Q1X_TEST_MAPPED' }] },
     applicationPolicy: { allowedApplications: ['example.app'] }, outputDir: join(home, 'output')
   }));

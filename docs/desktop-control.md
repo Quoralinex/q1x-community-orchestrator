@@ -28,6 +28,7 @@ A persisted `DesktopEndpoint` declares the backend, target platform and bridge p
   "name": "Portable desktop bridge",
   "backend": "stdio-bridge",
   "platform": "any",
+  "executionLocation": "local",
   "transport": {
     "command": "q1x-desktop-bridge",
     "args": [],
@@ -41,7 +42,9 @@ A persisted `DesktopEndpoint` declares the backend, target platform and bridge p
 }
 ```
 
-`platform` may be `macos`, `windows`, `linux` or `any`. Platform-specific endpoints are refused on incompatible hosts.
+`platform` may be `macos`, `windows`, `linux` or `any`. Platform-specific endpoints are refused on incompatible hosts, and unrecognized host operating systems are not silently treated as Linux. `executionLocation` declares where application data is actually processed (`local`, `private-network`, `managed-cloud` or `public-cloud`) and is propagated into capability privacy metadata.
+
+Only the built-in `stdio-bridge` backend requires `transport`. Custom native or remote backends can instead use validated endpoint identity/platform fields plus `backendConfig`, without supplying a fake executable.
 
 Environment mappings store only the bridge-visible variable name and the host environment key. Values are resolved at execution time and are not stored in endpoint configuration.
 
@@ -73,6 +76,7 @@ Example:
     {
       "id": "find-submit",
       "kind": "find",
+      "application": "example.app",
       "target": {
         "by": "role",
         "role": "button",
@@ -110,10 +114,13 @@ Desktop control can expose sensitive local applications, so the built-in boundar
 
 - commands and argv remain separate; no shell command strings are used;
 - only minimal process variables plus explicitly mapped environment values are inherited;
-- application allow/block policy is enforced before bridge invocation;
-- screenshot output must remain beneath the endpoint `outputDir`;
-- stdout/stderr are bounded;
-- timeout and abort signals terminate the bridge process;
+- application allow/block policy is enforced before bridge invocation; when a policy is active, actions must be bound to an application before the bridge receives them;
+- `find` requires an explicit provider-neutral target;
+- screenshot output must remain beneath the endpoint `outputDir`, including across Windows drive boundaries;
+- stdout/stderr are byte-bounded with linear chunk collection;
+- timeout and abort first terminate the bridge process and then escalate to forced termination if it does not exit; process groups are targeted where the host supports them;
+- bridge stdin failures are normalized as transport errors rather than uncaught process exceptions;
+- normalized action results must correlate in order with the submitted action identifiers;
 - bridge/application content is not copied into runtime audit events;
 - credentials, clipboard data, typed text, accessibility trees and screenshots are not persisted by the desktop transport.
 
@@ -121,7 +128,7 @@ Phase 6B does not implement privilege escalation, security-control bypass, crede
 
 ## Capability discovery
 
-`q1x desktop discover <endpoint-id>` registers a `desktop-control` capability. Availability requires both a registered backend and a compatible host platform.
+`q1x desktop discover <endpoint-id>` registers a namespaced `desktop-control` capability (`capability.desktop.<endpoint-id>`). Availability requires both a registered backend and a compatible recognized host platform.
 
 The capability advertises application, window, inspection, keyboard, mouse and screenshot operations through the existing live capability registry.
 

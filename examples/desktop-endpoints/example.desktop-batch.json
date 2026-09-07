@@ -9,7 +9,8 @@
     },
     {
       "id": "inspect",
-      "kind": "inspect"
+      "kind": "inspect",
+      "application": "example.app"
     },
     {
       "id": "find-submit",
@@ -18,7 +19,8 @@
         "by": "role",
         "role": "button",
         "name": "Continue"
-      }
+      },
+      "application": "example.app"
     }
   ],
   "stopOnError": true,

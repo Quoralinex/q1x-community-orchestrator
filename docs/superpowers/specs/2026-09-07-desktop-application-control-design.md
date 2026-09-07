@@ -21,8 +21,9 @@ A normative `DesktopEndpoint` persists configuration but no live application sta
 
 - id, name and backend id;
 - target platform (`macos`, `windows`, `linux` or `any`);
-- direct executable command and argument array for the bridge;
-- optional working directory;
+- explicit execution location (`local`, `private-network`, `managed-cloud` or `public-cloud`);
+- backend-specific configuration; the built-in `stdio-bridge` uses a direct executable command and argument array, while custom backends do not need a fake stdio transport;
+- optional working directory for stdio transport;
 - timeout and bounded-output limits;
 - explicit environment-variable mappings by host key name;
 - application allow/block policy;
@@ -102,10 +103,14 @@ Raw desktop state is not persisted. Screenshots are written only beneath an expl
 - Only minimal process variables plus explicitly mapped environment values are inherited by the bridge.
 - Endpoint configuration may not contain secret values by design; environment mappings carry key names only.
 - Application allow/block policy is enforced in Q1X before bridge invocation.
-- Screenshot output paths must resolve beneath the configured output directory.
+- Restricted endpoints require each action to be bound to an application before bridge invocation, then enforce allow/block policy.
+- `find` requires an explicit target.
+- Screenshot output paths must resolve beneath the configured output directory, including across Windows volume boundaries.
 - Optional file paths supplied by future bridge actions must resolve beneath configured file-access roots.
-- Output capture is bounded and bridge execution is time limited/cancellable.
-- Runtime audit events contain endpoint id, backend, platform, action count, status, duration and sanitized error code only.
+- Output capture is bounded with linear chunk collection; bridge execution is time limited/cancellable and escalates to forced termination when a bridge ignores graceful termination.
+- Bridge stdin failures are normalized as transport errors.
+- Returned action results are correlated by ordered action id and successful batches must account for every requested action.
+- Runtime audit events contain endpoint id, backend, platform, action count, status, duration and sanitized error code only, including security-policy and platform preflight denials.
 - Password values, clipboard contents, accessibility trees, typed text, screenshots and application content are not persisted by the desktop transport.
 
 Phase 6B does not implement privilege escalation, security-control bypass, credential extraction, keylogging or covert monitoring.
@@ -114,7 +119,7 @@ Phase 6B does not implement privilege escalation, security-control bypass, crede
 
 The Q1X contracts and runtime are identical on macOS, Windows and Linux. Native bridge implementations are optional packages. A host may also supply an application-specific or remote-desktop bridge if it implements `q1x-desktop-bridge/1`.
 
-The built-in backend reports a configured endpoint as available when the endpoint platform matches the host (or is `any`) and the backend is registered. Future native bridge packages may add richer probing without changing the contract.
+The built-in backend reports a configured endpoint as available when the endpoint platform matches a recognized host (or is `any`) and the backend is registered. Unrecognized host operating systems are not classified as Linux. Capability identifiers are namespaced as `capability.desktop.<endpoint-id>`, and the endpoint's explicit execution location is propagated into capability privacy metadata. Future native bridge packages may add richer probing without changing the contract.
 
 ## CLI
 

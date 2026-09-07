@@ -154,6 +154,7 @@ const desktopEndpoint: DesktopEndpoint = {
   name: "Portable desktop bridge",
   backend: "stdio-bridge",
   platform: "any",
+  executionLocation: "local",
   transport: { command: "node", args: ["bridge.mjs"], timeoutMs: 30000 },
   applicationPolicy: { allowedApplications: ["example.app"] },
   outputDir: "./desktop-output"
