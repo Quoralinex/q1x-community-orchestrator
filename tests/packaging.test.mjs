@@ -1,0 +1,49 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import test from 'node:test';
+
+const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
+const text = path => readFile(join(root, path), 'utf8');
+
+test('Docker image is non-root, persistent and health checked', async () => {
+  const dockerfile = await text('Dockerfile');
+  assert.match(dockerfile, /FROM node:24-bookworm-slim AS build/);
+  assert.match(dockerfile, /FROM node:24-bookworm-slim AS runtime/);
+  assert.match(dockerfile, /USER 10001:10001/);
+  assert.match(dockerfile, /Q1X_HOME=\/data/);
+  assert.match(dockerfile, /VOLUME \["\/data"\]/);
+  assert.match(dockerfile, /HEALTHCHECK/);
+  assert.match(dockerfile, /packages\/runtime\/dist\/service\.js/);
+  assert.doesNotMatch(dockerfile, /USER root/);
+});
+
+test('Compose profile confines the health port and removes ambient privilege', async () => {
+  const compose = await text('compose.yaml');
+  assert.match(compose, /127\.0\.0\.1:8787:8787/);
+  assert.match(compose, /q1x-state:\/data/);
+  assert.match(compose, /read_only: true/);
+  assert.match(compose, /cap_drop:\s*\n\s*- ALL/);
+  assert.match(compose, /no-new-privileges:true/);
+});
+
+test('runtime env example contains configuration but no credential values', async () => {
+  const env = await text('config/runtime.env.example');
+  assert.match(env, /Q1X_HOME=/);
+  assert.match(env, /Q1X_HOST=/);
+  assert.match(env, /Q1X_PORT=/);
+  assert.doesNotMatch(env, /(API_KEY|TOKEN|PASSWORD|SECRET)\s*=/i);
+});
+
+test('cross-platform workflow covers Linux, Windows, macOS and pinned actions', async () => {
+  const workflow = await text('.github/workflows/cross-platform-packaging.yml');
+  assert.match(workflow, /ubuntu-24\.04/);
+  assert.match(workflow, /windows-latest/);
+  assert.match(workflow, /macos-latest/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 2);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+  assert.match(workflow, /docker build --pull/);
+  assert.match(workflow, /npm pack --dry-run --workspace packages\/runtime/);
+});
