@@ -1,6 +1,6 @@
 import type { ContractVersion, Identifier } from "./common.js";
 
-export type ExecutableAdapterKind = "mcp" | "a2a" | "cli-tui";
+export type ExecutableAdapterKind = "mcp" | "a2a" | "cli-tui" | "browser-control" | "desktop-control";
 
 export interface AdapterEnvironmentMapping {
   name: string;
