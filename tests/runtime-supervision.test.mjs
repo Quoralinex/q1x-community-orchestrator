@@ -48,9 +48,8 @@ function mission() {
     objective: "Complete dependent work through capability-based supervision",
     status: "active",
     outcomes: [{ id: "outcome.phase7", description: "Programme completed", successCriteria: ["All work completed"] }],
-    constraints: [],
-    createdAt: now,
-    updatedAt: now
+    constraints: {},
+    createdAt: now
   };
 }
 
