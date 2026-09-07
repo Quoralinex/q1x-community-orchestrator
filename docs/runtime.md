@@ -75,4 +75,4 @@ The runtime validates every document against the normative Phase 1 schema and ad
 
 The local database stores immutable document versions, current head pointers, checkpoint snapshots and append-only runtime audit events. Public contract revisions remain distinct from internal storage revisions.
 
-Phase 2 binds no network port and executes no external tool or model. Capability discovery, provider adapters, MCP/A2A execution, browser/desktop control and dynamic teams are later roadmap phases.
+The original Phase 2 runtime bound no network port and executed no external tool or model. Subsequent pre-alpha phases have added capability discovery, model transport, MCP/A2A/CLI execution, browser/web control and desktop/application control on top of the same persistence and validation core. Dynamic teams remain the next roadmap phase.

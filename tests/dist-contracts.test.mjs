@@ -21,7 +21,7 @@ test("TypeScript schema catalog covers every normative schema", async () => {
   const files = [
     "common", "mission", "programme", "work-graph", "replan-event", "capability",
     "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-    "approval", "checkpoint", "deployment-profile", "discovery-manifest", "model-endpoint", "model-request", "model-response", "adapter-endpoint", "browser-endpoint", "browser-action-batch"
+    "approval", "checkpoint", "deployment-profile", "discovery-manifest", "model-endpoint", "model-request", "model-response", "adapter-endpoint", "browser-endpoint", "browser-action-batch", "desktop-endpoint", "desktop-action-batch"
   ];
   const schemaIds = [];
   for (const name of files) schemaIds.push((await load(`${name}.schema.json`)).$id);
@@ -49,6 +49,7 @@ test("runtime package is distributable and licensed", async () => {
   assert.match(runtimeReadme, /Open Control Runtime/i);
   assert.match(runtimeReadme, /capability discovery/i);
   assert.match(runtimeReadme, /browser/i);
+  assert.match(runtimeReadme, /desktop/i);
   assert.equal(packageJson.dependencies["playwright-core"], "1.63.0");
   assert.match(rootLicense, /^# PolyForm Noncommercial License 1\.0\.0/m);
 });

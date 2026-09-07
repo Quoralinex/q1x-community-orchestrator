@@ -1,0 +1,24 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.macos-native",
+  "name": "macOS native desktop",
+  "backend": "macos-native",
+  "platforms": ["macos"],
+  "allowedApplications": [
+    {
+      "id": "notes",
+      "name": "Notes",
+      "selectors": [
+        { "platform": "macos", "kind": "bundle-id", "value": "com.apple.Notes" }
+      ]
+    }
+  ],
+  "screenshotDir": "/tmp/q1x-desktop-screens",
+  "timeoutMs": 30000,
+  "policy": {
+    "allowLaunch": true,
+    "allowQuit": false,
+    "allowInput": true,
+    "allowCapture": true
+  }
+}

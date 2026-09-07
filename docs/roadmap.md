@@ -6,7 +6,7 @@
 4. **Phase 4 — Provider-neutral model transport and local inference:** secure endpoint registry, pluggable protocol transports, local-first compatible APIs and CLI invocation. **Implemented in pre-alpha.**
 5. **Phase 5 — MCP, A2A and CLI/TUI adapters:** executable endpoint registry, official MCP transports, A2A Agent Card/JSON-RPC support and direct no-shell CLI execution. **Implemented in pre-alpha.**
 6. **Phase 6A — Browser/web control:** managed real-browser sessions, Chromium-family CDP attachment, normalized web actions, bounded files/captures and browser CLI. **Implemented in pre-alpha.**
-7. **Phase 6B — Desktop/application control:** OS-neutral desktop contracts with platform backends and safe application/UI interaction.
+7. **Phase 6B — Desktop/application control:** OS-neutral desktop contracts with macOS, Windows and Linux platform backends plus safe application/UI interaction. **Implemented in pre-alpha.**
 8. Dynamic team formation and adaptive programme supervision.
 9. Cross-platform packaging and Docker deployment.
 10. Security, approvals, evidence, audit and recovery hardening.

@@ -26,7 +26,7 @@ Example domains include company formation, research programmes, digital R&D, pro
 
 ## Phase 1: public contract layer
 
-The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters and browser control.
+The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters, browser control and desktop/application control.
 
 ```bash
 npm ci
@@ -90,9 +90,20 @@ node packages/runtime/dist/cli.js --home .q1x browser run browser.managed-chromi
 
 Q1X does not bundle browser binaries or persist cookies/session material. See [`docs/browser-control.md`](docs/browser-control.md).
 
+## Phase 6B: desktop and application control
+
+The runtime now exposes OS-neutral desktop endpoints and action batches with pluggable native backends for macOS, Windows and Linux X11. Applications are explicitly allowlisted; native commands are spawned without a shell; typed text, UI content and screenshots are not copied into runtime audit events.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x desktop-endpoints put --file examples/desktop-endpoints/macos-native.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x desktop run desktop.macos-native --file examples/desktop-endpoints/example.desktop-batch.json
+```
+
+See [`docs/desktop-control.md`](docs/desktop-control.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution and browser/web control. Desktop/application control is the next adapter slice, followed by dynamic teams, deployment packaging and wider software/device adapters.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control and desktop/application control. Dynamic team formation and adaptive programme supervision are the next delivery slice, followed by deployment packaging and wider software/device adapters.
 
 ## Deployment profiles
 

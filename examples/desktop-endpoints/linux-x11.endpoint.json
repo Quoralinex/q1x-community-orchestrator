@@ -1,0 +1,25 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.linux-x11",
+  "name": "Linux X11 desktop",
+  "backend": "linux-x11",
+  "platforms": ["linux"],
+  "allowedApplications": [
+    {
+      "id": "editor",
+      "name": "Text editor",
+      "selectors": [
+        { "platform": "linux", "kind": "process-name", "value": "gedit" },
+        { "platform": "linux", "kind": "command", "value": "/usr/bin/gedit" }
+      ]
+    }
+  ],
+  "screenshotDir": "/tmp/q1x-desktop-screens",
+  "timeoutMs": 30000,
+  "policy": {
+    "allowLaunch": true,
+    "allowQuit": false,
+    "allowInput": true,
+    "allowCapture": true
+  }
+}

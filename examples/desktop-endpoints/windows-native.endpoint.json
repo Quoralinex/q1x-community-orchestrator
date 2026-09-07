@@ -1,0 +1,25 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.windows-native",
+  "name": "Windows native desktop",
+  "backend": "windows-native",
+  "platforms": ["windows"],
+  "allowedApplications": [
+    {
+      "id": "notepad",
+      "name": "Notepad",
+      "selectors": [
+        { "platform": "windows", "kind": "process-name", "value": "notepad.exe" },
+        { "platform": "windows", "kind": "executable-path", "value": "C:\\Windows\\System32\\notepad.exe" }
+      ]
+    }
+  ],
+  "screenshotDir": "C:\\Temp\\q1x-desktop-screens",
+  "timeoutMs": 30000,
+  "policy": {
+    "allowLaunch": true,
+    "allowQuit": false,
+    "allowInput": true,
+    "allowCapture": true
+  }
+}

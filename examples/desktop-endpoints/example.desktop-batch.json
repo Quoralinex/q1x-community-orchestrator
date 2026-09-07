@@ -1,0 +1,23 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.batch.example",
+  "actions": [
+    {
+      "id": "activate",
+      "kind": "activate",
+      "applicationId": "editor"
+    },
+    {
+      "id": "inspect",
+      "kind": "inspect",
+      "applicationId": "editor"
+    },
+    {
+      "id": "wait",
+      "kind": "wait",
+      "milliseconds": 250
+    }
+  ],
+  "stopOnError": true,
+  "timeoutMs": 30000
+}
