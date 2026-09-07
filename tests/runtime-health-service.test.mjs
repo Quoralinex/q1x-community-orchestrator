@@ -22,14 +22,14 @@ async function freePort() {
   });
 }
 
-test('local service exposes health/readiness and shuts down cleanly', async t => {
+test('local service exposes health/readiness and shuts down on termination', async t => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-health-service-'));
   const port = await freePort();
   const child = spawn(process.execPath, [service], {
     env: { ...process.env, Q1X_HOME: home, Q1X_HOST: '127.0.0.1', Q1X_PORT: String(port) },
     stdio: ['ignore', 'pipe', 'pipe']
   });
-  t.after(async () => { if (child.exitCode === null) child.kill('SIGKILL'); await rm(home, { recursive: true, force: true }); });
+  t.after(async () => { if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL'); await rm(home, { recursive: true, force: true }); });
   const base = `http://127.0.0.1:${port}`;
   const deadline = Date.now() + 10000;
   let ready;
@@ -44,8 +44,12 @@ test('local service exposes health/readiness and shuts down cleanly', async t =>
   assert.deepEqual(await health.json(), { status: 'ok' });
   const missing = await fetch(`${base}/missing`);
   assert.equal(missing.status, 404);
+
   child.kill('SIGTERM');
   const exit = await new Promise(resolve => child.once('exit', (code, signal) => resolve({ code, signal })));
-  assert.equal(exit.code, 0);
-  assert.equal(exit.signal, null);
+  if (process.platform === 'win32') {
+    assert.ok(exit.code === 0 || exit.signal === 'SIGTERM', `unexpected Windows termination: ${JSON.stringify(exit)}`);
+  } else {
+    assert.deepEqual(exit, { code: 0, signal: null });
+  }
 });
