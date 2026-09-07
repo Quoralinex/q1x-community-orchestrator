@@ -1,0 +1,31 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:supervision-policy",
+  "title": "Supervision Policy",
+  "type": "object",
+  "required": ["contractVersion", "id", "maxConcurrentAssignments", "maxAttemptsPerWorkItem", "stopConditions"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "maxConcurrentAssignments": { "type": "integer", "minimum": 1 },
+    "maxAttemptsPerWorkItem": { "type": "integer", "minimum": 1 },
+    "maxKnownCost": { "type": "number", "minimum": 0 },
+    "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+    "deadlineAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" },
+    "allowedExecutionLocations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/privacyLevel" } },
+    "minimumTrust": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/trustLevel" },
+    "preferNoUsageFee": { "type": "boolean" },
+    "preferLocal": { "type": "boolean" },
+    "allowUnknownCost": { "type": "boolean" },
+    "failureThresholdBeforeReplan": { "type": "integer", "minimum": 1 },
+    "checkpointEveryCycles": { "type": "integer", "minimum": 1 },
+    "plannerStrategyId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "stopConditions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["completed", "idle", "blocked", "approval-required", "budget-exhausted", "deadline-reached", "replan-required", "max-cycles", "cancelled"] }
+    }
+  },
+  "additionalProperties": false
+}

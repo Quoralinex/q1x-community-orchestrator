@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:execution-binding",
+  "title": "Execution Binding",
+  "type": "object",
+  "required": ["contractVersion", "id", "capabilityId", "executorKind", "operations", "enabled"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "capabilityId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "executorKind": { "enum": ["model-endpoint", "adapter-endpoint", "browser-endpoint", "desktop-endpoint", "external"] },
+    "endpointId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "operations": { "type": "array", "minItems": 1, "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "enabled": { "type": "boolean" },
+    "priority": { "type": "integer", "minimum": -1000, "maximum": 1000 },
+    "metadata": { "type": "object", "additionalProperties": true }
+  },
+  "additionalProperties": false
+}

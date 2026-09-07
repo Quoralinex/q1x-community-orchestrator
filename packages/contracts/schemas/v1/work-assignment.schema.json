@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:work-assignment",
+  "title": "Work Assignment",
+  "type": "object",
+  "required": ["contractVersion", "id", "programmeId", "workGraphId", "workGraphRevision", "workItemId", "teamPlanId", "teamMemberId", "bindingId", "capabilityId", "attempt", "requirements", "status", "createdAt", "updatedAt"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "programmeId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "workGraphRevision": { "type": "integer", "minimum": 1 },
+    "workItemId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "teamPlanId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "teamMemberId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "bindingId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "capabilityId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "attempt": { "type": "integer", "minimum": 1 },
+    "requirements": { "$ref": "urn:q1x:community:contracts:v1:execution-request#/properties/requirements" },
+    "contextRefs": { "type": "array", "uniqueItems": true, "items": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/reference" } },
+    "status": { "enum": ["planned", "running", "succeeded", "failed", "cancelled", "interrupted", "blocked"] },
+    "resultRef": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "usage": {
+      "type": "object",
+      "properties": {
+        "cost": { "type": "number", "minimum": 0 },
+        "currency": { "type": "string", "pattern": "^[A-Z]{3}$" },
+        "durationMs": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "errorCode": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "createdAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" },
+    "updatedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
+  },
+  "additionalProperties": false
+}

@@ -21,7 +21,8 @@ test("TypeScript schema catalog covers every normative schema", async () => {
   const files = [
     "common", "mission", "programme", "work-graph", "replan-event", "capability",
     "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-    "approval", "checkpoint", "deployment-profile", "discovery-manifest", "model-endpoint", "model-request", "model-response", "adapter-endpoint", "browser-endpoint", "browser-action-batch", "desktop-endpoint", "desktop-action-batch"
+    "approval", "checkpoint", "deployment-profile", "discovery-manifest", "model-endpoint", "model-request", "model-response", "adapter-endpoint", "browser-endpoint", "browser-action-batch", "desktop-endpoint", "desktop-action-batch",
+    "execution-binding", "team-plan", "work-assignment", "programme-proposal", "supervision-policy", "supervision-cycle"
   ];
   const schemaIds = [];
   for (const name of files) schemaIds.push((await load(`${name}.schema.json`)).$id);

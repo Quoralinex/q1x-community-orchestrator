@@ -26,7 +26,7 @@ Example domains include company formation, research programmes, digital R&D, pro
 
 ## Phase 1: public contract layer
 
-The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters, browser control and desktop/application control.
+The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters, browser control, desktop/application control and adaptive supervision.
 
 ```bash
 npm ci
@@ -101,9 +101,20 @@ node packages/runtime/dist/cli.js --home .q1x desktop discover desktop.portable-
 
 Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific controllers remain optional bridge implementations behind the same Q1X backend interface. See [`docs/desktop-control.md`](docs/desktop-control.md).
 
+## Phase 7: dynamic teams and adaptive programme supervision
+
+The runtime can now bind discovered capabilities to executable endpoints, form logical specialist teams for ready work, persist assignment attempts, supervise dependency-aware cycles and stop or replan at explicit approval, budget, deadline, failure and convergence boundaries.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x bindings put --file examples/supervision/example.execution-binding.json
+node packages/runtime/dist/cli.js --home .q1x team form programme.example --policy examples/supervision/example.supervision-policy.json
+```
+
+Supervision remains provider-neutral and uses the existing model, adapter, browser and desktop execution boundaries. Programme proposals are validated before acceptance and existing programmes are checkpointed before adaptive revisions by default. See [`docs/supervision.md`](docs/supervision.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control and desktop/application control. The next delivery phase is dynamic team formation and adaptive programme supervision, followed by deployment packaging and hardening.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation and adaptive programme supervision. The next delivery phase is cross-platform local/container packaging, followed by security hardening and public-alpha commissioning.
 
 ## Deployment profiles
 

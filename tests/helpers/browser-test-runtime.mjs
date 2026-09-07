@@ -40,6 +40,7 @@ export async function launchCdpBrowser() {
     '--headless=new', '--no-first-run', '--no-default-browser-check', '--disable-gpu'
   ], { stdio: 'ignore' });
   const url = `http://127.0.0.1:${port}`;
+  const cleanup = async () => rm(userDataDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 100 });
   const deadline = Date.now() + 20000;
   while (Date.now() < deadline) {
     try {
@@ -47,13 +48,20 @@ export async function launchCdpBrowser() {
       if (response.ok) return {
         url,
         async alive() { try { return (await fetch(`${url}/json/version`)).ok; } catch { return false; } },
-        async close() { child.kill('SIGTERM'); await new Promise(resolve => child.once('exit', resolve)); await rm(userDataDir, { recursive: true, force: true }); }
+        async close() {
+          if (child.exitCode === null && child.signalCode === null) {
+            child.kill('SIGTERM');
+            await new Promise(resolve => child.once('exit', resolve));
+          }
+          await cleanup();
+        }
       };
     } catch {}
     await new Promise(resolve => setTimeout(resolve, 100));
   }
   child.kill('SIGKILL');
-  await rm(userDataDir, { recursive: true, force: true });
+  if (child.exitCode === null && child.signalCode === null) await new Promise(resolve => child.once('exit', resolve));
+  await cleanup();
   throw new Error('CDP test browser did not become ready');
 }
 

@@ -1,0 +1,24 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "policy.local-balanced",
+  "maxConcurrentAssignments": 2,
+  "maxAttemptsPerWorkItem": 3,
+  "maxKnownCost": 25,
+  "currency": "EUR",
+  "allowedExecutionLocations": ["local", "browser-session"],
+  "minimumTrust": "configured",
+  "preferNoUsageFee": true,
+  "preferLocal": true,
+  "allowUnknownCost": false,
+  "failureThresholdBeforeReplan": 2,
+  "checkpointEveryCycles": 3,
+  "stopConditions": [
+    "completed",
+    "idle",
+    "blocked",
+    "approval-required",
+    "budget-exhausted",
+    "replan-required",
+    "cancelled"
+  ]
+}

@@ -49,4 +49,10 @@ export const SCHEMA_IDS = {
   browserActionBatch: "urn:q1x:community:contracts:v1:browser-action-batch",
   desktopEndpoint: "urn:q1x:community:contracts:v1:desktop-endpoint",
   desktopActionBatch: "urn:q1x:community:contracts:v1:desktop-action-batch",
+  executionBinding: "urn:q1x:community:contracts:v1:execution-binding",
+  teamPlan: "urn:q1x:community:contracts:v1:team-plan",
+  workAssignment: "urn:q1x:community:contracts:v1:work-assignment",
+  programmeProposal: "urn:q1x:community:contracts:v1:programme-proposal",
+  supervisionPolicy: "urn:q1x:community:contracts:v1:supervision-policy",
+  supervisionCycle: "urn:q1x:community:contracts:v1:supervision-cycle",
 } as const;

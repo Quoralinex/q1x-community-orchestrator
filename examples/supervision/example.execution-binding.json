@@ -1,0 +1,9 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "binding.local-analysis",
+  "capabilityId": "capability.local-analysis",
+  "executorKind": "external",
+  "operations": ["execute"],
+  "enabled": true,
+  "priority": 100
+}

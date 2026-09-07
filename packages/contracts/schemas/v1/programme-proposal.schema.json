@@ -1,0 +1,19 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:programme-proposal",
+  "title": "Programme Proposal",
+  "type": "object",
+  "required": ["contractVersion", "id", "missionId", "programme", "workGraph", "rationale", "plannerStrategyId", "proposedAt"],
+  "properties": {
+    "contractVersion": { "const": "1.0.0" },
+    "id": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "missionId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "programme": { "$ref": "urn:q1x:community:contracts:v1:programme" },
+    "workGraph": { "$ref": "urn:q1x:community:contracts:v1:work-graph" },
+    "assumptions": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1 } },
+    "rationale": { "type": "string", "minLength": 1 },
+    "plannerStrategyId": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier" },
+    "proposedAt": { "$ref": "urn:q1x:community:contracts:v1:common#/$defs/timestamp" }
+  },
+  "additionalProperties": false
+}
