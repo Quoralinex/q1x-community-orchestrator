@@ -17,7 +17,7 @@ async function validator() {
   const ajv = new Ajv2020({ allErrors: true, strict: true });
   addFormats(ajv);
   for (const name of ['common', 'desktop-endpoint', 'desktop-action-batch']) {
-    ajv.addSchema(await json(path.join(schemaDir, `${name}.schema.json`)));
+    ajv.addSchema(await json(path.join(schemaDir, `${name}.schema.json`));
   }
   return ajv;
 }
@@ -47,6 +47,28 @@ test('desktop endpoint example validates', async () => {
   assert.equal(validate(document), true, ajv.errorsText(validate.errors));
 });
 
+test('custom desktop backend endpoint does not require stdio transport', async () => {
+  const ajv = await validator();
+  const validate = ajv.getSchema('urn:q1x:community:contracts:v1:desktop-endpoint');
+  assert.ok(validate);
+  const document = {
+    contractVersion: '1.0.0', id: 'desktop.native', name: 'Native backend', backend: 'native-test',
+    platform: 'any', executionLocation: 'local', backendConfig: { channel: 'accessibility' }
+  };
+  assert.equal(validate(document), true, ajv.errorsText(validate.errors));
+});
+
+test('stdio desktop backend endpoint requires transport', async () => {
+  const ajv = await validator();
+  const validate = ajv.getSchema('urn:q1x:community:contracts:v1:desktop-endpoint');
+  assert.ok(validate);
+  const document = {
+    contractVersion: '1.0.0', id: 'desktop.bad-stdio', name: 'Missing transport', backend: 'stdio-bridge',
+    platform: 'any', executionLocation: 'local'
+  };
+  assert.equal(validate(document), false);
+});
+
 test('desktop focus application action validates', async () => {
   await assertBatch({ id: 'focus', kind: 'focus-application', application: 'example.app' });
 });
@@ -57,6 +79,12 @@ test('desktop inspect action validates', async () => {
 
 test('desktop find action validates', async () => {
   await assertBatch({ id: 'find-submit', kind: 'find', target: { by: 'role', role: 'button', name: 'Continue' } });
+});
+
+test('desktop find action without a target is rejected', async () => {
+  const { validate } = await desktopBatchValidator();
+  const document = { contractVersion: '1.0.0', id: 'desktop.batch.find-missing', actions: [{ id: 'find', kind: 'find' }] };
+  assert.equal(validate(document), false);
 });
 
 test('desktop batch options validate', async () => {
