@@ -15,12 +15,5 @@
     "priority": { "type": "integer", "minimum": -1000, "maximum": 1000 },
     "metadata": { "type": "object", "additionalProperties": true }
   },
-  "allOf": [
-    {
-      "if": { "properties": { "executorKind": { "const": "external" } }, "required": ["executorKind"] },
-      "then": { "not": { "required": ["endpointId"] } },
-      "else": { "required": ["endpointId"] }
-    }
-  ],
   "additionalProperties": false
 }
