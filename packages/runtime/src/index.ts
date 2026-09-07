@@ -14,3 +14,4 @@ export * from './model-protocols.js';
 export * from './adapter-security.js';
 export * from './adapter-transport.js';
 export * from './cli-adapter.js';
+export * from './a2a-adapter.js';
