@@ -32,8 +32,16 @@ jobs:
           done
           echo "No Chromium-compatible browser is installed on this runner" >&2
           exit 1
-      - name: Verify contracts, SDK and runtime
-        run: npm run check
+      - name: Build TypeScript workspaces
+        run: npm run build
+      - name: Validate normative contracts and examples
+        run: npm test
+      - name: Run runtime integration tests
+        run: npm run test:runtime
+      - name: Run strict SDK consumer type test
+        run: npm run test:types
+      - name: Run distribution and licence tests
+        run: npm run test:dist
       - name: Verify package contents
         run: |
           npm pack --dry-run --workspace packages/contracts
