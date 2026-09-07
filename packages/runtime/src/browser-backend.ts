@@ -59,6 +59,8 @@ export class BrowserSessionManager {
   }
   getSession(id: string): BrowserSessionHandle | undefined { return this.sessions.get(id)?.handle; }
   count(): number { return this.sessions.size; }
+  hasBackend(id: string): boolean { return this.registry.get(id) !== undefined; }
+  registerBackend(backend: BrowserBackend): void { this.registry.register(backend); }
   async execute(id: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
     const record = this.requireRecord(id);
     return record.backend.execute(record.session, batch, signal);

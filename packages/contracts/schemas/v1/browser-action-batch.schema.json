@@ -670,10 +670,14 @@
             "properties": {
               "extract": {
                 "const": "attribute"
+              },
+              "kind": {
+                "const": "extract"
               }
             },
             "required": [
-              "kind"
+              "kind",
+              "extract"
             ]
           },
           "then": {

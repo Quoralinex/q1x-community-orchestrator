@@ -27,3 +27,21 @@ export function assertSafeBrowserEndpoint(endpoint: BrowserEndpoint): void {
   const local = (url.protocol === 'http:' || url.protocol === 'ws:') && isLoopback(url.hostname);
   if (!secure && !local) throw new RuntimeError('INSECURE_ENDPOINT', 'Remote browser CDP endpoints must use HTTPS or WSS');
 }
+
+
+export function assertSafeBrowserNavigation(endpoint: BrowserEndpoint, rawUrl: string): URL {
+  let url: URL;
+  try { url = new URL(rawUrl); } catch { throw new RuntimeError('INSECURE_ENDPOINT', 'Browser navigation URL is invalid'); }
+  if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+    throw new RuntimeError('INSECURE_ENDPOINT', 'Browser navigation permits only HTTP and HTTPS URLs');
+  }
+  const origin = url.origin;
+  if (endpoint.navigation?.blockedOrigins?.includes(origin)) {
+    throw new RuntimeError('INSECURE_ENDPOINT', `Browser navigation origin is blocked: ${origin}`);
+  }
+  const allowed = endpoint.navigation?.allowedOrigins;
+  if (allowed?.length && !allowed.includes(origin)) {
+    throw new RuntimeError('INSECURE_ENDPOINT', `Browser navigation origin is not allowlisted: ${origin}`);
+  }
+  return url;
+}

@@ -1,8 +1,9 @@
-import type { Browser, BrowserContext, BrowserType, Page } from 'playwright-core';
+import type { Browser, BrowserContext, BrowserType, Page, Route } from 'playwright-core';
 import { chromium, firefox, webkit } from 'playwright-core';
 import type { BrowserActionBatch, BrowserBatchResult, BrowserEndpoint } from '@quoralinex/q1x-community-sdk';
 import { BrowserBackendRegistry, type BrowserBackend, type BrowserBackendSession } from './browser-backend.js';
 import { RuntimeError } from './errors.js';
+import { assertSafeBrowserNavigation } from './browser-security.js';
 import { executePlaywrightBatch } from './browser-actions.js';
 
 export class PlaywrightBrowserSession implements BrowserBackendSession {
@@ -12,9 +13,11 @@ export class PlaywrightBrowserSession implements BrowserBackendSession {
     readonly context: BrowserContext,
     readonly page: Page,
     readonly persistent: boolean,
-    private readonly connected: boolean
+    private readonly connected: boolean,
+    private readonly navigationRoute?: (route: Route) => Promise<void>
   ) {}
   async close(): Promise<void> {
+    if (this.navigationRoute) await this.context.unroute('**/*', this.navigationRoute).catch(() => undefined);
     if (this.connected) {
       if (this.browser) await this.browser.close();
       return;
@@ -34,6 +37,22 @@ function browserType(engine: BrowserEndpoint['engine']): BrowserType {
   return chromium;
 }
 
+
+async function installNavigationPolicy(endpoint: BrowserEndpoint, context: BrowserContext): Promise<(route: Route) => Promise<void>> {
+  const handler = async (route: Route): Promise<void> => {
+    const request = route.request();
+    if (!request.isNavigationRequest()) { await route.continue(); return; }
+    try {
+      assertSafeBrowserNavigation(endpoint, request.url());
+      await route.continue();
+    } catch {
+      await route.abort('blockedbyclient');
+    }
+  };
+  await context.route('**/*', handler);
+  return handler;
+}
+
 class PlaywrightBrowserBackend implements BrowserBackend {
   readonly id = 'playwright';
   async execute(session: BrowserBackendSession, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
@@ -49,8 +68,9 @@ class PlaywrightBrowserBackend implements BrowserBackend {
         await browser.close();
         throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Connected browser exposed no default context');
       }
+      const navigationRoute = await installNavigationPolicy(endpoint, context);
       const page = context.pages()[0] ?? await context.newPage();
-      return new PlaywrightBrowserSession(endpoint, browser, context, page, true, true);
+      return new PlaywrightBrowserSession(endpoint, browser, context, page, true, true, navigationRoute);
     }
     const type = browserType(endpoint.engine);
     const launch = {
@@ -66,16 +86,18 @@ class PlaywrightBrowserBackend implements BrowserBackend {
         ...(endpoint.viewport ? { viewport: endpoint.viewport } : {}),
         acceptDownloads: true
       });
+      const navigationRoute = await installNavigationPolicy(endpoint, context);
       const page = context.pages()[0] ?? await context.newPage();
-      return new PlaywrightBrowserSession(endpoint, context.browser(), context, page, true, false);
+      return new PlaywrightBrowserSession(endpoint, context.browser(), context, page, true, false, navigationRoute);
     }
     const browser = await type.launch(launch);
     const context = await browser.newContext({
       ...(endpoint.viewport ? { viewport: endpoint.viewport } : {}),
       acceptDownloads: true
     });
+    const navigationRoute = await installNavigationPolicy(endpoint, context);
     const page = await context.newPage();
-    return new PlaywrightBrowserSession(endpoint, browser, context, page, false, false);
+    return new PlaywrightBrowserSession(endpoint, browser, context, page, false, false, navigationRoute);
   }
 }
 

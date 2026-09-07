@@ -5,6 +5,7 @@ import type {
   BrowserAction, BrowserActionBatch, BrowserActionResult, BrowserBatchResult, BrowserTarget
 } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
+import { assertSafeBrowserNavigation } from './browser-security.js';
 import type { PlaywrightBrowserSession } from './playwright-browser.js';
 
 function locator(page: Page, target: BrowserTarget): Locator {
@@ -74,10 +75,31 @@ function uploadPaths(session: PlaywrightBrowserSession, requested: string[] | un
   }
   return resolved;
 }
+
+async function preflightNavigation(session: PlaywrightBrowserSession, rawUrl: string, timeout?: number): Promise<URL> {
+  let current = assertSafeBrowserNavigation(session.endpoint, rawUrl);
+  const policy = session.endpoint.navigation;
+  if (!policy?.allowedOrigins?.length && !policy?.blockedOrigins?.length) return current;
+  for (let redirects = 0; redirects <= 10; redirects += 1) {
+    const response = await session.context.request.get(current.href, { maxRedirects: 0, timeout, failOnStatusCode: false });
+    try {
+      const status = response.status();
+      const location = response.headers()['location'];
+      if (status < 300 || status >= 400 || !location) return current;
+      const next = new URL(location, current);
+      assertSafeBrowserNavigation(session.endpoint, next.href);
+      current = next;
+    } finally {
+      await response.dispose();
+    }
+  }
+  throw new RuntimeError('INSECURE_ENDPOINT', 'Browser navigation redirect limit exceeded during policy preflight');
+}
+
 async function executeAction(session: PlaywrightBrowserSession, action: BrowserAction): Promise<unknown> {
   const page = session.page;
   const timeout = action.timeoutMs;
-  if (action.kind === 'navigate') { await page.goto(action.url ?? '', { timeout }); return { url: page.url(), title: await page.title() }; }
+  if (action.kind === 'navigate') { const url = await preflightNavigation(session, action.url ?? '', timeout); await page.goto(url.href, { timeout }); assertSafeBrowserNavigation(session.endpoint, page.url()); return { url: page.url(), title: await page.title() }; }
   if (action.kind === 'back') { await page.goBack({ timeout }); return { url: page.url(), title: await page.title() }; }
   if (action.kind === 'forward') { await page.goForward({ timeout }); return { url: page.url(), title: await page.title() }; }
   if (action.kind === 'reload') { await page.reload({ timeout }); return { url: page.url(), title: await page.title() }; }

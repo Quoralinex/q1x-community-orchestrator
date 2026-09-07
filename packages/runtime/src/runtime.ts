@@ -1,8 +1,10 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterEndpoint, AdapterManifest, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import { assertSafeBrowserEndpoint } from './browser-security.js';
+import { BrowserSessionManager, type BrowserBackend, type BrowserSessionHandle } from './browser-backend.js';
+import { createDefaultBrowserBackendRegistry } from './playwright-browser.js';
 import type { AdapterTransport } from './adapter-transport.js';
 import { AdapterTransportRegistry } from './adapter-transport.js';
 import type { AdapterTransportContext } from './adapter-transport.js';
@@ -48,17 +50,19 @@ export class OpenControlRuntime {
   private readonly store: SqliteStore;
   private readonly modelTransports: ModelTransportRegistry;
   private readonly adapterTransports: AdapterTransportRegistry;
+  private readonly browserSessions: BrowserSessionManager;
 
-  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry) {
+  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager) {
     this.store = store;
     this.modelTransports = modelTransports;
     this.adapterTransports = adapterTransports;
+    this.browserSessions = browserSessions;
     this.home = store.home;
     this.databasePath = store.databasePath;
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
-    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry());
+    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry(), new BrowserSessionManager(createDefaultBrowserBackendRegistry()));
   }
 
   close(): void {
@@ -213,6 +217,68 @@ export class OpenControlRuntime {
 
   listBrowserEndpoints(): BrowserEndpoint[] {
     return this.store.listDocuments<BrowserEndpoint>('browser-endpoint');
+  }
+
+  registerBrowserBackend(backend: BrowserBackend): void {
+    this.browserSessions.registerBackend(backend);
+  }
+
+  async openBrowserSession(endpointId: string): Promise<BrowserSessionHandle> {
+    const endpoint = this.getBrowserEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Browser endpoint not found: ${endpointId}`);
+    const handle = await this.browserSessions.openSession(endpoint);
+    this.store.appendEvent('browser.session.open', 'browser-endpoint', endpoint.id, null, { backend: endpoint.backend, mode: endpoint.mode });
+    return handle;
+  }
+
+  async executeBrowserSession(sessionId: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
+    validateContract(SCHEMA_IDS.browserActionBatch, batch);
+    const handle = this.browserSessions.getSession(sessionId);
+    if (!handle) throw new RuntimeError('NOT_FOUND', `Browser session not found: ${sessionId}`);
+    const started = Date.now();
+    const result = await this.browserSessions.execute(sessionId, batch, signal);
+    this.store.appendEvent('browser.execute', 'browser-endpoint', handle.endpointId, null, {
+      backend: handle.backend, actionCount: batch.actions.length, status: result.status, durationMs: Date.now() - started
+    });
+    return result;
+  }
+
+  async closeBrowserSession(sessionId: string): Promise<void> {
+    const handle = this.browserSessions.getSession(sessionId);
+    if (!handle) throw new RuntimeError('NOT_FOUND', `Browser session not found: ${sessionId}`);
+    await this.browserSessions.closeSession(sessionId);
+    this.store.appendEvent('browser.session.close', 'browser-endpoint', handle.endpointId, null, { backend: handle.backend });
+  }
+
+  async runBrowserBatch(endpointId: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
+    const handle = await this.openBrowserSession(endpointId);
+    try {
+      return await this.executeBrowserSession(handle.id, batch, signal);
+    } finally {
+      if (this.browserSessions.getSession(handle.id)) await this.closeBrowserSession(handle.id);
+    }
+  }
+
+  discoverBrowserCapability(endpointId: string): CapabilityDescriptor {
+    const endpoint = this.getBrowserEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Browser endpoint not found: ${endpointId}`);
+    const platform = process.platform === 'darwin' ? 'macos' : process.platform === 'win32' ? 'windows' : 'linux';
+    const capability: CapabilityDescriptor = {
+      contractVersion: CONTRACT_VERSION,
+      id: `capability.${endpoint.id}`,
+      name: `${endpoint.name} browser control`,
+      adapterKind: 'browser-control',
+      operations: ['navigate','inspect','extract','click','type','keyboard','mouse','upload','download','screenshot'],
+      modalities: { input: ['text','structured-data','control'], output: ['text','image','structured-data','binary'] },
+      availability: { state: this.browserSessions.hasBackend(endpoint.backend) ? 'available' : 'offline', checkedAt: new Date().toISOString() },
+      cost: { class: 'no-usage-fee' },
+      privacy: { executionLocation: endpoint.mode === 'cdp' ? 'browser-session' : 'local', dataRetention: 'session' },
+      trust: { level: 'configured', source: `browser-endpoint:${endpoint.id}` },
+      platforms: [platform]
+    };
+    this.putCapability(capability);
+    this.store.appendEvent('browser.discover', 'browser-endpoint', endpoint.id, null, { backend: endpoint.backend, availability: capability.availability.state });
+    return capability;
   }
 
   putAdapterEndpoint(endpoint: AdapterEndpoint): AdapterEndpoint {

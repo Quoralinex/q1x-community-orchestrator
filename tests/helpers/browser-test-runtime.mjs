@@ -63,8 +63,12 @@ export async function startBrowserSite() {
   const { dirname, join } = await import('node:path');
   const { fileURLToPath } = await import('node:url');
   const root = join(dirname(fileURLToPath(import.meta.url)), '..', 'fixtures', 'browser-site');
+  const requests = [];
   const server = createServer(async (req, res) => {
-    const pathname = new URL(req.url ?? '/', 'http://localhost').pathname;
+    const requestUrl = new URL(req.url ?? '/', 'http://localhost');
+    const pathname = requestUrl.pathname;
+    requests.push(pathname);
+    if (pathname === '/redirect') { res.statusCode = 302; res.setHeader('location', requestUrl.searchParams.get('to') ?? '/'); res.end(); return; }
     const file = pathname === '/' ? 'index.html' : pathname.replace(/^\//, '');
     try {
       const body = await readFile(join(root, file));
@@ -74,5 +78,5 @@ export async function startBrowserSite() {
   await new Promise((resolve, reject) => { server.once('error', reject); server.listen(0, '127.0.0.1', resolve); });
   const address = server.address();
   if (!address || typeof address === 'string') throw new Error('Browser fixture server has no TCP address');
-  return { baseUrl: `http://127.0.0.1:${address.port}`, close: () => new Promise(resolve => server.close(resolve)) };
+  return { baseUrl: `http://127.0.0.1:${address.port}`, requests, close: () => new Promise(resolve => server.close(resolve)) };
 }
