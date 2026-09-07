@@ -47,4 +47,6 @@ export const SCHEMA_IDS = {
   adapterEndpoint: "urn:q1x:community:contracts:v1:adapter-endpoint",
   browserEndpoint: "urn:q1x:community:contracts:v1:browser-endpoint",
   browserActionBatch: "urn:q1x:community:contracts:v1:browser-action-batch",
+  desktopEndpoint: "urn:q1x:community:contracts:v1:desktop-endpoint",
+  desktopActionBatch: "urn:q1x:community:contracts:v1:desktop-action-batch",
 } as const;
