@@ -112,13 +112,29 @@ node packages/runtime/dist/cli.js --home .q1x team form programme.example --poli
 
 Supervision remains provider-neutral and uses the existing model, adapter, browser and desktop execution boundaries. Programme proposals are validated before acceptance and existing programmes are checkpointed before adaptive revisions by default. See [`docs/supervision.md`](docs/supervision.md).
 
+## Phase 8: cross-platform packaging and Docker deployment
+
+The pre-alpha runtime now has a verified source-install path for macOS, Windows and Linux plus a reproducible non-root Docker image with persistent `/data`, explicit environment configuration and health/readiness checks. A hardened local Compose profile is also included.
+
+```bash
+npm ci --no-audit --no-fund
+npm run build
+node packages/runtime/dist/cli.js --home .q1x init
+```
+
+```bash
+docker compose up --build
+```
+
+The container exposes only health/readiness on port `8787`; it does not create a mandatory hosted orchestration API. The Cross-platform Packaging workflow verifies native installation across all three operating systems and Docker build, non-root execution and persistent restart on Linux. See [`docs/deployment.md`](docs/deployment.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation and adaptive programme supervision. The next delivery phase is cross-platform local/container packaging, followed by security hardening and public-alpha commissioning.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision and cross-platform local/container packaging. The next delivery phase is security, approvals, evidence, audit and recovery hardening, followed by public-alpha commissioning.
 
 ## Deployment profiles
 
-The initial target is a zero-cost personal profile using an embedded database and local storage. Team and distributed profiles will add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
+The supported pre-alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
 
 ## Documentation
 

@@ -1,0 +1,12 @@
+.git
+.github
+.q1x*
+node_modules
+**/node_modules
+**/dist
+*.log
+*.tgz
+coverage
+.DS_Store
+.vscode
+.idea
