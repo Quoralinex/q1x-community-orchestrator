@@ -7,7 +7,8 @@
 5. **Phase 5 — MCP, A2A and CLI/TUI adapters:** executable endpoint registry, official MCP transports, A2A Agent Card/JSON-RPC support and direct no-shell CLI execution. **Implemented in pre-alpha.**
 6. **Phase 6A — Browser/web control:** managed real-browser sessions, Chromium-family CDP attachment, normalized web actions, bounded files/captures and browser CLI. **Implemented in pre-alpha.**
 7. **Phase 6B — Desktop/application control:** OS-neutral desktop contracts, pluggable backends, direct no-shell stdio bridge execution, application policy, capability discovery and desktop CLI. **Implemented in pre-alpha.**
-8. **Phase 7 — Dynamic team formation and adaptive programme supervision.**
-9. Cross-platform packaging and Docker deployment.
-10. Security, approvals, evidence, audit and recovery hardening.
-11. Public alpha, compatibility matrix and community adapter SDK.
+8. **Phase 7 — Dynamic team formation and adaptive programme supervision:** deterministic capability routing, durable logical teams and assignments, bounded supervision cycles, cancellation/replacement, budgets, approvals, checkpoints and validated replanning. **Implemented in pre-alpha.**
+9. **Phase 8 — Cross-platform packaging and Docker deployment.**
+10. **Phase 9 — Security, approvals, evidence, audit and recovery hardening.**
+11. **Phase 10 — Public alpha commissioning.**
+12. **Phase 11 — Compatibility matrix and community adapter SDK.**
