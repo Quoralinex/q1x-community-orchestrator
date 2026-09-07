@@ -11,3 +11,5 @@ export * from './model-security.js';
 export * from './model-transport.js';
 
 export * from './model-protocols.js';
+export * from './adapter-security.js';
+export * from './adapter-transport.js';

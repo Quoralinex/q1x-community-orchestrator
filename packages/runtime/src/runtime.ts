@@ -1,6 +1,9 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
+import { assertSafeAdapterEndpoint } from './adapter-security.js';
+import type { AdapterTransport } from './adapter-transport.js';
+import { AdapterTransportRegistry } from './adapter-transport.js';
 import { discoverManifest, type DiscoveryContext, type DiscoveryResult } from './discovery.js';
 import { assertSafeEndpointConfiguration } from './model-security.js';
 import { createDefaultModelTransportRegistry } from './model-protocols.js';
@@ -31,6 +34,7 @@ export interface RuntimeStatus {
     capabilities: number;
     adapters: number;
     modelEndpoints: number;
+    adapterEndpoints: number;
   };
 }
 
@@ -39,16 +43,18 @@ export class OpenControlRuntime {
   readonly databasePath: string;
   private readonly store: SqliteStore;
   private readonly modelTransports: ModelTransportRegistry;
+  private readonly adapterTransports: AdapterTransportRegistry;
 
-  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry) {
+  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry) {
     this.store = store;
     this.modelTransports = modelTransports;
+    this.adapterTransports = adapterTransports;
     this.home = store.home;
     this.databasePath = store.databasePath;
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
-    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry());
+    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), new AdapterTransportRegistry());
   }
 
   close(): void {
@@ -187,6 +193,26 @@ export class OpenControlRuntime {
 
   listModelEndpoints(): ModelEndpoint[] {
     return this.store.listDocuments<ModelEndpoint>('model-endpoint');
+  }
+
+  putAdapterEndpoint(endpoint: AdapterEndpoint): AdapterEndpoint {
+    validateContract(SCHEMA_IDS.adapterEndpoint, endpoint);
+    assertSafeAdapterEndpoint(endpoint);
+    this.store.putDocument({ kind: 'adapter-endpoint', id: endpoint.id, scopeId: null, document: endpoint });
+    this.store.appendEvent('adapter.endpoint.put', 'adapter-endpoint', endpoint.id, null, { protocol: endpoint.protocol, adapterKind: endpoint.adapterKind });
+    return endpoint;
+  }
+
+  getAdapterEndpoint(id: string): AdapterEndpoint | undefined {
+    return this.store.getDocument<AdapterEndpoint>('adapter-endpoint', id);
+  }
+
+  listAdapterEndpoints(): AdapterEndpoint[] {
+    return this.store.listDocuments<AdapterEndpoint>('adapter-endpoint');
+  }
+
+  registerAdapterTransport(transport: AdapterTransport): void {
+    this.adapterTransports.register(transport);
   }
 
   registerModelTransport(transport: ModelTransport): void {
@@ -351,7 +377,8 @@ export class OpenControlRuntime {
         checkpoints: this.listCheckpoints(programmeId).length,
         capabilities: this.listCapabilities().length,
         adapters: this.listAdapterManifests().length,
-        modelEndpoints: this.listModelEndpoints().length
+        modelEndpoints: this.listModelEndpoints().length,
+        adapterEndpoints: this.listAdapterEndpoints().length
       }
     };
   }
