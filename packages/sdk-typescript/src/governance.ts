@@ -38,7 +38,7 @@ export interface Approval {
   contractVersion: ContractVersion;
   id: Identifier;
   subject: Reference;
-  state: "pending" | "approved" | "rejected" | "expired" | "cancelled";
+  state: "pending" | "approved" | "rejected" | "expired" | "cancelled" | "consumed";
   requestedAt: Timestamp;
   requestedBy: Actor;
   requiredApproverKinds?: ("human" | "agent" | "service")[];
