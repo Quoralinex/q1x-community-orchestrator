@@ -45,3 +45,13 @@ Executable adapters use persisted `AdapterEndpoint` documents plus a pluggable `
 MCP uses the official client over stdio or Streamable HTTP, A2A maps Agent Card skills into the live capability registry and executes JSON-RPC messages, and CLI/TUI tools are spawned directly with explicit argv and no shell. Runtime audit events remain metadata-only.
 
 See [MCP, A2A and CLI/TUI Adapters](agent-cli-adapters.md) for configuration and security boundaries.
+
+## Phase 6 browser and desktop control boundary
+
+Browser control adds a standards-based `webdriver-http-v1` transport under the existing adapter registry. Structured execution input is mapped to W3C WebDriver session, navigation, element, script, window, cookie, actions, timeout, frame and alert endpoints. Browser capability discovery uses the WebDriver `/status` endpoint. No browser vendor or hosted browser service is mandatory.
+
+Desktop/application control uses `desktop-json-stdio-v1`, a neutral local bridge protocol. The orchestrator launches a configured bridge directly with explicit argv and no shell, sends one versioned JSON request, bounds stdout/stderr and normalizes JSON success or failure responses. Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific implementations can therefore live in optional bridge packages rather than the Community core.
+
+Both families preserve the existing transport security model and metadata-only runtime audit events. Page source, screenshots, cookies, UI trees and application data are not persisted by the transport layer.
+
+See [Browser/Web and Desktop/Application Adapters](browser-desktop-adapters.md) for action payloads, bridge protocol and security boundaries.
