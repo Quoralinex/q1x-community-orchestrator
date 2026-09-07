@@ -4,6 +4,7 @@
   "name": "Portable desktop bridge",
   "backend": "stdio-bridge",
   "platform": "any",
+  "executionLocation": "local",
   "transport": {
     "command": "q1x-desktop-bridge",
     "args": [],
