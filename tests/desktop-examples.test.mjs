@@ -22,6 +22,23 @@ async function validator() {
   return ajv;
 }
 
+async function desktopBatchValidator() {
+  const ajv = await validator();
+  const validate = ajv.getSchema('urn:q1x:community:contracts:v1:desktop-action-batch');
+  assert.ok(validate);
+  return { ajv, validate };
+}
+
+async function assertBatch(action, options = {}) {
+  const { ajv, validate } = await desktopBatchValidator();
+  const document = { contractVersion: '1.0.0', id: `desktop.batch.${action.id}`, actions: [action], ...options };
+  assert.equal(validate(document), true, ajv.errorsText(validate.errors));
+}
+
+test('desktop action schema compiles', async () => {
+  await desktopBatchValidator();
+});
+
 test('desktop endpoint example validates', async () => {
   const ajv = await validator();
   const validate = ajv.getSchema('urn:q1x:community:contracts:v1:desktop-endpoint');
@@ -30,10 +47,24 @@ test('desktop endpoint example validates', async () => {
   assert.equal(validate(document), true, ajv.errorsText(validate.errors));
 });
 
+test('desktop focus application action validates', async () => {
+  await assertBatch({ id: 'focus', kind: 'focus-application', application: 'example.app' });
+});
+
+test('desktop inspect action validates', async () => {
+  await assertBatch({ id: 'inspect', kind: 'inspect' });
+});
+
+test('desktop find action validates', async () => {
+  await assertBatch({ id: 'find-submit', kind: 'find', target: { by: 'role', role: 'button', name: 'Continue' } });
+});
+
+test('desktop batch options validate', async () => {
+  await assertBatch({ id: 'list', kind: 'list-applications' }, { stopOnError: true, timeoutMs: 30000 });
+});
+
 test('desktop action batch example validates', async () => {
-  const ajv = await validator();
-  const validate = ajv.getSchema('urn:q1x:community:contracts:v1:desktop-action-batch');
+  const { ajv, validate } = await desktopBatchValidator();
   const document = await json(path.join(root, 'examples', 'desktop-endpoints', 'example.desktop-batch.json'));
-  assert.ok(validate);
   assert.equal(validate(document), true, ajv.errorsText(validate.errors));
 });
