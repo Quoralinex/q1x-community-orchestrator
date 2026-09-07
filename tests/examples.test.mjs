@@ -11,7 +11,8 @@ const schemaDir = path.join(root, "packages", "contracts", "schemas", "v1");
 const schemaNames = [
   "common", "mission", "programme", "work-graph", "replan-event", "capability",
   "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-  "approval", "checkpoint", "deployment-profile", "discovery-manifest"
+  "approval", "checkpoint", "deployment-profile", "discovery-manifest",
+  "model-endpoint", "model-request", "model-response"
 ];
 
 async function json(file) {
@@ -46,7 +47,13 @@ const examples = [
   ["software-delivery/deployment-profile.json", "deployment-profile"],
   ["discovery/local-command.discovery.json", "discovery-manifest"],
   ["discovery/local-http.discovery.json", "discovery-manifest"],
-  ["discovery/desktop-path.discovery.json", "discovery-manifest"]
+  ["discovery/desktop-path.discovery.json", "discovery-manifest"],
+  ["model-endpoints/local-openai-chat.endpoint.json", "model-endpoint"],
+  ["model-endpoints/local-openai-responses.endpoint.json", "model-endpoint"],
+  ["model-endpoints/local-anthropic.endpoint.json", "model-endpoint"],
+  ["model-endpoints/hosted-compatible.endpoint.json", "model-endpoint"],
+  ["model-endpoints/example.model-request.json", "model-request"],
+  ["model-endpoints/example.model-response.json", "model-response"]
 ];
 
 test("cross-domain examples validate against normative schemas", async () => {

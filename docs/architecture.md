@@ -29,3 +29,11 @@ See [Open Control Runtime](runtime.md) for commands and recovery behaviour.
 ## Phase 3 discovery boundary
 
 Capability discovery is manifest-driven. The core engine understands generic command, path, environment and HTTP probes; it does not know product/vendor names. Discovery produces the existing `CapabilityDescriptor` contract and persists it through the Phase 2 runtime. Adapter/plugin authors can therefore add new products without modifying the orchestrator core.
+
+## Phase 4 model transport boundary
+
+Model transport separates endpoint location/adapter kind from wire protocol. The built-in protocol transports cover OpenAI-compatible chat completions, Responses-compatible endpoints and Anthropic-compatible Messages endpoints, but none of those requires a corresponding hosted provider. Local inference servers can expose the same protocols over loopback HTTP.
+
+Remote endpoints require HTTPS. Credential values are injected from environment variables only at invocation time, redirects are not followed automatically, and model prompt/output content is not persisted by the transport layer. `ModelTransportRegistry` is the extension point for native provider or experimental transports without a provider switch statement in Community core.
+
+See [Provider-Neutral Model Transport](model-transport.md) for endpoint examples and CLI usage.

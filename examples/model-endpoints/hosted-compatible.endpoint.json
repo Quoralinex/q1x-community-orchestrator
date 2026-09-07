@@ -1,0 +1,1 @@
+{"contractVersion":"1.0.0","id":"endpoint.hosted-example","name":"Hosted credential-reference endpoint","adapterKind":"provider-http","protocol":"openai-chat-completions","url":"https://api.example.invalid/v1/chat/completions","defaultModel":"provider-model","credentials":[{"header":"Authorization","environmentKey":"Q1X_MODEL_API_KEY","prefix":"Bearer "}],"timeoutMs":30000}
