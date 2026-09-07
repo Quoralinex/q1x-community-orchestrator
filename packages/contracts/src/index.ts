@@ -44,4 +44,5 @@ export const SCHEMA_IDS = {
   modelEndpoint: "urn:q1x:community:contracts:v1:model-endpoint",
   modelRequest: "urn:q1x:community:contracts:v1:model-request",
   modelResponse: "urn:q1x:community:contracts:v1:model-response",
+  adapterEndpoint: "urn:q1x:community:contracts:v1:adapter-endpoint",
 } as const;
