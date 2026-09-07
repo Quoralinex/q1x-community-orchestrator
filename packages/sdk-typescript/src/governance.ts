@@ -7,6 +7,9 @@ export interface Evidence {
   summary: string;
   sourceUri?: string;
   artifactRef?: Identifier;
+  executionRef?: Identifier;
+  resultRef?: Identifier;
+  contentDigest?: { algorithm: "sha256" | "sha512"; value: string };
   claims?: string[];
   provenance?: { actor?: Actor; method?: string };
   collectedAt: Timestamp;
@@ -52,4 +55,25 @@ export interface Checkpoint {
   artifactRefs?: Identifier[];
   evidenceRefs?: Identifier[];
   createdAt: Timestamp;
+}
+
+export interface AuditReceipt {
+  contractVersion: ContractVersion;
+  id: Identifier;
+  sequence: number;
+  eventType: string;
+  subject: Reference;
+  scopeId?: Identifier;
+  metadata?: Record<string, unknown>;
+  previousDigest?: string;
+  digest: string;
+  occurredAt: Timestamp;
+}
+
+export interface AuditVerification {
+  valid: boolean;
+  checked: number;
+  firstInvalidSequence?: number;
+  expectedDigest?: string;
+  actualDigest?: string;
 }
