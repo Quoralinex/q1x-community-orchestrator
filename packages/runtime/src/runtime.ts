@@ -1,7 +1,8 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterEndpoint, AdapterManifest, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
+import { assertSafeBrowserEndpoint } from './browser-security.js';
 import type { AdapterTransport } from './adapter-transport.js';
 import { AdapterTransportRegistry } from './adapter-transport.js';
 import type { AdapterTransportContext } from './adapter-transport.js';
@@ -37,6 +38,7 @@ export interface RuntimeStatus {
     adapters: number;
     modelEndpoints: number;
     adapterEndpoints: number;
+    browserEndpoints: number;
   };
 }
 
@@ -195,6 +197,22 @@ export class OpenControlRuntime {
 
   listModelEndpoints(): ModelEndpoint[] {
     return this.store.listDocuments<ModelEndpoint>('model-endpoint');
+  }
+
+  putBrowserEndpoint(endpoint: BrowserEndpoint): BrowserEndpoint {
+    validateContract(SCHEMA_IDS.browserEndpoint, endpoint);
+    assertSafeBrowserEndpoint(endpoint);
+    this.store.putDocument({ kind: 'browser-endpoint', id: endpoint.id, scopeId: null, document: endpoint });
+    this.store.appendEvent('browser.endpoint.put', 'browser-endpoint', endpoint.id, null, { backend: endpoint.backend, mode: endpoint.mode });
+    return endpoint;
+  }
+
+  getBrowserEndpoint(id: string): BrowserEndpoint | undefined {
+    return this.store.getDocument<BrowserEndpoint>('browser-endpoint', id);
+  }
+
+  listBrowserEndpoints(): BrowserEndpoint[] {
+    return this.store.listDocuments<BrowserEndpoint>('browser-endpoint');
   }
 
   putAdapterEndpoint(endpoint: AdapterEndpoint): AdapterEndpoint {
@@ -415,7 +433,8 @@ export class OpenControlRuntime {
         capabilities: this.listCapabilities().length,
         adapters: this.listAdapterManifests().length,
         modelEndpoints: this.listModelEndpoints().length,
-        adapterEndpoints: this.listAdapterEndpoints().length
+        adapterEndpoints: this.listAdapterEndpoints().length,
+        browserEndpoints: this.listBrowserEndpoints().length
       }
     };
   }

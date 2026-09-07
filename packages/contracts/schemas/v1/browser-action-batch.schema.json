@@ -277,10 +277,14 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "url"
-            ]
+            ],
+            "properties": {
+              "url": {
+                "type": "string",
+                "format": "uri"
+              }
+            }
           }
         },
         {
@@ -296,10 +300,13 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
@@ -315,10 +322,13 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
@@ -334,10 +344,13 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
@@ -353,11 +366,17 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "text"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
           }
         },
         {
@@ -373,11 +392,17 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "text"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "text": {
+                "type": "string"
+              }
+            }
           }
         },
         {
@@ -393,11 +418,18 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "key"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "key": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         },
         {
@@ -413,11 +445,21 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "values"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "values": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
           }
         },
         {
@@ -433,10 +475,13 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
@@ -452,10 +497,13 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              }
+            }
           }
         },
         {
@@ -471,11 +519,22 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "paths"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "paths": {
+                "type": "array",
+                "minItems": 1,
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              }
+            }
           }
         },
         {
@@ -491,11 +550,18 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "target",
               "outputPath"
-            ]
+            ],
+            "properties": {
+              "target": {
+                "$ref": "#/$defs/target"
+              },
+              "outputPath": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         },
         {
@@ -511,47 +577,17 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "x",
               "y"
-            ]
-          }
-        },
-        {
-          "if": {
+            ],
             "properties": {
-              "kind": {
-                "const": "mouse-down"
+              "x": {
+                "type": "number"
+              },
+              "y": {
+                "type": "number"
               }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "mouse-up"
-              }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
+            }
           }
         },
         {
@@ -567,11 +603,17 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "deltaX",
               "deltaY"
-            ]
+            ],
+            "properties": {
+              "deltaX": {
+                "type": "number"
+              },
+              "deltaY": {
+                "type": "number"
+              }
+            }
           }
         },
         {
@@ -587,29 +629,17 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "source",
               "target"
-            ]
-          }
-        },
-        {
-          "if": {
+            ],
             "properties": {
-              "kind": {
-                "const": "wait"
+              "source": {
+                "$ref": "#/$defs/target"
+              },
+              "target": {
+                "$ref": "#/$defs/target"
               }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
+            }
           }
         },
         {
@@ -625,100 +655,14 @@
           },
           "then": {
             "required": [
-              "id",
-              "kind",
               "outputPath"
-            ]
-          }
-        },
-        {
-          "if": {
+            ],
             "properties": {
-              "kind": {
-                "const": "back"
+              "outputPath": {
+                "type": "string",
+                "minLength": 1
               }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "forward"
-              }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "reload"
-              }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "inspect"
-              }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "kind": {
-                "const": "extract"
-              }
-            },
-            "required": [
-              "kind"
-            ]
-          },
-          "then": {
-            "required": [
-              "id",
-              "kind"
-            ]
+            }
           }
         },
         {
@@ -735,7 +679,13 @@
           "then": {
             "required": [
               "attribute"
-            ]
+            ],
+            "properties": {
+              "attribute": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
           }
         }
       ],

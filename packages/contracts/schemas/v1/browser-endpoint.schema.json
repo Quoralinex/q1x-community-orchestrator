@@ -144,10 +144,15 @@
         "required": [
           "engine"
         ],
-        "not": {
-          "required": [
-            "cdpUrl"
-          ]
+        "properties": {
+          "engine": {
+            "enum": [
+              "chromium",
+              "firefox",
+              "webkit"
+            ]
+          },
+          "cdpUrl": false
         }
       }
     },
@@ -166,10 +171,12 @@
         "required": [
           "cdpUrl"
         ],
-        "not": {
-          "required": [
-            "userDataDir"
-          ]
+        "properties": {
+          "cdpUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "userDataDir": false
         }
       }
     }
