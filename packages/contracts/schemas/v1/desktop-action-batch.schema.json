@@ -120,7 +120,7 @@
           }
         },
         {
-          "if": { "properties": { "kind": { "enum": ["click", "double-click", "hover", "type", "set-value", "select", "toggle"] } }, "required": ["kind"] },
+          "if": { "properties": { "kind": { "enum": ["find", "click", "double-click", "hover", "type", "set-value", "select", "toggle"] } }, "required": ["kind"] },
           "then": {
             "required": ["target"],
             "properties": { "target": { "$ref": "#/$defs/target" } }
