@@ -45,3 +45,11 @@ Executable adapters use persisted `AdapterEndpoint` documents plus a pluggable `
 MCP uses the official client over stdio or Streamable HTTP, A2A maps Agent Card skills into the live capability registry and executes JSON-RPC messages, and CLI/TUI tools are spawned directly with explicit argv and no shell. Runtime audit events remain metadata-only.
 
 See [MCP, A2A and CLI/TUI Adapters](agent-cli-adapters.md) for configuration and security boundaries.
+
+## Phase 6A browser-control boundary
+
+Browser control uses normative `BrowserEndpoint` and `BrowserActionBatch` contracts plus a pluggable `BrowserBackendRegistry`. The built-in Playwright Core backend implements managed contexts and Chromium-family CDP attachment while live sessions remain memory-only.
+
+Browser endpoint configuration may persist, but cookies, browser storage, authentication material and live session handles do not. Navigation policy, bounded local file access and metadata-only audit events form the control boundary. CLI execution is one-shot; long-lived sessions belong to the host runtime process.
+
+See [Browser and Web Control](browser-control.md).

@@ -10,6 +10,9 @@ import type {
   ModelRequest,
   ModelResponse,
   AdapterEndpoint,
+  BrowserEndpoint,
+  BrowserActionBatch,
+  BrowserBatchResult,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -111,3 +114,33 @@ const phase5Endpoint: AdapterEndpoint = {
   transport: { kind: "stdio", command: "node", args: ["worker.mjs"], inputMode: "json", outputMode: "json" }
 };
 void phase5Endpoint;
+
+const browserEndpoint: BrowserEndpoint = {
+  contractVersion: "1.0.0",
+  id: "browser.endpoint.test",
+  name: "Managed Chromium",
+  backend: "playwright",
+  mode: "managed",
+  engine: "chromium",
+  headless: true,
+  timeoutMs: 30000
+};
+const browserBatch: BrowserActionBatch = {
+  contractVersion: "1.0.0",
+  id: "browser.batch.test",
+  actions: [
+    { id: "navigate", kind: "navigate", url: "https://example.com" },
+    { id: "inspect", kind: "inspect" },
+    { id: "click", kind: "click", target: { by: "role", role: "button", name: "Continue" } }
+  ]
+};
+const browserResult: BrowserBatchResult = {
+  contractVersion: "1.0.0",
+  id: "browser.batch.test.result",
+  batchId: browserBatch.id,
+  status: "succeeded",
+  finalUrl: "https://example.com",
+  finalTitle: "Example",
+  actions: [{ id: "navigate", status: "succeeded", durationMs: 10 }]
+};
+void browserEndpoint; void browserBatch; void browserResult;

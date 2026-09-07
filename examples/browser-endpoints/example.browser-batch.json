@@ -1,0 +1,9 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "browser.batch.example",
+  "actions": [
+    { "id": "navigate", "kind": "navigate", "url": "https://example.com" },
+    { "id": "inspect", "kind": "inspect" },
+    { "id": "capture", "kind": "extract", "target": { "by": "selector", "value": "h1" }, "extract": "text" }
+  ]
+}

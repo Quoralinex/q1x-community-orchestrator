@@ -10,7 +10,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "tsc -b",
+    "build": "tsc -b --force",
     "clean": "tsc -b --clean",
     "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs",
     "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist",

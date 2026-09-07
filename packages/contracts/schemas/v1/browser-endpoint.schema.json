@@ -1,0 +1,185 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:browser-endpoint",
+  "title": "Browser Endpoint",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "name",
+    "backend",
+    "mode"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "backend": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "mode": {
+      "enum": [
+        "managed",
+        "cdp"
+      ]
+    },
+    "engine": {
+      "enum": [
+        "chromium",
+        "firefox",
+        "webkit"
+      ]
+    },
+    "headless": {
+      "type": "boolean"
+    },
+    "browserChannel": {
+      "type": "string",
+      "minLength": 1
+    },
+    "executablePath": {
+      "type": "string",
+      "minLength": 1
+    },
+    "userDataDir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "launchArgs": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "cdpUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "viewport": {
+      "type": "object",
+      "required": [
+        "width",
+        "height"
+      ],
+      "properties": {
+        "width": {
+          "type": "integer",
+          "minimum": 320,
+          "maximum": 16384
+        },
+        "height": {
+          "type": "integer",
+          "minimum": 240,
+          "maximum": 16384
+        }
+      },
+      "additionalProperties": false
+    },
+    "downloadDir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fileAccessRoots": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "navigation": {
+      "type": "object",
+      "properties": {
+        "allowedOrigins": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://[^/]+$"
+          }
+        },
+        "blockedOrigins": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "pattern": "^https?://[^/]+$"
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "timeoutMs": {
+      "type": "integer",
+      "minimum": 50,
+      "maximum": 3600000
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "managed"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "engine"
+        ],
+        "properties": {
+          "engine": {
+            "enum": [
+              "chromium",
+              "firefox",
+              "webkit"
+            ]
+          },
+          "cdpUrl": false
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": {
+          "mode": {
+            "const": "cdp"
+          }
+        },
+        "required": [
+          "mode"
+        ]
+      },
+      "then": {
+        "required": [
+          "cdpUrl"
+        ],
+        "properties": {
+          "cdpUrl": {
+            "type": "string",
+            "format": "uri"
+          },
+          "userDataDir": false
+        }
+      }
+    }
+  ],
+  "additionalProperties": false
+}

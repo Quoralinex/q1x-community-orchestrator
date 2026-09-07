@@ -32,6 +32,7 @@ Software delivery is only one workload. The project is designed for research, co
 - [Capability discovery](discovery.md) — manifest-driven probes and the live registry.
 - [Model transport](model-transport.md) — local/hosted endpoint protocols, credentials and CLI invocation.
 - [MCP, A2A and CLI/TUI adapters](agent-cli-adapters.md) — executable adapter endpoints, discovery, execution and security boundaries.
+- [Browser and web control](browser-control.md) — real browser sessions, web-chat control, security boundaries and CLI usage.
 - [Open Control Runtime](runtime.md) — SQLite state, semantic validation, CLI commands and checkpoint recovery.
 - [Use cases](use-cases.md) — business, research, R&D, product, infrastructure and software examples.
 - [Deployment model](deployment.md) — zero-cost personal, team and distributed profiles.
