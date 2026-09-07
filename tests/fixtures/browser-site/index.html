@@ -11,4 +11,13 @@
 <label>Accept <input id="accept" type="checkbox"></label>
 <input id="key-input" aria-label="Key input" onkeydown="if(event.key==='Enter')document.querySelector('#status').textContent='entered'">
 <script>window.fixtureLoaded=(window.fixtureLoaded||0)+1;</script>
+
+<input id="upload" type="file" onchange="document.querySelector('#upload-status').textContent=this.files[0]?.name||'none'">
+<p id="upload-status">none</p>
+<a id="download-link" href="/download.txt" download="fixture.txt">Download</a>
+<div id="drag-source" draggable="true" style="width:40px;height:40px;background:#ccc">drag</div>
+<div id="drop-target" style="width:100px;height:60px;border:1px solid" ondragover="event.preventDefault()" ondrop="event.preventDefault();this.dataset.dropped='yes'">drop</div>
+<div id="mouse-pad" style="position:absolute;left:10px;top:400px;width:120px;height:80px;background:#eee" onmousedown="this.dataset.down='yes'" onmouseup="this.dataset.up='yes'">mouse</div>
+<div style="height:1800px"></div>
+<script>window.addEventListener('scroll',()=>document.body.dataset.scrolled='yes')</script>
 </body></html>

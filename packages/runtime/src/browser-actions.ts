@@ -1,3 +1,5 @@
+import { mkdir } from 'node:fs/promises';
+import { dirname, isAbsolute, relative, resolve } from 'node:path';
 import type { Locator, Page } from 'playwright-core';
 import type {
   BrowserAction, BrowserActionBatch, BrowserActionResult, BrowserBatchResult, BrowserTarget
@@ -51,7 +53,29 @@ async function extract(page: Page, action: BrowserAction): Promise<unknown> {
   return scope.innerText();
 }
 
-async function executeAction(page: Page, action: BrowserAction): Promise<unknown> {
+
+function inside(root: string, candidate: string): boolean {
+  const rel = relative(resolve(root), resolve(candidate));
+  return rel === '' || (!rel.startsWith('..') && !isAbsolute(rel));
+}
+
+function outputPath(session: PlaywrightBrowserSession, requested: string | undefined): string {
+  if (!requested || !session.endpoint.downloadDir) throw new RuntimeError('INSECURE_ENDPOINT', 'Browser output requires a configured downloadDir and outputPath');
+  const candidate = isAbsolute(requested) ? resolve(requested) : resolve(session.endpoint.downloadDir, requested);
+  if (!inside(session.endpoint.downloadDir, candidate)) throw new RuntimeError('INSECURE_ENDPOINT', 'Browser output path escapes the configured downloadDir');
+  return candidate;
+}
+
+function uploadPaths(session: PlaywrightBrowserSession, requested: string[] | undefined): string[] {
+  if (!requested?.length || !session.endpoint.fileAccessRoots?.length) throw new RuntimeError('INSECURE_ENDPOINT', 'Browser upload requires configured fileAccessRoots');
+  const resolved = requested.map(value => resolve(value));
+  for (const candidate of resolved) {
+    if (!session.endpoint.fileAccessRoots.some(root => inside(root, candidate))) throw new RuntimeError('INSECURE_ENDPOINT', 'Browser upload path is outside configured fileAccessRoots');
+  }
+  return resolved;
+}
+async function executeAction(session: PlaywrightBrowserSession, action: BrowserAction): Promise<unknown> {
+  const page = session.page;
   const timeout = action.timeoutMs;
   if (action.kind === 'navigate') { await page.goto(action.url ?? '', { timeout }); return { url: page.url(), title: await page.title() }; }
   if (action.kind === 'back') { await page.goBack({ timeout }); return { url: page.url(), title: await page.title() }; }
@@ -68,6 +92,33 @@ async function executeAction(page: Page, action: BrowserAction): Promise<unknown
   if (action.kind === 'select') { await requiredTarget(page, action).selectOption(action.values ?? [], { timeout }); return undefined; }
   if (action.kind === 'check') { await requiredTarget(page, action).check({ timeout }); return undefined; }
   if (action.kind === 'uncheck') { await requiredTarget(page, action).uncheck({ timeout }); return undefined; }
+  if (action.kind === 'mouse-move') { await page.mouse.move(action.x ?? 0, action.y ?? 0); return undefined; }
+  if (action.kind === 'mouse-down') { await page.mouse.down({ button: action.button ?? 'left' }); return undefined; }
+  if (action.kind === 'mouse-up') { await page.mouse.up({ button: action.button ?? 'left' }); return undefined; }
+  if (action.kind === 'wheel') { await page.mouse.wheel(action.deltaX ?? 0, action.deltaY ?? 0); return undefined; }
+  if (action.kind === 'drag') {
+    if (!action.source || !action.target) throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Browser drag requires source and target');
+    await locator(page, action.source).dragTo(locator(page, action.target), { timeout }); return undefined;
+  }
+  if (action.kind === 'upload') {
+    await requiredTarget(page, action).setInputFiles(uploadPaths(session, action.paths), { timeout }); return undefined;
+  }
+  if (action.kind === 'download') {
+    const destination = outputPath(session, action.outputPath);
+    const pending = page.waitForEvent('download', { timeout });
+    await requiredTarget(page, action).click({ timeout });
+    const download = await pending;
+    await mkdir(dirname(destination), { recursive: true });
+    await download.saveAs(destination);
+    return { path: destination, suggestedFilename: download.suggestedFilename() };
+  }
+  if (action.kind === 'screenshot') {
+    const destination = outputPath(session, action.outputPath);
+    await mkdir(dirname(destination), { recursive: true });
+    if (action.target) await requiredTarget(page, action).screenshot({ path: destination });
+    else await page.screenshot({ path: destination, fullPage: action.fullPage ?? false });
+    return { path: destination };
+  }
   if (action.kind === 'wait') {
     if (action.target) await requiredTarget(page, action).waitFor({ state: 'visible', timeout });
     else await page.waitForTimeout(action.milliseconds ?? 0);
@@ -93,7 +144,7 @@ export async function executePlaywrightBatch(session: PlaywrightBrowserSession, 
     if (signal?.aborted) { overall = 'cancelled'; break; }
     const started = Date.now();
     try {
-      const output = await executeAction(session.page, action);
+      const output = await executeAction(session, action);
       actions.push({ id: action.id, status: 'succeeded', durationMs: Math.max(0, Date.now() - started), ...(output !== undefined ? { output } : {}) });
     } catch (error) {
       actions.push(failedResult(action, started, error));
