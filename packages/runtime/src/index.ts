@@ -29,3 +29,5 @@ export * from './supervision-allocator.js';
 export * from './work-executor.js';
 export * from './planning-strategy.js';
 export * from './supervision-extension.js';
+export * from './security-audit.js';
+export * from './security-extension.js';
