@@ -54,3 +54,37 @@ export function resolveDesktopApplication(
   }
   return application;
 }
+
+export function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: import('@quoralinex/q1x-community-sdk').DesktopActionBatch): void {
+  const allowed = new Set(endpoint.allowedApplications.map(application => application.id));
+  const inputKinds = new Set(['click','double-click','mouse-move','mouse-down','mouse-up','wheel','drag','type','press','hotkey']);
+  for (const action of batch.actions) {
+    const references = [action.applicationId, action.target?.by === 'application' ? action.target.applicationId : undefined,
+      action.target?.by === 'window' ? action.target.applicationId : undefined,
+      action.target?.by === 'accessibility' ? action.target.applicationId : undefined,
+      action.source?.by === 'application' ? action.source.applicationId : undefined,
+      action.source?.by === 'window' ? action.source.applicationId : undefined,
+      action.source?.by === 'accessibility' ? action.source.applicationId : undefined].filter(Boolean) as string[];
+    for (const id of references) {
+      if (!allowed.has(id)) throw new RuntimeError('INVALID_REFERENCE', `Desktop application is not allowlisted: ${id}`);
+    }
+    if (action.target?.by === 'window' && !action.target.applicationId && !action.target.title) {
+      throw new RuntimeError('SCHEMA_INVALID', 'Desktop window target requires applicationId or title');
+    }
+    if (action.target?.by === 'accessibility' && !action.target.role && !action.target.name && !action.target.identifier) {
+      throw new RuntimeError('SCHEMA_INVALID', 'Desktop accessibility target requires role, name or identifier');
+    }
+    if (action.kind === 'launch' && endpoint.policy?.allowLaunch === false) {
+      throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop endpoint policy blocks application launch');
+    }
+    if (action.kind === 'quit' && endpoint.policy?.allowQuit === false) {
+      throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop endpoint policy blocks application quit');
+    }
+    if (inputKinds.has(action.kind) && endpoint.policy?.allowInput === false) {
+      throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop endpoint policy blocks input actions');
+    }
+    if (action.kind === 'screenshot' && endpoint.policy?.allowCapture === false) {
+      throw new RuntimeError('INSECURE_ENDPOINT', 'Desktop endpoint policy blocks capture actions');
+    }
+  }
+}

@@ -1,9 +1,11 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, DesktopEndpoint, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, DesktopActionBatch, DesktopBatchResult, DesktopEndpoint, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import { assertSafeBrowserEndpoint } from './browser-security.js';
-import { assertSafeDesktopEndpoint } from './desktop-security.js';
+import { assertSafeDesktopBatch, assertSafeDesktopEndpoint } from './desktop-security.js';
+import { DesktopSessionManager, type DesktopBackend, type DesktopSessionHandle } from './desktop-backend.js';
+import { createDefaultDesktopBackendRegistry } from './desktop-platforms.js';
 import { BrowserSessionManager, type BrowserBackend, type BrowserSessionHandle } from './browser-backend.js';
 import { createDefaultBrowserBackendRegistry } from './playwright-browser.js';
 import type { AdapterTransport } from './adapter-transport.js';
@@ -53,18 +55,20 @@ export class OpenControlRuntime {
   private readonly modelTransports: ModelTransportRegistry;
   private readonly adapterTransports: AdapterTransportRegistry;
   private readonly browserSessions: BrowserSessionManager;
+  private readonly desktopSessions: DesktopSessionManager;
 
-  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager) {
+  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager, desktopSessions: DesktopSessionManager) {
     this.store = store;
     this.modelTransports = modelTransports;
     this.adapterTransports = adapterTransports;
     this.browserSessions = browserSessions;
+    this.desktopSessions = desktopSessions;
     this.home = store.home;
     this.databasePath = store.databasePath;
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
-    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry(), new BrowserSessionManager(createDefaultBrowserBackendRegistry()));
+    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry(), new BrowserSessionManager(createDefaultBrowserBackendRegistry()), new DesktopSessionManager(createDefaultDesktopBackendRegistry()));
   }
 
   close(): void {
@@ -235,6 +239,76 @@ export class OpenControlRuntime {
 
   listDesktopEndpoints(): DesktopEndpoint[] {
     return this.store.listDocuments<DesktopEndpoint>('desktop-endpoint');
+  }
+
+  registerDesktopBackend(backend: DesktopBackend): void {
+    this.desktopSessions.registerBackend(backend);
+  }
+
+  async openDesktopSession(endpointId: string): Promise<DesktopSessionHandle> {
+    const endpoint = this.getDesktopEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
+    const probe = await this.desktopSessions.probeBackend(endpoint.backend);
+    if (!probe.available) {
+      throw new RuntimeError('TRANSPORT_NOT_FOUND', probe.reason ?? `Desktop backend unavailable: ${endpoint.backend}`);
+    }
+    const handle = await this.desktopSessions.openSession(endpoint);
+    this.store.appendEvent('desktop.session.open', 'desktop-endpoint', endpoint.id, null, { backend:endpoint.backend });
+    return handle;
+  }
+
+  async executeDesktopSession(sessionId: string, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult> {
+    validateContract(SCHEMA_IDS.desktopActionBatch, batch);
+    const handle = this.desktopSessions.getSession(sessionId);
+    if (!handle) throw new RuntimeError('NOT_FOUND', `Desktop session not found: ${sessionId}`);
+    const endpoint = this.getDesktopEndpoint(handle.endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${handle.endpointId}`);
+    assertSafeDesktopBatch(endpoint, batch);
+    const started = Date.now();
+    const result = await this.desktopSessions.execute(sessionId, batch, signal);
+    this.store.appendEvent('desktop.execute', 'desktop-endpoint', endpoint.id, null, {
+      backend:handle.backend, actionCount:batch.actions.length, status:result.status, durationMs:Date.now() - started
+    });
+    return result;
+  }
+
+  async closeDesktopSession(sessionId: string): Promise<void> {
+    const handle = this.desktopSessions.getSession(sessionId);
+    if (!handle) throw new RuntimeError('NOT_FOUND', `Desktop session not found: ${sessionId}`);
+    await this.desktopSessions.closeSession(sessionId);
+    this.store.appendEvent('desktop.session.close', 'desktop-endpoint', handle.endpointId, null, { backend:handle.backend });
+  }
+
+  async runDesktopBatch(endpointId: string, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult> {
+    const handle = await this.openDesktopSession(endpointId);
+    try { return await this.executeDesktopSession(handle.id, batch, signal); }
+    finally {
+      if (this.desktopSessions.getSession(handle.id)) await this.closeDesktopSession(handle.id);
+    }
+  }
+
+  async discoverDesktopCapability(endpointId: string): Promise<CapabilityDescriptor> {
+    const endpoint = this.getDesktopEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
+    const probe = await this.desktopSessions.probeBackend(endpoint.backend);
+    const capability: CapabilityDescriptor = {
+      contractVersion:CONTRACT_VERSION,
+      id:`capability.${endpoint.id}`,
+      name:`${endpoint.name} desktop control`,
+      adapterKind:'desktop-control',
+      operations:probe.operations,
+      modalities:{ input:['text','structured-data','control'], output:['text','image','structured-data','binary'] },
+      availability:{ state:probe.available ? 'available' : 'offline', checkedAt:new Date().toISOString() },
+      cost:{ class:'no-usage-fee' },
+      privacy:{ executionLocation:'local', dataRetention:'session' },
+      trust:{ level:'configured', source:`desktop-endpoint:${endpoint.id}` },
+      platforms:endpoint.platforms
+    };
+    this.putCapability(capability);
+    this.store.appendEvent('desktop.discover', 'desktop-endpoint', endpoint.id, null, {
+      backend:endpoint.backend, availability:capability.availability.state
+    });
+    return capability;
   }
 
   registerBrowserBackend(backend: BrowserBackend): void {

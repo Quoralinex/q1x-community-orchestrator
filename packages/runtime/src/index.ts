@@ -29,3 +29,4 @@ export * from './desktop-process.js';
 export * from './macos-desktop.js';
 export * from './windows-desktop.js';
 export * from './linux-desktop.js';
+export * from './desktop-platforms.js';

@@ -87,6 +87,7 @@ export class DesktopSessionManager {
   count(): number { return this.sessions.size; }
   hasBackend(id: string): boolean { return this.registry.get(id) !== undefined; }
   registerBackend(backend: DesktopBackend): void { this.registry.register(backend); }
+  async probeBackend(id: string): Promise<DesktopBackendProbe> { return this.registry.probe(id); }
   async execute(id: string, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult> {
     const record = this.requireRecord(id);
     return record.backend.execute(record.session, batch, signal);
