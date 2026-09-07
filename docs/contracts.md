@@ -27,6 +27,8 @@ The `v1` contract layer is the stable public language used to describe missions,
 | Discovery manifest | OS-neutral command, path, environment and HTTP probes that produce live capabilities |
 | Model endpoint | Persistable local/hosted endpoint configuration with credential references, never credential values |
 | Model request / response | Provider-neutral text model invocation and normalized output envelopes |
+| Browser endpoint / action batch | Real browser session configuration plus normalized web actions without persisting live browser state |
+| Desktop endpoint / action batch | OS-neutral desktop bridge configuration plus normalized native application/window/UI actions |
 
 ## Adapter kinds
 
@@ -42,7 +44,7 @@ Backward-compatible additions may remain within a major contract version. Breaki
 
 ## Examples and validation
 
-The repository includes validated examples for company launch, digital R&D, software delivery, capability discovery and model transport. Run:
+The repository includes validated examples for company launch, digital R&D, software delivery, capability discovery, model transport, executable adapters, browser control and desktop/application control. Run:
 
 ```bash
 npm ci
