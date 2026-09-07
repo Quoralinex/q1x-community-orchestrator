@@ -1,0 +1,26 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.batch.example",
+  "actions": [
+    {
+      "id": "focus",
+      "kind": "focus-application",
+      "application": "example.app"
+    },
+    {
+      "id": "inspect",
+      "kind": "inspect"
+    },
+    {
+      "id": "find-submit",
+      "kind": "find",
+      "target": {
+        "by": "role",
+        "role": "button",
+        "name": "Continue"
+      }
+    }
+  ],
+  "stopOnError": true,
+  "timeoutMs": 30000
+}
