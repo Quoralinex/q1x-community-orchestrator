@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, DesktopActionBatch, DesktopEndpoint, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ReplanEvent, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
@@ -84,6 +84,20 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
     if (!endpointId) throw new Error(`browser ${action ?? ''}`.trim() + ' requires an endpoint id');
     if (action === 'run') return runtime.runBrowserBatch(endpointId, readJsonFile(requiredOption(args, '--file')) as BrowserActionBatch);
     if (action === 'discover') return runtime.discoverBrowserCapability(endpointId);
+  }
+  if (command === 'desktop-endpoints') {
+    if (action === 'put') return runtime.putDesktopEndpoint(readJsonFile(requiredOption(args, '--file')) as DesktopEndpoint);
+    if (action === 'list') return runtime.listDesktopEndpoints();
+    if (action === 'get') {
+      const id = args.shift(); if (!id) throw new Error('desktop-endpoints get requires an id');
+      return required(runtime.getDesktopEndpoint(id), 'Desktop endpoint', id);
+    }
+  }
+  if (command === 'desktop') {
+    const endpointId = args.shift();
+    if (!endpointId) throw new Error(`desktop ${action ?? ''}`.trim() + ' requires an endpoint id');
+    if (action === 'run') return runtime.runDesktopBatch(endpointId, readJsonFile(requiredOption(args, '--file')) as DesktopActionBatch);
+    if (action === 'discover') return runtime.discoverDesktopCapability(endpointId);
   }
   if (command === 'endpoints') {
     if (action === 'put') return runtime.putModelEndpoint(readJsonFile(requiredOption(args, '--file')) as ModelEndpoint);

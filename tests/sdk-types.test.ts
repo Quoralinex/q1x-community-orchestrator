@@ -13,6 +13,9 @@ import type {
   BrowserEndpoint,
   BrowserActionBatch,
   BrowserBatchResult,
+  DesktopEndpoint,
+  DesktopActionBatch,
+  DesktopBatchResult,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -144,3 +147,33 @@ const browserResult: BrowserBatchResult = {
   actions: [{ id: "navigate", status: "succeeded", durationMs: 10 }]
 };
 void browserEndpoint; void browserBatch; void browserResult;
+
+const desktopEndpoint: DesktopEndpoint = {
+  contractVersion: "1.0.0",
+  id: "desktop.endpoint.test",
+  name: "Portable desktop bridge",
+  backend: "stdio-bridge",
+  platform: "any",
+  executionLocation: "local",
+  supportedActions: ["focus-application", "inspect", "click"],
+  transport: { command: "node", args: ["bridge.mjs"], timeoutMs: 30000 },
+  applicationPolicy: { allowedApplications: ["example.app"] },
+  outputDir: "./desktop-output"
+};
+const desktopBatch: DesktopActionBatch = {
+  contractVersion: "1.0.0",
+  id: "desktop.batch.test",
+  actions: [
+    { id: "focus", kind: "focus-application", application: "example.app" },
+    { id: "inspect", kind: "inspect" },
+    { id: "click", kind: "click", target: { by: "role", role: "button", name: "Continue" } }
+  ]
+};
+const desktopResult: DesktopBatchResult = {
+  contractVersion: "1.0.0",
+  id: "desktop.batch.test.result",
+  batchId: desktopBatch.id,
+  status: "succeeded",
+  actions: [{ id: "focus", status: "succeeded", durationMs: 5 }]
+};
+void desktopEndpoint; void desktopBatch; void desktopResult;

@@ -32,8 +32,32 @@ jobs:
           done
           echo "No Chromium-compatible browser is installed on this runner" >&2
           exit 1
-      - name: Verify contracts, SDK and runtime
-        run: npm run check
+      - name: Build TypeScript workspaces
+        run: npm run build
+      - name: Self-validate normative schemas
+        run: node --test tests/schema-contracts.test.mjs
+      - name: Validate existing contract examples
+        run: node --test tests/examples.test.mjs
+      - name: Compile desktop action schema
+        run: node --test --test-name-pattern="desktop action schema compiles" tests/desktop-examples.test.mjs
+      - name: Validate desktop endpoint example
+        run: node --test --test-name-pattern="desktop endpoint example validates" tests/desktop-examples.test.mjs
+      - name: Validate desktop focus application rule
+        run: node --test --test-name-pattern="desktop focus application action validates" tests/desktop-examples.test.mjs
+      - name: Validate desktop inspect rule
+        run: node --test --test-name-pattern="desktop inspect action validates" tests/desktop-examples.test.mjs
+      - name: Validate desktop find rule
+        run: node --test --test-name-pattern="desktop find action validates" tests/desktop-examples.test.mjs
+      - name: Validate desktop batch options
+        run: node --test --test-name-pattern="desktop batch options validate" tests/desktop-examples.test.mjs
+      - name: Validate desktop action batch example
+        run: node --test --test-name-pattern="desktop action batch example validates" tests/desktop-examples.test.mjs
+      - name: Run runtime integration tests
+        run: npm run test:runtime
+      - name: Run strict SDK consumer type test
+        run: npm run test:types
+      - name: Run distribution and licence tests
+        run: npm run test:dist
       - name: Verify package contents
         run: |
           npm pack --dry-run --workspace packages/contracts

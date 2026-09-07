@@ -1,10 +1,13 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, AdapterManifest, BrowserActionBatch, BrowserBatchResult, BrowserEndpoint, CapabilityDescriptor, Checkpoint, DesktopActionBatch, DesktopBatchResult, DesktopEndpoint, DiscoveryManifest, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, ModelResponse, Programme, ReplanEvent, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { assertSafeAdapterEndpoint } from './adapter-security.js';
 import { assertSafeBrowserEndpoint } from './browser-security.js';
 import { BrowserSessionManager, type BrowserBackend, type BrowserSessionHandle } from './browser-backend.js';
 import { createDefaultBrowserBackendRegistry } from './playwright-browser.js';
+import { assertSafeDesktopBatch, assertSafeDesktopEndpoint, desktopPlatformForHost, isDesktopEndpointPlatformCompatible } from './desktop-security.js';
+import { DesktopBackendRegistry, type DesktopBackend } from './desktop-backend.js';
+import { createDefaultDesktopBackendRegistry } from './stdio-desktop.js';
 import type { AdapterTransport } from './adapter-transport.js';
 import { AdapterTransportRegistry } from './adapter-transport.js';
 import type { AdapterTransportContext } from './adapter-transport.js';
@@ -23,7 +26,6 @@ export interface RuntimeOpenOptions {
   home?: string;
 }
 
-
 export interface RuntimeStatus {
   contractVersion: typeof CONTRACT_VERSION;
   home: string;
@@ -41,6 +43,7 @@ export interface RuntimeStatus {
     modelEndpoints: number;
     adapterEndpoints: number;
     browserEndpoints: number;
+    desktopEndpoints: number;
   };
 }
 
@@ -51,18 +54,26 @@ export class OpenControlRuntime {
   private readonly modelTransports: ModelTransportRegistry;
   private readonly adapterTransports: AdapterTransportRegistry;
   private readonly browserSessions: BrowserSessionManager;
+  private readonly desktopBackends: DesktopBackendRegistry;
 
-  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager) {
+  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager, desktopBackends: DesktopBackendRegistry) {
     this.store = store;
     this.modelTransports = modelTransports;
     this.adapterTransports = adapterTransports;
     this.browserSessions = browserSessions;
+    this.desktopBackends = desktopBackends;
     this.home = store.home;
     this.databasePath = store.databasePath;
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
-    return new OpenControlRuntime(SqliteStore.open(options.home), createDefaultModelTransportRegistry(), createDefaultAdapterTransportRegistry(), new BrowserSessionManager(createDefaultBrowserBackendRegistry()));
+    return new OpenControlRuntime(
+      SqliteStore.open(options.home),
+      createDefaultModelTransportRegistry(),
+      createDefaultAdapterTransportRegistry(),
+      new BrowserSessionManager(createDefaultBrowserBackendRegistry()),
+      createDefaultDesktopBackendRegistry()
+    );
   }
 
   close(): void {
@@ -278,6 +289,81 @@ export class OpenControlRuntime {
     };
     this.putCapability(capability);
     this.store.appendEvent('browser.discover', 'browser-endpoint', endpoint.id, null, { backend: endpoint.backend, availability: capability.availability.state });
+    return capability;
+  }
+
+  putDesktopEndpoint(endpoint: DesktopEndpoint): DesktopEndpoint {
+    validateContract(SCHEMA_IDS.desktopEndpoint, endpoint);
+    assertSafeDesktopEndpoint(endpoint);
+    this.store.putDocument({ kind: 'desktop-endpoint', id: endpoint.id, scopeId: null, document: endpoint });
+    this.store.appendEvent('desktop.endpoint.put', 'desktop-endpoint', endpoint.id, null, { backend: endpoint.backend, platform: endpoint.platform });
+    return endpoint;
+  }
+
+  getDesktopEndpoint(id: string): DesktopEndpoint | undefined {
+    return this.store.getDocument<DesktopEndpoint>('desktop-endpoint', id);
+  }
+
+  listDesktopEndpoints(): DesktopEndpoint[] {
+    return this.store.listDocuments<DesktopEndpoint>('desktop-endpoint');
+  }
+
+  registerDesktopBackend(backend: DesktopBackend): void {
+    this.desktopBackends.register(backend);
+  }
+
+  async runDesktopBatch(endpointId: string, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult> {
+    validateContract(SCHEMA_IDS.desktopActionBatch, batch);
+    const endpoint = this.getDesktopEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
+    const started = Date.now();
+    try {
+      const preparedBatch = assertSafeDesktopBatch(endpoint, batch);
+      if (endpoint.executionLocation === 'local' && !isDesktopEndpointPlatformCompatible(endpoint)) {
+        throw new RuntimeError('TRANSPORT_NOT_FOUND', `Desktop endpoint platform is not compatible with this host: ${endpoint.platform}`);
+      }
+      const result = await this.desktopBackends.execute(endpoint, preparedBatch, signal);
+      if (result.contractVersion !== CONTRACT_VERSION || result.batchId !== batch.id) {
+        throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop backend returned mismatched batch references');
+      }
+      this.store.appendEvent('desktop.execute', 'desktop-endpoint', endpoint.id, null, {
+        backend: endpoint.backend, platform: endpoint.platform, actionCount: batch.actions.length,
+        status: result.status, durationMs: Date.now() - started
+      });
+      return result;
+    } catch (error) {
+      this.store.appendEvent('desktop.execute', 'desktop-endpoint', endpoint.id, null, {
+        backend: endpoint.backend, platform: endpoint.platform, actionCount: batch.actions.length,
+        status: 'failed', durationMs: Date.now() - started,
+        errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
+      });
+      throw error;
+    }
+  }
+
+  discoverDesktopCapability(endpointId: string): CapabilityDescriptor {
+    const endpoint = this.getDesktopEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
+    const hostPlatform = desktopPlatformForHost();
+    const platformCompatible = endpoint.executionLocation !== 'local' || (hostPlatform !== undefined && isDesktopEndpointPlatformCompatible(endpoint));
+    const available = this.desktopBackends.has(endpoint.backend) && platformCompatible;
+    const capability: CapabilityDescriptor = {
+      contractVersion: CONTRACT_VERSION,
+      id: `capability.desktop.${endpoint.id}`,
+      name: `${endpoint.name} desktop control`,
+      adapterKind: 'desktop-control',
+      operations: [...endpoint.supportedActions],
+      modalities: { input: ['text','structured-data','control'], output: ['text','image','structured-data'] },
+      availability: { state: available ? 'available' : 'offline', checkedAt: new Date().toISOString() },
+      cost: { class: 'no-usage-fee' },
+      privacy: { executionLocation: endpoint.executionLocation, dataRetention: 'none' },
+      trust: { level: 'configured', source: `desktop-endpoint:${endpoint.id}` },
+      platforms: [endpoint.executionLocation === 'local' && endpoint.platform === 'any' ? (hostPlatform ?? 'any') : endpoint.platform]
+    };
+    this.putCapability(capability);
+    this.store.appendEvent('desktop.discover', 'desktop-endpoint', endpoint.id, null, {
+      backend: endpoint.backend, platform: endpoint.platform, availability: capability.availability.state
+    });
     return capability;
   }
 
@@ -500,7 +586,8 @@ export class OpenControlRuntime {
         adapters: this.listAdapterManifests().length,
         modelEndpoints: this.listModelEndpoints().length,
         adapterEndpoints: this.listAdapterEndpoints().length,
-        browserEndpoints: this.listBrowserEndpoints().length
+        browserEndpoints: this.listBrowserEndpoints().length,
+        desktopEndpoints: this.listDesktopEndpoints().length
       }
     };
   }

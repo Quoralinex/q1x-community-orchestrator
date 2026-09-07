@@ -1,0 +1,208 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:contracts:v1:desktop-endpoint",
+  "title": "Desktop Endpoint",
+  "type": "object",
+  "required": [
+    "contractVersion",
+    "id",
+    "name",
+    "backend",
+    "platform",
+    "executionLocation",
+    "supportedActions"
+  ],
+  "properties": {
+    "contractVersion": {
+      "const": "1.0.0"
+    },
+    "id": {
+      "$ref": "urn:q1x:community:contracts:v1:common#/$defs/identifier"
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1
+    },
+    "backend": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^[A-Za-z0-9][A-Za-z0-9._:-]*$"
+    },
+    "platform": {
+      "enum": [
+        "macos",
+        "windows",
+        "linux",
+        "any"
+      ]
+    },
+    "executionLocation": {
+      "enum": [
+        "local",
+        "private-network",
+        "managed-cloud",
+        "public-cloud"
+      ]
+    },
+    "transport": {
+      "$ref": "#/$defs/stdioTransport"
+    },
+    "backendConfig": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "applicationPolicy": {
+      "type": "object",
+      "properties": {
+        "allowedApplications": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "blockedApplications": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "additionalProperties": false
+    },
+    "outputDir": {
+      "type": "string",
+      "minLength": 1
+    },
+    "fileAccessRoots": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string",
+        "minLength": 1
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "additionalProperties": true
+    },
+    "supportedActions": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "list-applications",
+          "launch-application",
+          "focus-application",
+          "close-application",
+          "list-windows",
+          "focus-window",
+          "move-window",
+          "resize-window",
+          "inspect",
+          "find",
+          "click",
+          "double-click",
+          "hover",
+          "type",
+          "press",
+          "set-value",
+          "select",
+          "toggle",
+          "mouse-move",
+          "mouse-down",
+          "mouse-up",
+          "wheel",
+          "drag",
+          "wait",
+          "screenshot"
+        ]
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "backend": {
+            "const": "stdio-bridge"
+          }
+        },
+        "required": [
+          "backend"
+        ]
+      },
+      "then": {
+        "required": [
+          "transport"
+        ],
+        "properties": {
+          "transport": {
+            "$ref": "#/$defs/stdioTransport"
+          }
+        }
+      }
+    }
+  ],
+  "additionalProperties": false,
+  "$defs": {
+    "stdioTransport": {
+      "type": "object",
+      "required": [
+        "command"
+      ],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cwd": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timeoutMs": {
+          "type": "integer",
+          "minimum": 50,
+          "maximum": 3600000
+        },
+        "maxOutputBytes": {
+          "type": "integer",
+          "minimum": 1024,
+          "maximum": 104857600
+        },
+        "environment": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [
+              "name",
+              "environmentKey"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+              },
+              "environmentKey": {
+                "type": "string",
+                "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+              }
+            },
+            "additionalProperties": false
+          }
+        }
+      },
+      "additionalProperties": false
+    }
+  }
+}

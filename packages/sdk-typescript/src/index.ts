@@ -11,3 +11,4 @@ export * from "./work-graph.js";
 export * from "./model.js";
 export * from "./adapter-endpoint.js";
 export * from "./browser.js";
+export * from "./desktop.js";

@@ -8,7 +8,7 @@ import { RuntimeError } from './errors.js';
 const schemaFiles = [
   'common', 'mission', 'programme', 'work-graph', 'replan-event',
   'capability', 'adapter-manifest', 'execution-request', 'execution-result',
-  'evidence', 'artifact', 'approval', 'checkpoint', 'deployment-profile', 'discovery-manifest', 'model-endpoint', 'model-request', 'model-response', 'adapter-endpoint', 'browser-endpoint', 'browser-action-batch'
+  'evidence', 'artifact', 'approval', 'checkpoint', 'deployment-profile', 'discovery-manifest', 'model-endpoint', 'model-request', 'model-response', 'adapter-endpoint', 'browser-endpoint', 'browser-action-batch', 'desktop-endpoint', 'desktop-action-batch'
 ] as const;
 
 const addFormats = FormatsModule.default.default;

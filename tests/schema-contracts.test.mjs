@@ -16,7 +16,8 @@ const required = [
   "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json",
   "discovery-manifest.schema.json", "model-endpoint.schema.json",
   "model-request.schema.json", "model-response.schema.json", "adapter-endpoint.schema.json",
-  "browser-endpoint.schema.json", "browser-action-batch.schema.json"
+  "browser-endpoint.schema.json", "browser-action-batch.schema.json",
+  "desktop-endpoint.schema.json", "desktop-action-batch.schema.json"
 ];
 
 async function load(name) {
