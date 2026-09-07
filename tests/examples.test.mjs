@@ -56,7 +56,9 @@ const examples = [
   ["model-endpoints/example.model-response.json", "model-response"],
   ["adapter-endpoints/mcp-stdio.endpoint.json", "adapter-endpoint"],
   ["adapter-endpoints/a2a-https.endpoint.json", "adapter-endpoint"],
-  ["adapter-endpoints/cli-json.endpoint.json", "adapter-endpoint"]
+  ["adapter-endpoints/cli-json.endpoint.json", "adapter-endpoint"],
+  ["adapter-endpoints/webdriver-local.endpoint.json", "adapter-endpoint"],
+  ["adapter-endpoints/desktop-bridge.endpoint.json", "adapter-endpoint"]
 ];
 
 test("cross-domain examples validate against normative schemas", async () => {
