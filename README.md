@@ -26,7 +26,7 @@ Example domains include company formation, research programmes, digital R&D, pro
 
 ## Phase 1: public contract layer
 
-The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery and model transport.
+The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters and browser control.
 
 ```bash
 npm ci
@@ -79,9 +79,20 @@ node packages/runtime/dist/cli.js --home .q1x adapter discover adapter.mcp.local
 
 See [`docs/agent-cli-adapters.md`](docs/agent-cli-adapters.md).
 
+## Phase 6A: browser and web control
+
+The runtime now controls real browser sessions through a provider-neutral browser endpoint/action layer. The built-in Playwright backend supports managed browser contexts and explicit CDP attachment to an existing Chromium-family session, with navigation/origin policy, mouse and keyboard control, forms, inspection/extraction, bounded uploads/downloads and screenshots.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x browser-endpoints put --file examples/browser-endpoints/managed-chromium.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x browser run browser.managed-chromium --file examples/browser-endpoints/example.browser-batch.json
+```
+
+Q1X does not bundle browser binaries or persist cookies/session material. See [`docs/browser-control.md`](docs/browser-control.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport and MCP/A2A/CLI execution. The next adapter families are browser/web control and desktop/application control, followed by software/simulation adapters and edge/device bridges.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution and browser/web control. Desktop/application control is the next adapter slice, followed by dynamic teams, deployment packaging and wider software/device adapters.
 
 ## Deployment profiles
 

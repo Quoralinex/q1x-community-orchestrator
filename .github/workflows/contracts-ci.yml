@@ -19,6 +19,19 @@ jobs:
           cache: npm
       - name: Install dependencies
         run: npm ci --no-audit --no-fund
+      - name: Locate Chromium-compatible browser for real browser tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          for browser in /usr/bin/google-chrome /usr/bin/chromium /usr/bin/chromium-browser; do
+            if [[ -x "$browser" ]]; then
+              echo "Q1X_TEST_BROWSER_EXECUTABLE=$browser" >> "$GITHUB_ENV"
+              "$browser" --version
+              exit 0
+            fi
+          done
+          echo "No Chromium-compatible browser is installed on this runner" >&2
+          exit 1
       - name: Verify contracts, SDK and runtime
         run: npm run check
       - name: Verify package contents

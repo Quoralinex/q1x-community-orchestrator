@@ -48,4 +48,7 @@ test("runtime package is distributable and licensed", async () => {
   assert.equal(packageJson.bin.q1x, "./dist/cli.js");
   assert.match(runtimeReadme, /Open Control Runtime/i);
   assert.match(runtimeReadme, /capability discovery/i);
+  assert.match(runtimeReadme, /browser/i);
+  assert.equal(packageJson.dependencies["playwright-core"], "1.63.0");
+  assert.match(rootLicense, /^# PolyForm Noncommercial License 1\.0\.0/m);
 });
