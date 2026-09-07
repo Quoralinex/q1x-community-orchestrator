@@ -53,3 +53,13 @@ Browser control uses normative `BrowserEndpoint` and `BrowserActionBatch` contra
 Browser endpoint configuration may persist, but cookies, browser storage, authentication material and live session handles do not. Navigation policy, bounded local file access and metadata-only audit events form the control boundary. CLI execution is one-shot; long-lived sessions belong to the host runtime process.
 
 See [Browser and Web Control](browser-control.md).
+
+## Phase 6B desktop-control boundary
+
+Desktop/application control uses normative `DesktopEndpoint` and `DesktopActionBatch` contracts plus a pluggable `DesktopBackendRegistry`. The built-in `stdio-bridge` backend launches an explicitly configured local bridge directly with separate command/argv and `shell: false`, sends the versioned `q1x-desktop-bridge/1` envelope and normalizes the returned batch result.
+
+The Community core does not bind itself to macOS Accessibility, Windows UI Automation or Linux AT-SPI. Native and application-specific automation implementations live behind the same desktop backend boundary. Endpoint platform compatibility, application allow/block policy, output confinement, environment allowlisting, timeout/output bounds and metadata-only audit records are enforced in the runtime.
+
+Desktop UI trees, typed text, screenshots and application content are not copied into runtime audit events.
+
+See [Desktop and Application Control](desktop-control.md).
