@@ -1,7 +1,7 @@
 import { spawn } from 'node:child_process';
 import type { DesktopActionBatch, DesktopActionResult, DesktopBatchResult, DesktopEndpoint } from '@quoralinex/q1x-community-sdk';
 import { CONTRACT_VERSION } from '@quoralinex/q1x-community-contracts';
-import type { DesktopBackend } from './desktop-backend.js';
+import { DesktopBackendRegistry, type DesktopBackend } from './desktop-backend.js';
 import { resolveDesktopEnvironment } from './desktop-security.js';
 import { RuntimeError } from './errors.js';
 
@@ -21,7 +21,7 @@ function object(value: unknown): JsonRecord | undefined {
   return value && typeof value === 'object' && !Array.isArray(value) ? value as JsonRecord : undefined;
 }
 
-function boundedAppend(current: Buffer, chunk: Buffer, limit: number): { value: Buffer; limited: boolean } {
+function boundedAppend(current: Buffer<ArrayBufferLike>, chunk: Buffer<ArrayBufferLike>, limit: number): { value: Buffer<ArrayBufferLike>; limited: boolean } {
   const next = Buffer.concat([current, chunk]);
   if (next.length <= limit) return { value: next, limited: false };
   return { value: next.subarray(0, limit), limited: true };
@@ -37,8 +37,8 @@ async function runBridge(endpoint: DesktopEndpoint, batch: DesktopActionBatch, s
     stdio: ['pipe', 'pipe', 'pipe']
   });
 
-  let stdout = Buffer.alloc(0);
-  let stderr = Buffer.alloc(0);
+  let stdout: Buffer<ArrayBufferLike> = Buffer.alloc(0);
+  let stderr: Buffer<ArrayBufferLike> = Buffer.alloc(0);
   let outputLimited = false;
   let timedOut = false;
   let aborted = false;
@@ -117,6 +117,7 @@ function normalizeResult(value: unknown, batch: DesktopActionBatch): DesktopBatc
   if (!['succeeded', 'failed', 'cancelled', 'partial'].includes(status) || !Array.isArray(result.actions)) {
     throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop bridge returned an invalid batch status');
   }
+  const metadata = object(result.metadata);
   return {
     contractVersion: CONTRACT_VERSION,
     id: result.id,
@@ -125,7 +126,7 @@ function normalizeResult(value: unknown, batch: DesktopActionBatch): DesktopBatc
     actions: result.actions.map(normalizeAction),
     ...(typeof result.startedAt === 'string' ? { startedAt: result.startedAt } : {}),
     ...(typeof result.finishedAt === 'string' ? { finishedAt: result.finishedAt } : {}),
-    ...(object(result.metadata) ? { metadata: object(result.metadata) } : {})
+    ...(metadata ? { metadata } : {})
   };
 }
 
@@ -146,14 +147,6 @@ class StdioDesktopBridgeBackend implements DesktopBackend {
   }
 }
 
-export function createDefaultDesktopBackendRegistry() {
-  const { DesktopBackendRegistry } = requireDesktopRegistry();
+export function createDefaultDesktopBackendRegistry(): DesktopBackendRegistry {
   return new DesktopBackendRegistry([new StdioDesktopBridgeBackend()]);
 }
-
-function requireDesktopRegistry(): typeof import('./desktop-backend.js') {
-  return { DesktopBackendRegistry: classPlaceholder } as unknown as typeof import('./desktop-backend.js');
-}
-
-// Replaced by the direct import during TypeScript emit; kept separate to avoid a runtime cycle in older Node loaders.
-import { DesktopBackendRegistry as classPlaceholder } from './desktop-backend.js';
