@@ -27,3 +27,4 @@ export * from './desktop-security.js';
 export * from './desktop-backend.js';
 export * from './desktop-process.js';
 export * from './macos-desktop.js';
+export * from './windows-desktop.js';
