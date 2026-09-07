@@ -26,7 +26,7 @@ Example domains include company formation, research programmes, digital R&D, pro
 
 ## Phase 1: public contract layer
 
-The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters and browser control.
+The provider-neutral `v1` contract family lives under [`packages/contracts/schemas/v1/`](packages/contracts/schemas/v1/). JSON Schema 2020-12 is normative; [`packages/sdk-typescript/`](packages/sdk-typescript/) is the first reference SDK. Validated examples cover company formation, digital R&D, software delivery, capability discovery, model transport, executable adapters, browser control and desktop/application control.
 
 ```bash
 npm ci
@@ -81,7 +81,7 @@ See [`docs/agent-cli-adapters.md`](docs/agent-cli-adapters.md).
 
 ## Phase 6A: browser and web control
 
-The runtime now controls real browser sessions through a provider-neutral browser endpoint/action layer. The built-in Playwright backend supports managed browser contexts and explicit CDP attachment to an existing Chromium-family session, with navigation/origin policy, mouse and keyboard control, forms, inspection/extraction, bounded uploads/downloads and screenshots.
+The runtime controls real browser sessions through a provider-neutral browser endpoint/action layer. The built-in Playwright backend supports managed browser contexts and explicit CDP attachment to an existing Chromium-family session, with navigation/origin policy, mouse and keyboard control, forms, inspection/extraction, bounded uploads/downloads and screenshots.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x browser-endpoints put --file examples/browser-endpoints/managed-chromium.endpoint.json
@@ -90,9 +90,20 @@ node packages/runtime/dist/cli.js --home .q1x browser run browser.managed-chromi
 
 Q1X does not bundle browser binaries or persist cookies/session material. See [`docs/browser-control.md`](docs/browser-control.md).
 
+## Phase 6B: desktop and application control
+
+The runtime now controls native desktop applications through provider-neutral `DesktopEndpoint` and `DesktopActionBatch` contracts. The built-in `stdio-bridge` backend launches an explicitly configured bridge with separate command/argv and no shell, enforces application/platform policy, bounds output and keeps UI content out of runtime audit events.
+
+```bash
+node packages/runtime/dist/cli.js --home .q1x desktop-endpoints put --file examples/desktop-endpoints/portable-stdio.endpoint.json
+node packages/runtime/dist/cli.js --home .q1x desktop discover desktop.portable-stdio
+```
+
+Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific controllers remain optional bridge implementations behind the same Q1X backend interface. See [`docs/desktop-control.md`](docs/desktop-control.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution and browser/web control. Desktop/application control is the next adapter slice, followed by dynamic teams, deployment packaging and wider software/device adapters.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control and desktop/application control. The next delivery phase is dynamic team formation and adaptive programme supervision, followed by deployment packaging and hardening.
 
 ## Deployment profiles
 
