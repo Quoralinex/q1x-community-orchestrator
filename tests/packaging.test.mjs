@@ -65,3 +65,31 @@ test('public alpha workflow is manual-release, fail-closed and action-pinned', a
   assert.ok(actionRefs.length >= 4);
   for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
 });
+
+test('public alpha documentation covers install, verification, recovery and limitations', async () => {
+  const alpha = await text('docs/public-alpha.md');
+  assert.match(alpha, /0\.1\.0-alpha\.1/);
+  assert.match(alpha, /source installation/i);
+  assert.match(alpha, /packed package/i);
+  assert.match(alpha, /Docker/i);
+  assert.match(alpha, /healthz/);
+  assert.match(alpha, /readyz/);
+  assert.match(alpha, /rollback/i);
+  assert.match(alpha, /security/i);
+  assert.match(alpha, /SHA256SUMS/);
+
+  const limits = await text('docs/known-limitations.md');
+  assert.match(limits, /actor identifiers.*not cryptographically authenticated/is);
+  assert.match(limits, /not an externally anchored transparency log/i);
+  assert.match(limits, /browser binaries are not bundled/i);
+  assert.match(limits, /desktop.*optional.*bridge/is);
+  assert.match(limits, /single-node/i);
+  assert.match(limits, /breaking changes/i);
+  assert.match(limits, /npm publication.*may be unavailable/is);
+
+  const changelog = await text('CHANGELOG.md');
+  assert.match(changelog, /0\.1\.0-alpha\.1/);
+  const notes = await text('RELEASE_NOTES.md');
+  assert.match(notes, /public alpha/i);
+  assert.match(notes, /Phase 11/i);
+});
