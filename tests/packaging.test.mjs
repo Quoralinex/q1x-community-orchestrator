@@ -47,3 +47,21 @@ test('cross-platform workflow covers Linux, Windows, macOS and pinned actions', 
   assert.match(workflow, /docker build --pull/);
   assert.match(workflow, /npm pack --dry-run --workspace packages\/runtime/);
 });
+
+test('public alpha workflow is manual-release, fail-closed and action-pinned', async () => {
+  const workflow = await text('.github/workflows/public-alpha.yml');
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /release:/);
+  assert.match(workflow, /publish_npm:/);
+  assert.match(workflow, /refs\/heads\/main/);
+  assert.match(workflow, /scripts\/release\/prepare-alpha\.mjs/);
+  assert.match(workflow, /scripts\/release\/verify-packed-consumer\.mjs/);
+  assert.match(workflow, /gh release create/);
+  assert.match(workflow, /gh api.*git\/refs/);
+  assert.match(workflow, /--provenance/);
+  assert.doesNotMatch(workflow, /NPM_TOKEN|npm_[A-Za-z0-9]/);
+  assert.doesNotMatch(workflow, /push:\s*\n\s*tags:/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 4);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
