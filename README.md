@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phases 1–10 are implemented and Phase 11 compatibility/Community Adapter SDK implementation is in final public-alpha candidate validation for `0.1.0-alpha.1`. The repository remains experimental and must not be treated as production-ready. A GitHub tag/prerelease is authoritative only when the governed Public Alpha Commissioning workflow creates it from a verified protected `main` commit.
+> **Status:** Phases 1–11 are implemented and the Phase 11 branch has passed exact-head public-alpha candidate acceptance for `0.1.0-alpha.1`. The repository remains experimental and must not be treated as production-ready. Protected-`main` merge and manual release commissioning remain separate gates; a GitHub tag/prerelease is authoritative only when the governed Public Alpha Commissioning workflow creates it from a verified protected `main` commit.
 
 ## What it is
 
@@ -59,7 +59,7 @@ See [`docs/discovery.md`](docs/discovery.md).
 
 ## Phase 4: provider-neutral model transport
 
-The runtime can persist safe model endpoints and invoke local or hosted inference through pluggable wire-protocol transports. Built-ins cover OpenAI-compatible chat completions, Responses-compatible endpoints and Anthropic-compatible Messages endpoints; those are protocol formats, not mandatory providers.
+The runtime can now persist safe model endpoints and invoke local or hosted inference through pluggable wire-protocol transports. Built-ins cover OpenAI-compatible chat completions, Responses-compatible endpoints and Anthropic-compatible Messages endpoints; those are protocol formats, not mandatory providers.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x endpoints put --file examples/model-endpoints/local-openai-chat.endpoint.json
@@ -70,7 +70,7 @@ Local loopback HTTP is supported for zero-provider-bill inference. Remote endpoi
 
 ## Phase 5: MCP, A2A and CLI/TUI adapters
 
-The runtime persists executable adapter endpoints and dispatches MCP, A2A and local CLI/TUI work through one provider-neutral adapter registry. MCP uses the official TypeScript client for stdio and Streamable HTTP; A2A supports Agent Card discovery and JSON-RPC `message/send`; CLI tools are spawned directly without a shell.
+The runtime now persists executable adapter endpoints and dispatches MCP, A2A and local CLI/TUI work through one provider-neutral adapter registry. MCP uses the official TypeScript client for stdio and Streamable HTTP; A2A supports Agent Card discovery and JSON-RPC `message/send`; CLI tools are spawned directly without a shell.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x adapter-endpoints put --file examples/adapter-endpoints/mcp-stdio.endpoint.json
@@ -92,7 +92,7 @@ Q1X does not bundle browser binaries or persist cookies/session material. See [`
 
 ## Phase 6B: desktop and application control
 
-The runtime controls native desktop applications through provider-neutral `DesktopEndpoint` and `DesktopActionBatch` contracts. The built-in `stdio-bridge` backend launches an explicitly configured bridge with separate command/argv and no shell, enforces application/platform policy, bounds output and keeps UI content out of runtime audit events.
+The runtime now controls native desktop applications through provider-neutral `DesktopEndpoint` and `DesktopActionBatch` contracts. The built-in `stdio-bridge` backend launches an explicitly configured bridge with separate command/argv and no shell, enforces application/platform policy, bounds output and keeps UI content out of runtime audit events.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x desktop-endpoints put --file examples/desktop-endpoints/portable-stdio.endpoint.json
@@ -103,7 +103,7 @@ Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-
 
 ## Phase 7: dynamic teams and adaptive programme supervision
 
-The runtime can bind discovered capabilities to executable endpoints, form logical specialist teams for ready work, persist assignment attempts, supervise dependency-aware cycles and stop or replan at explicit approval, budget, deadline, failure and convergence boundaries.
+The runtime can now bind discovered capabilities to executable endpoints, form logical specialist teams for ready work, persist assignment attempts, supervise dependency-aware cycles and stop or replan at explicit approval, budget, deadline, failure and convergence boundaries.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x bindings put --file examples/supervision/example.execution-binding.json
@@ -138,33 +138,27 @@ node packages/runtime/dist/cli.js --home .q1x audit verify
 node packages/runtime/dist/cli.js --home .q1x recovery reconcile
 ```
 
-Audit metadata recursively redacts secret-shaped keys and does not copy prompts, browser/desktop session content or credentials into routine receipts. The current local CLI does not cryptographically authenticate actor identifiers, and the local hash chain is not an externally anchored transparency log. See [`docs/security-hardening.md`](docs/security-hardening.md) for exact behavior and limitations.
+Audit metadata recursively redacts secret-shaped keys and does not copy prompts, browser/desktop session content or credentials into routine receipts. The current local CLI does not cryptographically authenticate actor identifiers, and the local hash chain is not an externally anchored transparency log. See [`docs/security-hardening.md`](docs/security-hardening.md) for the exact behavior and limitations.
 
 ## Phase 10: public alpha commissioning
 
-The governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. The release pipeline validates exact internal package versions, generates governed tarballs, produces SHA-256 release evidence, verifies a clean external consumer and provides a fail-closed manual GitHub prerelease workflow.
+The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 implements release identity checks, exact internal package version locking, generated contracts/SDK/Adapter-SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
 
-After Phase 11 integration the governed package set contains four packages in dependency order: contracts, core SDK, Community Adapter SDK and runtime. GitHub release artifacts remain authoritative even when optional npm Trusted Publishing is unavailable. npm publication is a separate opt-in OIDC lane and is never required for the GitHub release path.
+The GitHub prerelease is authoritative even when npm publication is unavailable. npm publication is a separate opt-in Trusted Publishing/OIDC lane and is never required for the GitHub release path. Release creation refuses a stale `main` target or an existing authoritative tag/release and points the tag directly at the exact verified `main` commit.
 
 See [`docs/public-alpha.md`](docs/public-alpha.md), [`docs/known-limitations.md`](docs/known-limitations.md), [`CHANGELOG.md`](CHANGELOG.md) and [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
 
 ## Phase 11: compatibility matrix and Community Adapter SDK
 
-Phase 11 adds machine-readable compatibility declarations, deterministic generated [`docs/compatibility-matrix.md`](docs/compatibility-matrix.md), a dedicated compatibility CI gate and explicit `tested`, `experimental` and `unsupported` status semantics.
+Phase 11 adds an evidence-backed compatibility registry and deterministic generated matrix with explicit `tested`, `experimental` and `unsupported` statuses. Absence from the matrix is not a compatibility claim. Tested declarations carry repository-verifiable CI evidence; broader provider, model, browser, desktop and remote-agent combinations remain experimental until their exact combinations are verified.
 
-The separate public [`@quoralinex/q1x-community-adapter-sdk`](packages/adapter-sdk/) package provides third-party adapter authoring, metadata validation and `runAdapterConformance(...)`. Its current compatibility tuple is Adapter SDK `0.1.0-alpha.1`, contract `1.0.0`, runtime `0.1.x`.
+The separate [`@quoralinex/q1x-community-adapter-sdk`](packages/adapter-sdk/) provides public adapter metadata validation, compatibility tuple checks and a conformance runner. The runtime bridge accepts adapters only through explicit operator-controlled registration and preserves the existing provider-neutral execution envelope. A deterministic local reference adapter lives under [`examples/community-adapter/`](examples/community-adapter/).
 
-The runtime exposes a narrow `communityAdapterTransport(...)` bridge and accepts explicitly supplied transports through `OpenControlRuntime.open({ adapterTransports: [...] })`. Community core does not auto-scan packages, auto-load arbitrary modules, provide an adapter marketplace or expose a secret store.
-
-The Adapter SDK is **not a sandbox**. Passing conformance is compatibility evidence, not a trust/security certificate. Operators remain responsible for reviewing adapter source, dependencies, permissions, network behavior, credentials and data handling.
-
-See [`docs/community-adapter-sdk.md`](docs/community-adapter-sdk.md), [`docs/compatibility-matrix.md`](docs/compatibility-matrix.md) and the deterministic local [`examples/community-adapter/`](examples/community-adapter/) reference template.
+Conformance validates the published adapter contract; it is **not a sandbox and is not trust certification** for arbitrary third-party code. See [`docs/community-adapter-sdk.md`](docs/community-adapter-sdk.md) and [`docs/compatibility-matrix.md`](docs/compatibility-matrix.md).
 
 ## Capability fabric
 
-Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, public-alpha commissioning, evidence-driven compatibility declarations and the public Community Adapter SDK/runtime bridge.
-
-Compatibility evidence is intentionally scoped. Do not infer uncited provider, OS, browser, native bridge, application or third-party-adapter support from the presence of a generic extension interface.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, public-alpha release governance, the compatibility matrix and the Community Adapter SDK.
 
 ## Deployment profiles
 
