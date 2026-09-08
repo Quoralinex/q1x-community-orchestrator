@@ -23,11 +23,11 @@
       "allOf": [
         {
           "if": { "properties": { "algorithm": { "const": "sha256" } }, "required": ["algorithm"] },
-          "then": { "properties": { "value": { "pattern": "^[0-9a-f]{64}$" } } }
+          "then": { "properties": { "value": { "type": "string", "pattern": "^[0-9a-f]{64}$" } } }
         },
         {
           "if": { "properties": { "algorithm": { "const": "sha512" } }, "required": ["algorithm"] },
-          "then": { "properties": { "value": { "pattern": "^[0-9a-f]{128}$" } } }
+          "then": { "properties": { "value": { "type": "string", "pattern": "^[0-9a-f]{128}$" } } }
         }
       ],
       "additionalProperties": false
