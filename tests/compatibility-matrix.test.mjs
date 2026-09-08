@@ -11,6 +11,10 @@ import {
 
 const SHA = '371b27e265a5922184d0a48f57b966b9fbae959b';
 
+function normalizeLineEndings(value) {
+  return value.replace(/\r\n/g, '\n');
+}
+
 function matrix(entries = []) {
   return {
     matrixVersion: '1.0.0',
@@ -103,7 +107,7 @@ test('checked-in matrix source validates and generated markdown is current', asy
   const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
   const markdown = await readFile(new URL('../docs/compatibility-matrix.md', import.meta.url), 'utf8');
   const generated = renderCompatibilityMarkdown(normalizeCompatibilityMatrix(source));
-  assert.equal(markdown, generated);
+  assert.equal(normalizeLineEndings(markdown), normalizeLineEndings(generated));
 });
 
 test('generator check mode succeeds only when checked-in markdown matches', () => {
