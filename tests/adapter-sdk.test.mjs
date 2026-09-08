@@ -7,23 +7,67 @@ import {
   assertCommunityAdapter,
   createAdapterCompatibility,
   defineCommunityAdapter,
+  runAdapterConformance,
   validateCommunityAdapter,
 } from '../packages/adapter-sdk/dist/index.js';
+
+function endpoint() {
+  return {
+    contractVersion: '1.0.0',
+    id: 'adapter.community.echo',
+    name: 'Community echo',
+    adapterKind: 'cli-tui',
+    protocol: 'community.echo',
+    transport: {
+      kind: 'stdio',
+      command: 'node',
+      args: ['echo.mjs'],
+      inputMode: 'json',
+      outputMode: 'json',
+    },
+  };
+}
+
+function request() {
+  return {
+    contractVersion: '1.0.0',
+    id: 'execution.community.echo',
+    workItemId: 'task.community.echo',
+    requirements: {
+      operations: ['community.echo'],
+      adapterKinds: ['cli-tui'],
+      inputModalities: ['text'],
+      outputModalities: ['text'],
+      localOnly: true,
+      minimumTrust: 'validated',
+    },
+    input: { text: 'hello' },
+    contextRefs: [],
+    policy: {
+      timeoutSeconds: 30,
+      maxAttempts: 1,
+      maxCost: 0,
+      currency: 'USD',
+      privacy: 'local',
+    },
+    createdAt: '2026-09-08T15:00:00Z',
+  };
+}
 
 function validAdapter(overrides = {}) {
   return {
     protocol: 'community.echo',
     compatibility: createAdapterCompatibility(),
-    async execute(_endpoint, request) {
+    async execute(_endpoint, executionRequest) {
       return {
         contractVersion: '1.0.0',
         id: 'result.echo',
-        requestId: request.id,
-        workItemId: request.workItemId,
+        requestId: executionRequest.id,
+        workItemId: executionRequest.workItemId,
         status: 'succeeded',
-        output: request.input,
-        startedAt: request.createdAt,
-        finishedAt: request.createdAt,
+        output: executionRequest.input,
+        startedAt: executionRequest.createdAt,
+        finishedAt: executionRequest.createdAt,
       };
     },
     ...overrides,
@@ -79,4 +123,95 @@ test('assertCommunityAdapter throws package-owned error for invalid metadata', (
     () => assertCommunityAdapter(validAdapter({ protocol: 'INVALID' })),
     error => error instanceof AdapterSdkError && error.code === 'INVALID_ADAPTER',
   );
+});
+
+test('conformance suite accepts a deterministic adapter and propagates the supplied signal', async () => {
+  const controller = new AbortController();
+  let observedSignal;
+  const adapter = validAdapter({
+    async execute(_endpoint, executionRequest, context) {
+      observedSignal = context?.signal;
+      return {
+        contractVersion: '1.0.0',
+        id: 'result.conformance',
+        requestId: executionRequest.id,
+        workItemId: executionRequest.workItemId,
+        status: 'succeeded',
+        output: executionRequest.input,
+        startedAt: executionRequest.createdAt,
+        finishedAt: executionRequest.createdAt,
+      };
+    },
+    async discover() {
+      return [{
+        contractVersion: '1.0.0',
+        id: 'capability.community.echo',
+        name: 'Community echo',
+        description: 'Echoes deterministic local input.',
+        operations: ['community.echo'],
+        adapterKinds: ['cli-tui'],
+        inputModalities: ['text'],
+        outputModalities: ['text'],
+        trust: 'validated',
+        locality: 'local',
+      }];
+    },
+  });
+
+  const report = await runAdapterConformance(adapter, {
+    endpoint: endpoint(),
+    request: request(),
+    signal: controller.signal,
+  });
+
+  assert.equal(report.ok, true);
+  assert.equal(report.protocol, 'community.echo');
+  assert.ok(report.checks.every(check => check.ok));
+  assert.equal(observedSignal, controller.signal);
+});
+
+test('conformance suite rejects invalid execution results and discovery values', async () => {
+  const badResult = await runAdapterConformance(validAdapter({
+    async execute(_endpoint, executionRequest) {
+      return {
+        contractVersion: '2.0.0',
+        id: 'result.bad',
+        requestId: executionRequest.id,
+        workItemId: executionRequest.workItemId,
+        status: 'succeeded',
+        startedAt: executionRequest.createdAt,
+        finishedAt: executionRequest.createdAt,
+      };
+    },
+  }), { endpoint: endpoint(), request: request() });
+  assert.equal(badResult.ok, false);
+  assert.ok(badResult.checks.some(check => check.name === 'execute-result' && !check.ok));
+
+  const badDiscovery = await runAdapterConformance(validAdapter({
+    async discover() { return { arbitrary: true }; },
+  }), { endpoint: endpoint(), request: request() });
+  assert.equal(badDiscovery.ok, false);
+  assert.ok(badDiscovery.checks.some(check => check.name === 'discover-result' && !check.ok));
+});
+
+test('conformance suite detects mutation of endpoint or request fixtures', async () => {
+  const mutating = validAdapter({
+    async execute(adapterEndpoint, executionRequest) {
+      adapterEndpoint.name = 'mutated';
+      executionRequest.input.text = 'mutated';
+      return {
+        contractVersion: '1.0.0',
+        id: 'result.mutating',
+        requestId: executionRequest.id,
+        workItemId: executionRequest.workItemId,
+        status: 'succeeded',
+        startedAt: executionRequest.createdAt,
+        finishedAt: executionRequest.createdAt,
+      };
+    },
+  });
+
+  const report = await runAdapterConformance(mutating, { endpoint: endpoint(), request: request() });
+  assert.equal(report.ok, false);
+  assert.ok(report.checks.some(check => check.name === 'fixture-immutability' && !check.ok));
 });
