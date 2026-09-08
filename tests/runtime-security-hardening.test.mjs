@@ -50,6 +50,43 @@ test('protected work stays fail-closed until a matching single-use approval is a
   assert.equal(runtime.verifyAuditChain().valid, true);
 });
 
+test('approval subject kind must exactly match a known work item', async t => {
+  const { runtime } = await fixture(t);
+  assert.throws(() => runtime.requestApproval({
+    contractVersion: '1.0.0',
+    id: 'approval.wrong-kind',
+    subject: { id: 'task.company-docs', kind: 'programme' },
+    state: 'pending',
+    requestedAt: new Date().toISOString(),
+    requestedBy: { id: 'agent.supervisor', kind: 'agent' },
+    requiredApproverKinds: ['human']
+  }), error => error.code === 'INVALID_REFERENCE');
+});
+
+test('approval request rejects ambiguous work item ids across programmes', async t => {
+  const { runtime } = await fixture(t);
+  const now = new Date().toISOString();
+  runtime.putProgramme({
+    contractVersion: '1.0.0', id: 'programme.duplicate-work', missionId: 'mission.company-launch', revision: 1, status: 'active',
+    workstreams: [{ id: 'ws.duplicate', title: 'Duplicate', objective: 'Prove ambiguity is rejected', status: 'active' }],
+    createdAt: now, updatedAt: now
+  });
+  runtime.putWorkGraph({
+    contractVersion: '1.0.0', id: 'graph.duplicate-work', programmeId: 'programme.duplicate-work', revision: 1,
+    nodes: [{ id: 'task.company-docs', kind: 'task', title: 'Duplicate protected work', parentId: 'ws.duplicate', status: 'ready', approvalRequired: true }],
+    edges: [], updatedAt: now
+  });
+  assert.throws(() => runtime.requestApproval({
+    contractVersion: '1.0.0',
+    id: 'approval.ambiguous-work',
+    subject: { id: 'task.company-docs', kind: 'task' },
+    state: 'pending',
+    requestedAt: now,
+    requestedBy: { id: 'agent.supervisor', kind: 'agent' },
+    requiredApproverKinds: ['human']
+  }), error => error.code === 'CONFLICT');
+});
+
 test('evidence is immutable and carries bounded execution/result provenance', async t => {
   const { runtime } = await fixture(t);
   const evidence = {
