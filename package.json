@@ -13,7 +13,7 @@
     "build": "tsc -b --force",
     "clean": "tsc -b --clean",
     "start": "node packages/runtime/dist/service.js",
-    "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs tests/desktop-examples.test.mjs tests/packaging.test.mjs tests/release-commissioning.test.mjs",
+    "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs tests/desktop-examples.test.mjs tests/packaging.test.mjs tests/release-commissioning.test.mjs tests/compatibility-matrix.test.mjs",
     "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist",
     "test:types": "tsc --ignoreConfig --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts",
     "test:dist": "node --test tests/dist-contracts.test.mjs",
