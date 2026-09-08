@@ -1,9 +1,10 @@
 import { createHash } from 'node:crypto';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
-import { CONTRACT_VERSION } from '@quoralinex/q1x-community-contracts';
+import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
 import type { AuditReceipt, AuditVerification, Reference } from '@quoralinex/q1x-community-sdk';
 import { resolveRuntimeHome } from './home.js';
+import { validateContract } from './schema-loader.js';
 
 const SENSITIVE_KEY = /(authorization|cookie|password|passwd|secret|token|api[-_]?key|credential|session)/i;
 
@@ -87,11 +88,13 @@ export class SecurityAuditStore {
     };
     const digest = digestFor(body);
     const id = `audit.${sequence}.${digest.slice(7, 19)}`;
+    const receipt: AuditReceipt = { contractVersion: CONTRACT_VERSION, id, ...body, digest };
+    validateContract(SCHEMA_IDS.auditReceipt, receipt);
     this.db.prepare(`INSERT INTO security_audit_receipts
       (sequence, id, event_type, subject_json, scope_id, metadata_json, previous_digest, digest, occurred_at)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
     ).run(sequence, id, eventType, JSON.stringify(subject), scopeId ?? null, safeMetadata ? JSON.stringify(safeMetadata) : null, previous?.digest ?? null, digest, occurredAt);
-    return { contractVersion: CONTRACT_VERSION, id, ...body, digest };
+    return receipt;
   }
 
   list(): AuditReceipt[] {
