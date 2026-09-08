@@ -1,5 +1,5 @@
 import { execFileSync } from 'node:child_process';
-import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -7,6 +7,7 @@ import { PUBLIC_PACKAGES, RELEASE_VERSION, sha256File } from './release-metadata
 
 const root = dirname(fileURLToPath(new URL('../../package.json', import.meta.url)));
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
+const publicPackageNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
 
 function valueFor(name) {
   const index = process.argv.indexOf(name);
@@ -43,6 +44,35 @@ function validateManifestShape(manifest) {
   }
 }
 
+async function packageName(directory) {
+  try {
+    return JSON.parse(await readFile(join(directory, 'package.json'), 'utf8')).name;
+  } catch {
+    return undefined;
+  }
+}
+
+async function localThirdPartyPackageDirectories() {
+  const modules = join(root, 'node_modules');
+  const directories = [];
+  for (const entry of await readdir(modules, { withFileTypes: true })) {
+    if (entry.name === '.bin' || (!entry.isDirectory() && !entry.isSymbolicLink())) continue;
+    const entryPath = join(modules, entry.name);
+    if (entry.name.startsWith('@')) {
+      for (const scoped of await readdir(entryPath, { withFileTypes: true })) {
+        if (!scoped.isDirectory() && !scoped.isSymbolicLink()) continue;
+        const scopedPath = join(entryPath, scoped.name);
+        const name = await packageName(scopedPath);
+        if (name && !publicPackageNames.has(name)) directories.push(scopedPath);
+      }
+      continue;
+    }
+    const name = await packageName(entryPath);
+    if (name && !publicPackageNames.has(name)) directories.push(entryPath);
+  }
+  return directories.sort();
+}
+
 export async function verifyPackedConsumer(artifactsDirectory) {
   const directory = isAbsolute(artifactsDirectory) ? artifactsDirectory : resolve(root, artifactsDirectory);
   const manifest = await readManifest(directory);
@@ -60,6 +90,8 @@ export async function verifyPackedConsumer(artifactsDirectory) {
   const home = join(consumer, 'runtime-home');
   try {
     await writeFile(join(consumer, 'package.json'), JSON.stringify({ name: 'q1x-release-consumer', private: true, type: 'module' }, null, 2));
+    const thirdPartyPackages = await localThirdPartyPackageDirectories();
+    if (thirdPartyPackages.length === 0) throw new Error('No locally installed third-party packages are available for offline consumer verification');
     run(npmCommand, [
       'install',
       '--offline',
@@ -67,6 +99,8 @@ export async function verifyPackedConsumer(artifactsDirectory) {
       '--no-audit',
       '--no-fund',
       '--package-lock=false',
+      '--install-links=true',
+      ...thirdPartyPackages,
       ...tarballs
     ], consumer);
 
