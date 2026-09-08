@@ -99,10 +99,15 @@ jobs:
           test "$(node -p "require('./.release/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
           node scripts/release/verify-packed-consumer.mjs --artifacts .release
           (cd .release && sha256sum --check SHA256SUMS)
-      - name: Refuse tag or release replacement
+      - name: Refuse stale main target or release replacement
         shell: bash
         run: |
           set -euo pipefail
+          REMOTE_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+          if [[ "$REMOTE_MAIN" != "$GITHUB_SHA" ]]; then
+            echo "Protected main moved from ${GITHUB_SHA} to ${REMOTE_MAIN}; refusing a stale release." >&2
+            exit 1
+          fi
           if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
             echo "Tag ${TAG} already exists; refusing to replace an authoritative release identity." >&2
             exit 1
@@ -111,10 +116,8 @@ jobs:
             echo "Release ${TAG} already exists; refusing to replace an authoritative release." >&2
             exit 1
           fi
-      - name: Create authoritative tag after validation
-        run: gh api --method POST "repos/${GITHUB_REPOSITORY}/git/refs" -f ref="refs/tags/${TAG}" -f sha="$GITHUB_SHA"
-      - name: Create GitHub prerelease
-        run: gh release create "$TAG" .release/* --prerelease --verify-tag --title "Q1X Community Orchestrator ${TAG}" --notes-file RELEASE_NOTES.md
+      - name: Create GitHub prerelease at the verified main commit
+        run: gh release create "$TAG" .release/* --prerelease --target "$GITHUB_SHA" --title "Q1X Community Orchestrator ${TAG}" --notes-file RELEASE_NOTES.md
 
   publish-npm:
     name: publish-npm-trusted
