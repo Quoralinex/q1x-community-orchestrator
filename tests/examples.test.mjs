@@ -11,7 +11,7 @@ const schemaDir = path.join(root, "packages", "contracts", "schemas", "v1");
 const schemaNames = [
   "common", "mission", "programme", "work-graph", "replan-event", "capability",
   "adapter-manifest", "execution-request", "execution-result", "evidence", "artifact",
-  "approval", "checkpoint", "deployment-profile", "discovery-manifest",
+  "approval", "checkpoint", "audit-receipt", "deployment-profile", "discovery-manifest",
   "model-endpoint", "model-request", "model-response", "adapter-endpoint",
   "browser-endpoint", "browser-action-batch", "desktop-endpoint", "desktop-action-batch",
   "execution-binding", "supervision-policy", "team-plan", "work-assignment",
@@ -66,7 +66,10 @@ const examples = [
   ["desktop-endpoints/portable-stdio.endpoint.json", "desktop-endpoint"],
   ["desktop-endpoints/example.desktop-batch.json", "desktop-action-batch"],
   ["supervision/example.execution-binding.json", "execution-binding"],
-  ["supervision/example.supervision-policy.json", "supervision-policy"]
+  ["supervision/example.supervision-policy.json", "supervision-policy"],
+  ["security/example.approval-request.json", "approval"],
+  ["security/example.evidence.json", "evidence"],
+  ["security/example.audit-receipt.json", "audit-receipt"]
 ];
 
 test("cross-domain examples validate against normative schemas", async () => {
@@ -107,4 +110,12 @@ test("failed execution without error is rejected", async () => {
   const base = await json(path.join(root, "examples", "software-delivery", "execution-result.json"));
   const { error, ...withoutError } = base;
   assert.equal(validate({ ...withoutError, status: "failed" }), false);
+});
+
+test("evidence content digest length must match its declared algorithm", async () => {
+  const ajv = await validator();
+  const validate = ajv.getSchema("urn:q1x:community:contracts:v1:evidence");
+  const base = await json(path.join(root, "examples", "security", "example.evidence.json"));
+  assert.equal(validate({ ...base, contentDigest: { algorithm: "sha256", value: "abc" } }), false);
+  assert.equal(validate({ ...base, contentDigest: { algorithm: "sha512", value: "a".repeat(64) } }), false);
 });

@@ -1,0 +1,6 @@
+{
+  "actor": { "id": "human.owner", "kind": "human" },
+  "action": "approve",
+  "decidedAt": "2026-09-08T10:01:00Z",
+  "reason": "Reviewed the protected action and accepted the consequences."
+}

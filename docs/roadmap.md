@@ -9,6 +9,6 @@
 7. **Phase 6B — Desktop/application control:** OS-neutral desktop contracts, pluggable backends, direct no-shell stdio bridge execution, application policy, capability discovery and desktop CLI. **Implemented in pre-alpha.**
 8. **Phase 7 — Dynamic team formation and adaptive programme supervision:** deterministic capability routing, durable logical teams and assignments, bounded supervision cycles, cancellation/replacement, budgets, approvals, checkpoints and validated replanning. **Implemented in pre-alpha.**
 9. **Phase 8 — Cross-platform packaging and Docker deployment:** Node.js source install on macOS/Windows/Linux, non-root multi-stage OCI image, persistent state, health/readiness lifecycle, Compose hardening, explicit configuration and cross-platform installation verification. **Implemented in pre-alpha.**
-10. **Phase 9 — Security, approvals, evidence, audit and recovery hardening.**
+10. **Phase 9 — Security, approvals, evidence, audit and recovery hardening:** single-use consequential-action approvals, immutable evidence provenance, metadata-only tamper-evident audit receipts and checkpoint-backed interrupted-work recovery. **Implemented in pre-alpha.**
 11. **Phase 10 — Public alpha commissioning.**
 12. **Phase 11 — Compatibility matrix and community adapter SDK.**

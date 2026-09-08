@@ -13,7 +13,7 @@ const required = [
   "work-graph.schema.json", "replan-event.schema.json", "capability.schema.json",
   "adapter-manifest.schema.json", "execution-request.schema.json",
   "execution-result.schema.json", "evidence.schema.json", "artifact.schema.json",
-  "approval.schema.json", "checkpoint.schema.json", "deployment-profile.schema.json",
+  "approval.schema.json", "checkpoint.schema.json", "audit-receipt.schema.json", "deployment-profile.schema.json",
   "discovery-manifest.schema.json", "model-endpoint.schema.json",
   "model-request.schema.json", "model-response.schema.json", "adapter-endpoint.schema.json",
   "browser-endpoint.schema.json", "browser-action-batch.schema.json",

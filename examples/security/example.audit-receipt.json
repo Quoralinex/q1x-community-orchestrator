@@ -1,0 +1,14 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "audit.1.example000001",
+  "sequence": 1,
+  "eventType": "approval.requested",
+  "subject": { "id": "approval.example.release", "kind": "approval" },
+  "scopeId": "programme.example",
+  "metadata": {
+    "subjectId": "task.publish-release",
+    "requiredApproverKinds": ["human"]
+  },
+  "digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+  "occurredAt": "2026-09-08T10:00:00Z"
+}

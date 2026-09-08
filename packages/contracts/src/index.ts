@@ -39,6 +39,7 @@ export const SCHEMA_IDS = {
   artifact: "urn:q1x:community:contracts:v1:artifact",
   approval: "urn:q1x:community:contracts:v1:approval",
   checkpoint: "urn:q1x:community:contracts:v1:checkpoint",
+  auditReceipt: "urn:q1x:community:contracts:v1:audit-receipt",
   deploymentProfile: "urn:q1x:community:contracts:v1:deployment-profile",
   discoveryManifest: "urn:q1x:community:contracts:v1:discovery-manifest",
   modelEndpoint: "urn:q1x:community:contracts:v1:model-endpoint",

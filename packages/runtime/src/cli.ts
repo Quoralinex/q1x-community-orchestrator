@@ -1,10 +1,11 @@
 #!/usr/bin/env node
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import type { AdapterEndpoint, BrowserActionBatch, BrowserEndpoint, CapabilityDescriptor, DesktopActionBatch, DesktopEndpoint, ExecutionBinding, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ProgrammeProposal, ReplanEvent, SupervisionPolicy, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { AdapterEndpoint, Approval, ApprovalDecision, BrowserActionBatch, BrowserEndpoint, CapabilityDescriptor, DesktopActionBatch, DesktopEndpoint, Evidence, ExecutionBinding, ExecutionRequest, ExecutionResult, Mission, ModelEndpoint, ModelRequest, Programme, ProgrammeProposal, ReplanEvent, SupervisionPolicy, WorkGraph } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { OpenControlRuntime } from './runtime.js';
 import './supervision-extension.js';
+import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
 
 function takeOption(args: string[], name: string): string | undefined {
@@ -88,6 +89,40 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
       return runtime.superviseUntilStop(programmeId, policy, maxCycles ? { maxCycles: Number.parseInt(maxCycles, 10) } : undefined);
     }
     if (action === 'cycles') return runtime.listSupervisionCycles(programmeId);
+  }
+  if (command === 'approval') {
+    if (action === 'request') return runtime.requestApproval(readJsonFile(requiredOption(args, '--file')) as Approval);
+    if (action === 'list') return runtime.listApprovals(takeOption(args, '--programme'));
+    if (action === 'show') {
+      const id = args.shift(); if (!id) throw new Error('approval show requires an id');
+      return required(runtime.getApproval(id), 'Approval', id);
+    }
+    if (action === 'decide') {
+      const id = args.shift(); if (!id) throw new Error('approval decide requires an id');
+      return runtime.decideApproval(id, readJsonFile(requiredOption(args, '--file')) as ApprovalDecision);
+    }
+    if (action === 'apply') {
+      const id = args.shift(); if (!id) throw new Error('approval apply requires an id');
+      return runtime.applyApproval(id);
+    }
+  }
+  if (command === 'evidence') {
+    if (action === 'record') {
+      const evidence = readJsonFile(requiredOption(args, '--file')) as Evidence;
+      return runtime.recordEvidence(evidence, takeOption(args, '--programme'));
+    }
+    if (action === 'list') return runtime.listEvidence(takeOption(args, '--programme'));
+    if (action === 'show') {
+      const id = args.shift(); if (!id) throw new Error('evidence show requires an id');
+      return required(runtime.getEvidence(id), 'Evidence', id);
+    }
+  }
+  if (command === 'audit') {
+    if (action === 'list') return runtime.listAuditReceipts();
+    if (action === 'verify') return runtime.verifyAuditChain();
+  }
+  if (command === 'recovery' && action === 'reconcile') {
+    return runtime.reconcileInterruptedAssignments(takeOption(args, '--programme'));
   }
   if (command === 'adapters') {
     if (action === 'list') return runtime.listAdapterManifests();

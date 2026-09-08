@@ -49,6 +49,8 @@ It does **not** expose orchestration, model, browser or desktop execution APIs. 
 
 `SIGINT` and `SIGTERM` stop readiness first, close the HTTP listener and then close the SQLite runtime. This is the deterministic shutdown path used by container orchestration.
 
+During Phase 9 delivery, service startup also verifies the security audit receipt chain and reconciles abandoned `running` assignments before entering ready state. Audit-chain corruption prevents readiness; interrupted work is checkpointed and moved into recoverable `interrupted`/`blocked` state rather than assumed successful.
+
 ## Docker
 
 Build the image from a clean checkout:
@@ -114,7 +116,11 @@ For upgrades during pre-alpha:
 2. copy or snapshot the complete runtime-home directory, including `state.sqlite`, `state.sqlite-wal` and `state.sqlite-shm` when present;
 3. replace the checkout/image;
 4. start against the same runtime home;
-5. verify `/readyz` or `q1x status` before resuming work.
+5. run `q1x audit verify` when Phase 9 security receipts are present;
+6. run `q1x recovery reconcile` when an interrupted prior process may have left running assignments;
+7. verify `/readyz` or `q1x status` before resuming work.
+
+For online backups, use a SQLite-aware backup mechanism that creates a consistent database snapshot. Do not copy `state.sqlite` alone while WAL state may be active and assume the result contains a complete audit/history boundary.
 
 Phase 8 does not introduce a destructive automatic database migration. Any future schema change requiring a migration must be explicit, tested and documented before the public-alpha release. Downgrading across a future storage-schema migration is not claimed as supported unless that release explicitly documents it.
 
