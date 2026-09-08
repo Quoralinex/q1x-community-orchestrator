@@ -11,6 +11,7 @@ import {
   readReleaseIdentity,
   sha256File
 } from '../scripts/release/release-metadata.mjs';
+import { verifyPackedConsumer } from '../scripts/release/verify-packed-consumer.mjs';
 
 const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
 
@@ -64,5 +65,12 @@ test('release manifest hashes artifacts deterministically and rejects a non-comm
   assert.throws(
     () => buildReleaseManifest({ identity, sourceSha: 'main', artifacts, generatedAt: '2026-09-08T00:00:00.000Z' }),
     /source sha/i
+  );
+});
+
+test('packed consumer verification fails clearly when the governed release bundle is missing', async () => {
+  await assert.rejects(
+    () => verifyPackedConsumer(join(tmpdir(), 'q1x-missing-release-artifacts')),
+    /release-manifest\.json/i
   );
 });
