@@ -128,9 +128,9 @@ docker compose up --build
 
 The container exposes only health/readiness on port `8787`; it does not create a mandatory hosted orchestration API. The Cross-platform Packaging workflow verifies native installation across all three operating systems and Docker build, non-root execution and persistent restart on Linux. See [`docs/deployment.md`](docs/deployment.md).
 
-## Phase 9: security, approvals, evidence, audit and recovery hardening — in delivery
+## Phase 9: security, approvals, evidence, audit and recovery hardening
 
-The Phase 9 branch adds single-use fail-closed approvals for protected work, immutable evidence provenance, metadata-only SHA-256-linked audit receipts and checkpoint-backed restart reconciliation. The local service verifies the audit chain and reconciles abandoned running assignments before entering ready state.
+The runtime now includes single-use fail-closed approvals for protected work, immutable evidence provenance, metadata-only SHA-256-linked audit receipts and checkpoint-backed restart reconciliation. The local service verifies the audit chain and reconciles abandoned running assignments before entering ready state.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x approval request --file examples/security/example.approval-request.json
@@ -142,7 +142,7 @@ Audit metadata recursively redacts secret-shaped keys and does not copy prompts,
 
 ## Capability fabric
 
-Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision and cross-platform local/container packaging. Security, approval, evidence, audit and recovery hardening is in delivery; public-alpha commissioning follows after it is accepted on protected `main`.
+Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging and security/approval/evidence/audit/recovery hardening. Public-alpha commissioning is the next delivery phase.
 
 ## Deployment profiles
 
