@@ -2,7 +2,7 @@
 
 Q1X Community Orchestrator `0.1.0-alpha.1` is an experimental public alpha. It is intended for evaluation, local development and Community testing. It is not a production-ready or generally available release and may introduce breaking changes before a stable version.
 
-The public alpha keeps the zero-provider-bill baseline: the runtime itself can operate locally without a hosted Q1X service, cloud account or paid model API. External providers, models, browsers and desktop bridges remain optional capabilities supplied by the operator.
+The public alpha keeps the zero-provider-bill baseline: the runtime itself can operate locally without a hosted Q1X service, cloud account or paid model API. External providers, models, browsers, desktop bridges and third-party adapters remain optional capabilities supplied by the operator.
 
 ## Release identity and verification
 
@@ -11,7 +11,7 @@ The governed GitHub prerelease is identified by:
 - version `0.1.0-alpha.1`;
 - tag `v0.1.0-alpha.1`;
 - the exact protected `main` source commit recorded in `release-manifest.json`;
-- three package tarballs for contracts, SDK and runtime;
+- four package tarballs for contracts, core SDK, Adapter SDK and runtime;
 - `SHA256SUMS` containing the SHA-256 digest of every package tarball.
 
 After downloading the release bundle, verify package integrity before installation:
@@ -48,16 +48,17 @@ node packages/runtime/dist/cli.js --home ./.q1x init
 node packages/runtime/dist/cli.js --home ./.q1x status
 ```
 
-The root workspace is deliberately private/non-publishable. Only the contracts, TypeScript SDK and runtime packages are release artifacts.
+The root workspace is deliberately private/non-publishable. Only the contracts, TypeScript core SDK, Community Adapter SDK and runtime packages are governed release artifacts.
 
 ## Packed package installation
 
 The GitHub prerelease package tarballs remain a supported alpha installation path even if the Q1X packages have not been published to npm.
 
-Download these three files from the same governed release:
+Download these four files from the same governed release:
 
 - `quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz`;
 - `quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz`;
+- `quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz`;
 - `quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz`.
 
 After verifying `SHA256SUMS`, install them together into a project:
@@ -66,6 +67,7 @@ After verifying `SHA256SUMS`, install them together into a project:
 npm install \
   ./quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz \
   ./quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz \
+  ./quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz \
   ./quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz
 ```
 
@@ -78,7 +80,15 @@ npx q1x --home ./.q1x init
 npx q1x --home ./.q1x status
 ```
 
-The commissioning workflow independently verifies the same Q1X tarballs in a clean external consumer with Q1X package registry access disabled, so workspace links cannot hide missing package contents.
+The commissioning workflow independently verifies the same four Q1X tarballs in a clean external consumer with Q1X package registry access disabled, so workspace links cannot hide missing Q1X package contents. The verifier supplies already-installed third-party dependency directories locally for that CI check; a normal user installation still resolves third-party packages through npm.
+
+## Community Adapter SDK
+
+The public `@quoralinex/q1x-community-adapter-sdk` package is part of the governed alpha package set. Its compatibility line is SDK `0.1.0-alpha.1`, contract `1.0.0`, runtime `0.1.x`.
+
+Community adapters are installed and registered explicitly by the operator. The SDK provides validation and `runAdapterConformance(...)`; the runtime provides the narrow `communityAdapterTransport(...)` bridge. The SDK is **not a sandbox**, and passing conformance does not establish trust or replace source/dependency/security review.
+
+See [Community Adapter SDK](community-adapter-sdk.md), the local `examples/community-adapter/` reference and the evidence-driven [Compatibility Matrix](compatibility-matrix.md).
 
 ## Docker installation
 
@@ -143,13 +153,13 @@ When using the packed runtime, replace `node packages/runtime/dist/cli.js` with 
 
 Q1X does not bundle browser binaries. Browser control requires an explicitly configured compatible browser endpoint. The built-in browser layer supports managed Chromium-family execution and explicit CDP attachment subject to the runtime's navigation/origin and file policies.
 
-See [Browser and web control](browser-control.md) for endpoint configuration and the exact security boundaries. Do not infer support for a browser or operating-system combination that has not been tested.
+See [Browser and web control](browser-control.md) for endpoint configuration and the exact security boundaries. Do not infer support for a browser or operating-system combination that has not been tested in the compatibility matrix.
 
 ## Desktop/application setup
 
 The Community runtime provides provider-neutral desktop contracts and a portable stdio-bridge boundary. Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific controllers are optional bridge implementations; they are not universally bundled platform drivers.
 
-See [Desktop and application control](desktop-control.md).
+See [Desktop and application control](desktop-control.md) and [Compatibility Matrix](compatibility-matrix.md).
 
 ## Security and audit checks
 
@@ -191,8 +201,8 @@ If an alpha upgrade must be reversed:
 
 Do not mix an older executable with durable state that a newer incompatible migration has transformed unless that downgrade path is explicitly supported by the release.
 
-## What is tested in Phase 10
+## What is tested
 
-Commissioning verifies the source-install lifecycle on GitHub-hosted Ubuntu, macOS and Windows runners, plus the Linux OCI/Docker path. It also verifies the three generated package tarballs as an external consumer and checks their SHA-256 release evidence.
+Commissioning verifies the source-install lifecycle on GitHub-hosted Ubuntu, macOS and Windows runners, plus the Linux OCI/Docker path. It verifies all four generated package tarballs as an external consumer and checks their SHA-256 release evidence.
 
-That is not the complete compatibility matrix. Phase 11 will define the broader provider, model, adapter, browser, desktop and protocol compatibility declarations together with the Community Adapter SDK.
+Phase 11 additionally maintains a machine-readable compatibility declaration and deterministic [Compatibility Matrix](compatibility-matrix.md). Entries are explicitly labelled `tested`, `experimental` or `unsupported`; those labels are scoped to their cited repository evidence and must not be generalized beyond the stated tuple.
