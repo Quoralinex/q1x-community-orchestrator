@@ -25,9 +25,9 @@ Software delivery is only one workload. The project is designed for research, co
 
 <div class="callout"><strong>Design rule:</strong> models are capabilities, not the architecture. The system routes work by capability, cost, privacy, modality, evidence, trust and availability.</div>
 
-## Public alpha candidate
+## Public alpha
 
-Phase 10 is commissioning `0.1.0-alpha.1` as the first governed public-alpha release candidate. The release surface includes version-locked package tarballs, SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. It remains experimental and is not production-ready.
+Phase 10 implements the governed `0.1.0-alpha.1` public-alpha release pipeline. The release surface includes version-locked package tarballs, SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. The software remains experimental and is not production-ready. The authoritative prerelease is created only from a verified protected `main` commit.
 
 - [Public alpha quick start](public-alpha.md) — release identity, installation, integrity verification, upgrade and rollback.
 - [Known limitations](known-limitations.md) — explicit alpha nonclaims and unsupported assumptions.
