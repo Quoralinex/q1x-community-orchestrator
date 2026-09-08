@@ -1,4 +1,6 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
@@ -40,10 +42,7 @@ test('rejects duplicate entry ids', () => {
 });
 
 test('rejects duplicate compatibility tuples', () => {
-  const value = matrix([
-    testedEntry(),
-    testedEntry({ id: 'other-id' }),
-  ]);
+  const value = matrix([testedEntry(), testedEntry({ id: 'other-id' })]);
   assert.throws(() => validateCompatibilityMatrix(value), /duplicate compatibility tuple/i);
 });
 
@@ -71,9 +70,7 @@ test('requires repository-verifiable source paths for CI evidence', () => {
 });
 
 test('requires caveats for experimental entries', () => {
-  const entry = {
-    id: 'browser.other', category: 'browser', target: 'Other browser engines', status: 'experimental',
-  };
+  const entry = { id: 'browser.other', category: 'browser', target: 'Other browser engines', status: 'experimental' };
   assert.throws(() => validateCompatibilityMatrix(matrix([entry])), /experimental.*caveat/i);
 });
 
@@ -100,4 +97,19 @@ test('renders a deterministic matrix with legend, evidence and no-claim warning'
   assert.match(one, /cross-platform-packaging\.yml/);
   assert.match(one, new RegExp(SHA));
   assert.match(one, /absence.*not.*compatibility claim/i);
+});
+
+test('checked-in matrix source validates and generated markdown is current', async () => {
+  const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
+  const markdown = await readFile(new URL('../docs/compatibility-matrix.md', import.meta.url), 'utf8');
+  const generated = renderCompatibilityMarkdown(normalizeCompatibilityMatrix(source));
+  assert.equal(markdown, generated);
+});
+
+test('generator check mode succeeds only when checked-in markdown matches', () => {
+  const result = spawnSync(process.execPath, ['scripts/compatibility/generate-matrix.mjs', '--check'], {
+    cwd: new URL('..', import.meta.url),
+    encoding: 'utf8',
+  });
+  assert.equal(result.status, 0, result.stderr || result.stdout);
 });
