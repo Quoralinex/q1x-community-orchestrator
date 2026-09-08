@@ -23,6 +23,7 @@ test('public alpha identity is exact and version locked', async () => {
   assert.deepEqual(identity.packages.map(item => item.name), [
     '@quoralinex/q1x-community-contracts',
     '@quoralinex/q1x-community-sdk',
+    '@quoralinex/q1x-community-adapter-sdk',
     '@quoralinex/q1x-community-runtime'
   ]);
   assert.equal(assertReleaseIdentity(identity), identity);
