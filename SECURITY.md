@@ -6,11 +6,11 @@ Use GitHub's private vulnerability reporting feature when it is available for th
 
 Security fixes follow the same protected-branch and review requirements as other changes, with disclosure coordinated after a fix is available.
 
-## Current pre-alpha security posture
+## Current public-alpha security posture
 
-The Community runtime is local-first and pre-alpha. Security boundaries are designed to fail closed around configured endpoints, browser/desktop execution policy and consequential work approvals, but the project must not be treated as a hardened multi-tenant or enterprise identity system.
+The Community runtime is local-first and experimental. Security boundaries are designed to fail closed around configured endpoints, browser/desktop execution policy and consequential work approvals, but the project must not be treated as a hardened multi-tenant or enterprise identity system.
 
-Phase 9 is introducing:
+Implemented Phase 9 controls include:
 
 - single-use approval records for protected work;
 - immutable evidence with bounded provenance and optional cryptographic content digests;
@@ -18,7 +18,7 @@ Phase 9 is introducing:
 - startup audit-chain verification;
 - checkpoint-backed reconciliation of interrupted running work.
 
-See [`docs/security-hardening.md`](docs/security-hardening.md) for the exact behavior and limitations.
+Phase 10 public-alpha commissioning does not widen those security guarantees. See [`docs/security-hardening.md`](docs/security-hardening.md) for the exact behavior and [`docs/known-limitations.md`](docs/known-limitations.md) for the current release nonclaims.
 
 ## Sensitive data boundary
 
