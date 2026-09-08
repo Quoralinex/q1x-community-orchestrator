@@ -1,0 +1,18 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "evidence.example.release-test",
+  "kind": "test-result",
+  "summary": "Release verification completed successfully.",
+  "executionRef": "execution.example.release-test",
+  "resultRef": "result.example.release-test",
+  "contentDigest": {
+    "algorithm": "sha256",
+    "value": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+  },
+  "claims": ["The tested release candidate satisfied the referenced verification run."],
+  "provenance": {
+    "actor": { "id": "service.ci", "kind": "service" },
+    "method": "node-test"
+  },
+  "collectedAt": "2026-09-08T10:02:00Z"
+}
