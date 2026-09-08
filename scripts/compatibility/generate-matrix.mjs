@@ -8,6 +8,10 @@ const sourcePath = resolve(root, 'compatibility/matrix.json');
 const outputPath = resolve(root, 'docs/compatibility-matrix.md');
 const check = process.argv.includes('--check');
 
+function normalizeLineEndings(value) {
+  return value.replace(/\r\n/g, '\n');
+}
+
 const source = JSON.parse(await readFile(sourcePath, 'utf8'));
 const rendered = renderCompatibilityMarkdown(normalizeCompatibilityMatrix(source));
 
@@ -19,7 +23,7 @@ if (check) {
     console.error('Compatibility matrix documentation is missing.');
     process.exitCode = 1;
   }
-  if (current && current !== rendered) {
+  if (current && normalizeLineEndings(current) !== normalizeLineEndings(rendered)) {
     console.error('Compatibility matrix documentation is stale. Run node scripts/compatibility/generate-matrix.mjs.');
     process.exitCode = 1;
   }
