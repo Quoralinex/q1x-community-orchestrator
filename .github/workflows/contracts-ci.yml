@@ -40,6 +40,8 @@ jobs:
         run: node --test tests/examples.test.mjs
       - name: Validate release commissioning contracts
         run: node --test tests/release-commissioning.test.mjs
+      - name: Prepare public alpha artifacts
+        run: node scripts/release/prepare-alpha.mjs --output .release-test --source-sha "$GITHUB_SHA"
       - name: Compile desktop action schema
         run: node --test --test-name-pattern="desktop action schema compiles" tests/desktop-examples.test.mjs
       - name: Validate desktop endpoint example
