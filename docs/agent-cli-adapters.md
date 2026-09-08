@@ -1,6 +1,6 @@
 # MCP, A2A and CLI/TUI Adapters
 
-Phase 5 adds executable adapter endpoints for MCP servers, A2A agents and local CLI/TUI tools while preserving the provider-neutral Q1X execution envelope.
+Phase 5 adds executable adapter endpoints for MCP servers, A2A agents and local CLI/TUI tools while preserving the provider-neutral Q1X execution envelope. Phase 11 adds a separate public Community Adapter SDK so third-party transport implementations can target that same envelope through an explicit runtime bridge.
 
 ## Adapter endpoints
 
@@ -57,6 +57,18 @@ node packages/runtime/dist/cli.js --home .q1x adapter execute adapter.cli.local-
 
 The example command path is illustrative; configure it for a real local tool before execution.
 
+## Community Adapter SDK
+
+The public `@quoralinex/q1x-community-adapter-sdk` package lets third-party authors implement a `CommunityAdapter`, validate the exact public-alpha compatibility tuple and run the deterministic conformance suite.
+
+The current line is Adapter SDK `0.1.0-alpha.1`, contract `1.0.0`, Community runtime `0.1.x`.
+
+Adapters are installed and registered **explicitly** by the operator. The runtime bridge `communityAdapterTransport(...)` converts a conforming adapter into the existing `AdapterTransport` interface; a host supplies that transport through `OpenControlRuntime.open({ adapterTransports: [...] })` or the existing explicit registry surface.
+
+Community core does not scan packages, auto-load arbitrary modules or maintain a marketplace/secret store. The Adapter SDK is **not a sandbox**, and a passing conformance report is compatibility evidence rather than a trust certificate.
+
+See [Community Adapter SDK](community-adapter-sdk.md), the local [`examples/community-adapter/`](../examples/community-adapter/) reference template and the generated [Compatibility Matrix](compatibility-matrix.md).
+
 ## Security and audit
 
 Remote HTTP requires HTTPS, except for loopback development endpoints. Credentials cannot be embedded in URLs or persisted in sensitive static headers.
@@ -65,10 +77,14 @@ Adapter execution audit events contain endpoint id, protocol, outcome, duration 
 
 MCP clients and transports are closed after discovery or execution. CLI stdout/stderr capture is bounded. Network redirects are not followed automatically when credentials may be attached.
 
+A Community Adapter receives only the bounded bridge context explicitly supplied by the host (`signal`, `env` and `fetch`). It is not handed runtime database, audit-store, browser-session or desktop-backend objects by the Community bridge. Operators must still review arbitrary adapter code and dependencies because normal JavaScript process permissions remain outside conformance.
+
 ## Extensibility
 
-Third-party transports can register additional protocol ids through `AdapterTransportRegistry` without changing the core runtime. That keeps adapter families open to future MCP, A2A, CLI and other interoperable transports while retaining one execution contract.
+Built-in and third-party transports share the existing `AdapterTransportRegistry`. The Phase 11 Community Adapter SDK provides the public authoring/conformance path while retaining explicit registration and duplicate-protocol conflict handling.
+
+This keeps adapter families open to future MCP, A2A, CLI and other interoperable transports without changing the core execution contract or introducing mandatory vendor/provider dependencies.
 
 ## Examples
 
-Schema-validated endpoint examples live in `examples/adapter-endpoints/`.
+Schema-validated endpoint examples live in `examples/adapter-endpoints/`. The Community Adapter reference template lives in `examples/community-adapter/`.

@@ -151,5 +151,7 @@ jobs:
         run: npm publish --provenance --access public .release/quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz
       - name: Publish SDK with trusted provenance
         run: npm publish --provenance --access public .release/quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz
+      - name: Publish adapter SDK with trusted provenance
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz
       - name: Publish runtime with trusted provenance
         run: npm publish --provenance --access public .release/quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz

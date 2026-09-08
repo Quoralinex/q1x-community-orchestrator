@@ -35,7 +35,7 @@ function validateManifestShape(manifest) {
   if (manifest?.status !== 'public-alpha') throw new Error('Release manifest status must be public-alpha');
   if (manifest?.version !== RELEASE_VERSION) throw new Error(`Release manifest version must be ${RELEASE_VERSION}`);
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length !== PUBLIC_PACKAGES.length) {
-    throw new Error('Release manifest must contain exactly three package artifacts');
+    throw new Error('Release manifest must contain exactly four package artifacts');
   }
   const expectedNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
   const actualNames = new Set(manifest.artifacts.map(artifact => artifact.packageName));
@@ -107,14 +107,23 @@ export async function verifyPackedConsumer(artifactsDirectory) {
     run(process.execPath, [
       '--input-type=module',
       '--eval',
-      "import * as sdk from '@quoralinex/q1x-community-sdk'; import * as runtime from '@quoralinex/q1x-community-runtime'; if (!sdk || !runtime) process.exit(1);"
+      [
+        "import * as sdk from '@quoralinex/q1x-community-sdk';",
+        "import * as adapterSdk from '@quoralinex/q1x-community-adapter-sdk';",
+        "import * as runtime from '@quoralinex/q1x-community-runtime';",
+        "const adapter = { protocol: 'consumer.echo', compatibility: adapterSdk.createAdapterCompatibility(), async execute(_endpoint, request) { return { contractVersion: '1.0.0', id: 'result.consumer.echo', requestId: request.id, workItemId: request.workItemId, status: 'succeeded', startedAt: request.createdAt, finishedAt: request.createdAt }; } };",
+        "if (!sdk || !runtime || !adapterSdk.validateCommunityAdapter(adapter).ok) process.exit(1);"
+      ].join(' ')
     ], consumer);
 
     const typeSmoke = join(consumer, 'consumer.ts');
     await writeFile(typeSmoke, [
       "import type { AuditVerification } from '@quoralinex/q1x-community-sdk';",
+      "import type { CommunityAdapter } from '@quoralinex/q1x-community-adapter-sdk';",
       "const verification: AuditVerification = { valid: true, checked: 0 };",
+      "declare const adapter: CommunityAdapter;",
       'void verification;',
+      'void adapter;',
       ''
     ].join('\n'));
     run(process.execPath, [

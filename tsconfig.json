@@ -3,6 +3,7 @@
   "references": [
     { "path": "./packages/contracts" },
     { "path": "./packages/sdk-typescript" },
+    { "path": "./packages/adapter-sdk" },
     { "path": "./packages/runtime" }
   ]
 }

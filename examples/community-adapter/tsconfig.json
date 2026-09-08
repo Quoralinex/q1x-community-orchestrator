@@ -7,14 +7,8 @@
     "declaration": true,
     "outDir": "dist",
     "rootDir": "src",
-    "composite": true,
     "skipLibCheck": true,
     "types": ["node"]
   },
-  "references": [
-    { "path": "../contracts" },
-    { "path": "../sdk-typescript" },
-    { "path": "../adapter-sdk" }
-  ],
   "include": ["src/**/*.ts"]
 }

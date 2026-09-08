@@ -1,7 +1,7 @@
 {
-  "name": "@quoralinex/q1x-community-runtime",
+  "name": "@quoralinex/q1x-community-adapter-sdk",
   "version": "0.1.0-alpha.1",
-  "description": "Single-node Open Control Runtime for Q1X Community Orchestrator.",
+  "description": "Public authoring and conformance SDK for Q1X Community Orchestrator adapters.",
   "type": "module",
   "engines": {
     "node": ">=24"
@@ -18,25 +18,16 @@
     }
   },
   "dependencies": {
-    "@modelcontextprotocol/client": "2.0.0",
-    "@quoralinex/q1x-community-adapter-sdk": "0.1.0-alpha.1",
-    "@quoralinex/q1x-community-contracts": "0.1.0-alpha.1",
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.1",
-    "ajv": "^8.17.1",
-    "ajv-formats": "^3.0.1",
-    "playwright-core": "1.63.0"
+    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
     "type": "git",
     "url": "https://github.com/Quoralinex/q1x-community-orchestrator.git",
-    "directory": "packages/runtime"
+    "directory": "packages/adapter-sdk"
   },
   "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
   "publishConfig": {
     "access": "public"
-  },
-  "bin": {
-    "q1x": "./dist/cli.js"
   }
 }

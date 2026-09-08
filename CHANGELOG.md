@@ -2,7 +2,7 @@
 
 All notable Community Orchestrator release changes are recorded here. The project remains pre-stable until a future release explicitly declares otherwise.
 
-## 0.1.0-alpha.1 — public alpha
+## 0.1.0-alpha.1 — public alpha candidate
 
 ### Foundation delivered
 
@@ -19,8 +19,8 @@ All notable Community Orchestrator release changes are recorded here. The projec
 
 ### Public alpha commissioning
 
-- exact version alignment across contracts, SDK and runtime packages;
-- governed `npm pack` artifacts for all three public packages;
+- exact version alignment across the four public packages: contracts, core SDK, Community Adapter SDK and runtime;
+- governed `npm pack` artifacts for all four public packages;
 - machine-readable release manifest and SHA-256 checksum evidence;
 - clean external-consumer verification from packed Q1X artifacts;
 - fail-closed GitHub public-alpha commissioning workflow;
@@ -29,10 +29,23 @@ All notable Community Orchestrator release changes are recorded here. The projec
 - source, packed-package and Docker quick-start guidance;
 - documented upgrade/rollback procedure and public-alpha known limitations.
 
+### Phase 11 compatibility and extension surface
+
+- machine-readable compatibility declarations with deterministic generated Markdown;
+- separate Compatibility Matrix CI gate and drift validation;
+- explicit `tested`, `experimental` and `unsupported` compatibility status semantics;
+- public `@quoralinex/q1x-community-adapter-sdk` authoring package;
+- exact Adapter SDK compatibility tuple: SDK `0.1.0-alpha.1`, contract `1.0.0`, runtime `0.1.x`;
+- structured `runAdapterConformance(...)` checks for metadata, execution, discovery and fixture mutation;
+- narrow `communityAdapterTransport(...)` runtime bridge with explicit operator registration;
+- deterministic local `examples/community-adapter/` reference implementation;
+- documented no-auto-loading, no-marketplace, no-secret-store and no-sandbox boundaries;
+- conformance explicitly separated from security/trust certification.
+
 ### Licence
 
 The public repository and packages retain the PolyForm Noncommercial License 1.0.0. Commercial use requires a separate licence from Quoralinex.
 
 ### Stability
 
-This is an experimental public alpha, not a production or general-availability release. Breaking changes may occur before stable release. Phase 11 will add the formal compatibility matrix and Community Adapter SDK.
+This remains an experimental public alpha, not a production or general-availability release. Breaking changes may occur before stable release. A GitHub tag or prerelease is authoritative only after the governed manual Public Alpha Commissioning workflow has actually created it from the verified protected `main` commit; this changelog does not by itself assert that commissioning action has occurred.

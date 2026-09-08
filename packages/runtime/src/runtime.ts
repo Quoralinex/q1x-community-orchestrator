@@ -24,6 +24,7 @@ import { SqliteStore } from './store.js';
 
 export interface RuntimeOpenOptions {
   home?: string;
+  adapterTransports?: readonly AdapterTransport[];
 }
 
 export interface RuntimeStatus {
@@ -67,10 +68,12 @@ export class OpenControlRuntime {
   }
 
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
+    const adapterTransports = createDefaultAdapterTransportRegistry();
+    for (const transport of options.adapterTransports ?? []) adapterTransports.register(transport);
     return new OpenControlRuntime(
       SqliteStore.open(options.home),
       createDefaultModelTransportRegistry(),
-      createDefaultAdapterTransportRegistry(),
+      adapterTransports,
       new BrowserSessionManager(createDefaultBrowserBackendRegistry()),
       createDefaultDesktopBackendRegistry()
     );

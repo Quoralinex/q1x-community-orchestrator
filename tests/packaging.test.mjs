@@ -68,6 +68,23 @@ test('public alpha workflow is manual-release, fail-closed and action-pinned', a
   for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
 });
 
+test('compatibility workflow is focused, read-only and action-pinned', async () => {
+  const workflow = await text('.github/workflows/compatibility.yml');
+  assert.match(workflow, /name:\s*Compatibility Matrix/);
+  assert.match(workflow, /pull_request:/);
+  assert.match(workflow, /push:/);
+  assert.match(workflow, /branches:\s*\[main\]/);
+  assert.match(workflow, /compatibility\/\*\*/);
+  assert.match(workflow, /scripts\/compatibility\/\*\*/);
+  assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
+  assert.match(workflow, /ubuntu-24\.04/);
+  assert.match(workflow, /npm ci --no-audit --no-fund/);
+  assert.match(workflow, /npm run test:compatibility/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 2);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
+
 test('public alpha documentation preserves release and security boundaries', async () => {
   const quickStart = await text('docs/public-alpha.md');
   const limitations = await text('docs/known-limitations.md');

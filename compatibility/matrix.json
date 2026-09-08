@@ -1,0 +1,113 @@
+{
+  "matrixVersion": "1.0.0",
+  "projectVersion": "0.1.0-alpha.1",
+  "generatedFrom": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+  "entries": [
+    {
+      "id": "os.ubuntu-24.04.source",
+      "category": "os",
+      "target": "Ubuntu 24.04 source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+    },
+    {
+      "id": "os.macos-latest.source",
+      "category": "os",
+      "target": "macOS latest source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+    },
+    {
+      "id": "os.windows-latest.source",
+      "category": "os",
+      "target": "Windows latest source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+    },
+    {
+      "id": "deployment.docker-linux",
+      "category": "deployment",
+      "target": "Linux Docker/OCI non-root deployment",
+      "status": "tested",
+      "implementation": "Docker multi-stage image",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+    },
+    {
+      "id": "package-consumer.alpha-tarballs",
+      "category": "package-consumer",
+      "target": "Governed four-package Q1X alpha tarballs in an external consumer",
+      "status": "tested",
+      "implementation": "npm pack tarballs",
+      "evidence": [
+        {"kind": "ci", "source": ".github/workflows/public-alpha.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
+        {"kind": "ci", "source": "tests/release-adapter-governance.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
+        {"kind": "ci", "source": "tests/release-commissioning.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}
+      ]
+    },
+    {
+      "id": "model-transport.provider-combinations",
+      "category": "model-transport",
+      "target": "Provider/model endpoint combinations",
+      "status": "experimental",
+      "implementation": "Provider-neutral compatible HTTP transports",
+      "constraints": ["Specific provider, model and endpoint combinations require separate verification before being labelled tested."]
+    },
+    {
+      "id": "adapter.mcp",
+      "category": "adapter",
+      "target": "MCP stdio and Streamable HTTP adapters",
+      "status": "experimental",
+      "implementation": "Built-in MCP transports",
+      "constraints": ["Protocol behavior is covered by runtime tests, but environment/server combinations require explicit compatibility evidence before promotion to tested."]
+    },
+    {
+      "id": "adapter.a2a",
+      "category": "adapter",
+      "target": "A2A JSON-RPC agents",
+      "status": "experimental",
+      "implementation": "Built-in A2A transport",
+      "constraints": ["Remote agent implementations and deployment environments vary and require explicit compatibility evidence."]
+    },
+    {
+      "id": "adapter.cli",
+      "category": "adapter",
+      "target": "Local CLI/TUI adapters",
+      "status": "experimental",
+      "implementation": "Direct no-shell stdio transports",
+      "constraints": ["Executable-specific behavior depends on the operator-installed tool and is not universally compatible."]
+    },
+    {
+      "id": "browser.chromium",
+      "category": "browser",
+      "target": "Chromium-family browser control",
+      "status": "experimental",
+      "implementation": "Playwright/CDP backend",
+      "constraints": ["Browser binaries are not bundled and host/browser-version combinations require explicit evidence before promotion to tested."]
+    },
+    {
+      "id": "desktop.stdio",
+      "category": "desktop",
+      "target": "Desktop/application control through the stdio bridge",
+      "status": "experimental",
+      "implementation": "OS-neutral desktop bridge",
+      "constraints": ["Native driver availability and application behavior are host-specific and require explicit evidence before promotion to tested."]
+    },
+    {
+      "id": "protocol.community-adapter",
+      "category": "protocol",
+      "target": "Community Adapter SDK conformance and explicit runtime bridge",
+      "status": "tested",
+      "implementation": "@quoralinex/q1x-community-adapter-sdk",
+      "version": "0.1.0-alpha.1 / contract 1.0.0 / runtime 0.1.x",
+      "evidence": [
+        {"kind": "ci", "source": "tests/adapter-sdk.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
+        {"kind": "ci", "source": "tests/community-adapter-example.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
+        {"kind": "ci", "source": "tests/runtime-community-adapter.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}
+      ],
+      "notes": "This tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
+    }
+  ]
+}

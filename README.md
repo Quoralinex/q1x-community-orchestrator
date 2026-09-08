@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phase 10 public-alpha commissioning is implemented for `0.1.0-alpha.1`. The repository remains experimental and must not be treated as production-ready. The authoritative GitHub prerelease is created only by the governed Public Alpha Commissioning workflow from a verified protected `main` commit.
+> **Status:** Phases 1–11 are implemented and the Phase 11 branch has passed exact-head public-alpha candidate acceptance for `0.1.0-alpha.1`. The repository remains experimental and must not be treated as production-ready. Protected-`main` merge and manual release commissioning remain separate gates; a GitHub tag/prerelease is authoritative only when the governed Public Alpha Commissioning workflow creates it from a verified protected `main` commit.
 
 ## What it is
 
@@ -142,15 +142,23 @@ Audit metadata recursively redacts secret-shaped keys and does not copy prompts,
 
 ## Phase 10: public alpha commissioning
 
-The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 implements release identity checks, exact internal package version locking, generated contracts/SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
+The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 implements release identity checks, exact internal package version locking, generated contracts/SDK/Adapter-SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
 
 The GitHub prerelease is authoritative even when npm publication is unavailable. npm publication is a separate opt-in Trusted Publishing/OIDC lane and is never required for the GitHub release path. Release creation refuses a stale `main` target or an existing authoritative tag/release and points the tag directly at the exact verified `main` commit.
 
-See [`docs/public-alpha.md`](docs/public-alpha.md), [`docs/known-limitations.md`](docs/known-limitations.md), [`CHANGELOG.md`](CHANGELOG.md) and [`RELEASE_NOTES.md`](RELEASE_NOTES.md). Phase 11 remains separate and will deliver the broader compatibility matrix and Community Adapter SDK.
+See [`docs/public-alpha.md`](docs/public-alpha.md), [`docs/known-limitations.md`](docs/known-limitations.md), [`CHANGELOG.md`](CHANGELOG.md) and [`RELEASE_NOTES.md`](RELEASE_NOTES.md).
+
+## Phase 11: compatibility matrix and Community Adapter SDK
+
+Phase 11 adds an evidence-backed compatibility registry and deterministic generated matrix with explicit `tested`, `experimental` and `unsupported` statuses. Absence from the matrix is not a compatibility claim. Tested declarations carry repository-verifiable CI evidence; broader provider, model, browser, desktop and remote-agent combinations remain experimental until their exact combinations are verified.
+
+The separate [`@quoralinex/q1x-community-adapter-sdk`](packages/adapter-sdk/) provides public adapter metadata validation, compatibility tuple checks and a conformance runner. The runtime bridge accepts adapters only through explicit operator-controlled registration and preserves the existing provider-neutral execution envelope. A deterministic local reference adapter lives under [`examples/community-adapter/`](examples/community-adapter/).
+
+Conformance validates the published adapter contract; it is **not a sandbox and is not trust certification** for arbitrary third-party code. See [`docs/community-adapter-sdk.md`](docs/community-adapter-sdk.md) and [`docs/compatibility-matrix.md`](docs/compatibility-matrix.md).
 
 ## Capability fabric
 
-Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening and the Phase 10 public-alpha release pipeline. The broader compatibility matrix and Community Adapter SDK remain Phase 11 work.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, public-alpha release governance, the compatibility matrix and the Community Adapter SDK.
 
 ## Deployment profiles
 
@@ -158,7 +166,7 @@ The supported alpha baseline is a zero-cost single-node profile using an embedde
 
 ## Documentation
 
-The detailed architecture, use cases, deployment model, public-alpha guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
+The detailed architecture, use cases, deployment model, public-alpha guidance, compatibility evidence, adapter authoring guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
 
 ## Contributing
 

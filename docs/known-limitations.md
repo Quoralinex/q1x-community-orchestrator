@@ -18,6 +18,12 @@ Q1X Community Orchestrator `0.1.0-alpha.1` is experimental software. The stateme
 
 8. **npm publication may be unavailable while GitHub artifacts remain available.** GitHub prerelease tarballs are the authoritative public-alpha package artifacts. npm publication is optional and requires separately configured trusted-publishing authority; its absence does not invalidate the governed GitHub release.
 
-Additional current nonclaims include enterprise IAM, HSM-backed signing, remote attestation, confidential-computing isolation, externally witnessed audit transparency, guaranteed crash-atomicity across every multi-write governance operation, and production/SLA support.
+9. **Community adapters are not sandboxed by the Adapter SDK.** `@quoralinex/q1x-community-adapter-sdk` validates the public compatibility contract and supplies a conformance runner, but imported adapter code runs with the permissions granted by its host process unless the operator adds an independent isolation mechanism. Installation and registration are explicit operator actions.
 
-Phase 11 will publish the broader tested/experimental/unsupported compatibility matrix and the Community Adapter SDK. Until then, do not infer compatibility beyond the surfaces explicitly exercised by repository CI and documented for this alpha.
+10. **Conformance is compatibility evidence, not a trust certificate.** Passing `runAdapterConformance(...)` does not prove that an adapter is safe, non-malicious, correctly licensed, privacy-preserving or appropriate for a workload. Operators remain responsible for reviewing adapter source, dependencies, permissions, network behavior, credential handling and data retention.
+
+11. **Compatibility evidence is scoped.** The Phase 11 compatibility matrix labels surfaces `tested`, `experimental` or `unsupported` against specific repository evidence. A tested entry does not imply support for uncited operating-system versions, provider variants, browser versions, native bridges, applications or third-party adapters.
+
+Additional current nonclaims include enterprise IAM, HSM-backed signing, remote attestation, confidential-computing isolation, externally witnessed audit transparency, guaranteed crash-atomicity across every multi-write governance operation, adapter marketplace trust, automatic package vetting and production/SLA support.
+
+See [Compatibility Matrix](compatibility-matrix.md) and [Community Adapter SDK](community-adapter-sdk.md) for the Phase 11 evidence and extension boundaries. Do not infer compatibility or trust beyond the surfaces explicitly exercised by repository CI and documented for this alpha.

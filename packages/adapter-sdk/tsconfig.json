@@ -9,12 +9,8 @@
     "rootDir": "src",
     "composite": true,
     "skipLibCheck": true,
-    "types": ["node"]
+    "lib": ["ES2022", "DOM"]
   },
-  "references": [
-    { "path": "../contracts" },
-    { "path": "../sdk-typescript" },
-    { "path": "../adapter-sdk" }
-  ],
+  "references": [{ "path": "../sdk-typescript" }],
   "include": ["src/**/*.ts"]
 }

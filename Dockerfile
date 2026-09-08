@@ -5,6 +5,7 @@ WORKDIR /app
 COPY package.json package-lock.json ./
 COPY packages/contracts/package.json packages/contracts/package.json
 COPY packages/sdk-typescript/package.json packages/sdk-typescript/package.json
+COPY packages/adapter-sdk/package.json packages/adapter-sdk/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
 RUN npm ci --no-audit --no-fund
 
