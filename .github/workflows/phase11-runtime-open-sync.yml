@@ -1,0 +1,52 @@
+name: Phase 11 Runtime Open Sync
+
+on:
+  push:
+    branches:
+      - feat/phase11-compatibility-adapter-sdk
+    paths:
+      - '.github/workflows/phase11-runtime-open-sync.yml'
+      - 'packages/runtime/package.json'
+
+permissions:
+  contents: write
+
+jobs:
+  sync-runtime-open:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: feat/phase11-compatibility-adapter-sdk
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+      - name: Patch runtime open options and injection
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          path = Path('packages/runtime/src/runtime.ts')
+          text = path.read_text()
+          old_options = """export interface RuntimeOpenOptions {\n  home?: string;\n}\n"""
+          new_options = """export interface RuntimeOpenOptions {\n  home?: string;\n  adapterTransports?: readonly AdapterTransport[];\n}\n"""
+          if old_options not in text:
+              raise SystemExit('RuntimeOpenOptions patch target not found')
+          text = text.replace(old_options, new_options, 1)
+          old_open = """  static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {\n    return new OpenControlRuntime(\n      SqliteStore.open(options.home),\n      createDefaultModelTransportRegistry(),\n      createDefaultAdapterTransportRegistry(),\n      new BrowserSessionManager(createDefaultBrowserBackendRegistry()),\n      createDefaultDesktopBackendRegistry()\n    );\n  }\n"""
+          new_open = """  static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {\n    const adapterTransports = createDefaultAdapterTransportRegistry();\n    for (const transport of options.adapterTransports ?? []) adapterTransports.register(transport);\n    return new OpenControlRuntime(\n      SqliteStore.open(options.home),\n      createDefaultModelTransportRegistry(),\n      adapterTransports,\n      new BrowserSessionManager(createDefaultBrowserBackendRegistry()),\n      createDefaultDesktopBackendRegistry()\n    );\n  }\n"""
+          if old_open not in text:
+              raise SystemExit('OpenControlRuntime.open patch target not found')
+          path.write_text(text.replace(old_open, new_open, 1))
+          PY
+      - name: Regenerate workspace lockfile
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit generated runtime-open changes
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add packages/runtime/src/runtime.ts package-lock.json
+          git diff --cached --exit-code && { echo 'No generated changes found'; exit 1; } || true
+          git commit -m 'feat: inject community adapter transports at runtime open'
+          git push origin HEAD:feat/phase11-compatibility-adapter-sdk
