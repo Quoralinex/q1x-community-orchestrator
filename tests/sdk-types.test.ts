@@ -16,6 +16,11 @@ import type {
   DesktopEndpoint,
   DesktopActionBatch,
   DesktopBatchResult,
+  Approval,
+  ApprovalDecision,
+  Evidence,
+  AuditReceipt,
+  AuditVerification,
 } from "../packages/sdk-typescript/src/index.js";
 
 const mission: Mission = {
@@ -177,3 +182,43 @@ const desktopResult: DesktopBatchResult = {
   actions: [{ id: "focus", status: "succeeded", durationMs: 5 }]
 };
 void desktopEndpoint; void desktopBatch; void desktopResult;
+
+const approvalDecision: ApprovalDecision = {
+  actor: { id: "human.owner", kind: "human" },
+  action: "approve",
+  decidedAt: "2026-09-08T10:01:00Z",
+  reason: "Reviewed."
+};
+const approval: Approval = {
+  contractVersion: "1.0.0",
+  id: "approval.sdk-test",
+  subject: { id: "task.sdk-protected", kind: "task" },
+  state: "consumed",
+  requestedAt: "2026-09-08T10:00:00Z",
+  requestedBy: { id: "agent.supervisor", kind: "agent" },
+  requiredApproverKinds: ["human"],
+  decision: approvalDecision
+};
+const evidence: Evidence = {
+  contractVersion: "1.0.0",
+  id: "evidence.sdk-test",
+  kind: "test-result",
+  summary: "Typed evidence",
+  executionRef: "execution.sdk-test",
+  resultRef: "result.sdk-test",
+  contentDigest: { algorithm: "sha256", value: "a".repeat(64) },
+  provenance: { actor: { id: "service.ci", kind: "service" }, method: "node-test" },
+  collectedAt: "2026-09-08T10:02:00Z"
+};
+const auditReceipt: AuditReceipt = {
+  contractVersion: "1.0.0",
+  id: "audit.1.sdk-test",
+  sequence: 1,
+  eventType: "approval.requested",
+  subject: { id: approval.id, kind: "approval" },
+  scopeId: "programme.sdk-test",
+  digest: `sha256:${"b".repeat(64)}`,
+  occurredAt: "2026-09-08T10:00:00Z"
+};
+const auditVerification: AuditVerification = { valid: true, checked: 1 };
+void approvalDecision; void approval; void evidence; void auditReceipt; void auditVerification;
