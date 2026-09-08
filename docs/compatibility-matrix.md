@@ -2,7 +2,7 @@
 
 **Matrix version:** 1.0.0  
 **Project version:** 0.1.0-alpha.1  
-**Evidence baseline:** `371b27e265a5922184d0a48f57b966b9fbae959b`
+**Evidence baseline:** `3f249d836dac51725691b6dfe83a9c7d85842c50`
 
 ## Status legend
 
@@ -16,21 +16,21 @@
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| macOS latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
-| Ubuntu 24.04 source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
-| Windows latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
+| macOS latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
+| Ubuntu 24.04 source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
+| Windows latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
 
 ## deployment
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Linux Docker/OCI non-root deployment | tested | Docker multi-stage image | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
+| Linux Docker/OCI non-root deployment | tested | Docker multi-stage image | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
 
 ## package-consumer
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Governed Q1X alpha tarballs in an external consumer | tested | npm pack tarballs | — | ci: `.github/workflows/public-alpha.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b`<br>ci: `tests/release-commissioning.test.mjs` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
+| Governed four-package Q1X alpha tarballs in an external consumer | tested | npm pack tarballs | — | ci: `.github/workflows/public-alpha.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>ci: `tests/release-adapter-governance.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>ci: `tests/release-commissioning.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
 
 ## model-transport
 
@@ -44,7 +44,7 @@
 | --- | --- | --- | --- | --- | --- |
 | A2A JSON-RPC agents | experimental | Built-in A2A transport | — | — | Remote agent implementations and deployment environments vary and require explicit compatibility evidence. |
 | Local CLI/TUI adapters | experimental | Direct no-shell stdio transports | — | — | Executable-specific behavior depends on the operator-installed tool and is not universally compatible. |
-| MCP stdio and Streamable HTTP adapters | experimental | Built-in MCP transports | — | — | Protocol behavior is covered by runtime tests, but the formal Phase 11 matrix has not yet promoted environment/server combinations to tested. |
+| MCP stdio and Streamable HTTP adapters | experimental | Built-in MCP transports | — | — | Protocol behavior is covered by runtime tests, but environment/server combinations require explicit compatibility evidence before promotion to tested. |
 
 ## browser
 
@@ -62,5 +62,5 @@
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Third-party Community Adapter SDK protocols | unsupported | Not yet implemented on this matrix baseline | — | — | Phase 11 will replace this baseline entry with conformance-backed compatibility once the separate adapter SDK is implemented. |
+| Community Adapter SDK conformance and explicit runtime bridge | tested | @quoralinex/q1x-community-adapter-sdk | 0.1.0-alpha.1 / contract 1.0.0 / runtime 0.1.x | ci: `tests/adapter-sdk.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>ci: `tests/community-adapter-example.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>ci: `tests/runtime-community-adapter.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | This tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted. |
 
