@@ -31,7 +31,7 @@
   "allOf": [
     {
       "if": { "properties": { "state": { "enum": ["approved", "rejected", "consumed"] } }, "required": ["state"] },
-      "then": { "required": ["decision"] }
+      "then": { "properties": { "decision": {} }, "required": ["decision"] }
     }
   ],
   "additionalProperties": false
