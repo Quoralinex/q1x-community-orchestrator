@@ -1,0 +1,106 @@
+{
+  "matrixVersion": "1.0.0",
+  "projectVersion": "0.1.0-alpha.1",
+  "generatedFrom": "371b27e265a5922184d0a48f57b966b9fbae959b",
+  "entries": [
+    {
+      "id": "os.ubuntu-24.04.source",
+      "category": "os",
+      "target": "Ubuntu 24.04 source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"}]
+    },
+    {
+      "id": "os.macos-latest.source",
+      "category": "os",
+      "target": "macOS latest source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"}]
+    },
+    {
+      "id": "os.windows-latest.source",
+      "category": "os",
+      "target": "Windows latest source install",
+      "status": "tested",
+      "implementation": "Node.js 24",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"}]
+    },
+    {
+      "id": "deployment.docker-linux",
+      "category": "deployment",
+      "target": "Linux Docker/OCI non-root deployment",
+      "status": "tested",
+      "implementation": "Docker multi-stage image",
+      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"}]
+    },
+    {
+      "id": "package-consumer.alpha-tarballs",
+      "category": "package-consumer",
+      "target": "Governed Q1X alpha tarballs in an external consumer",
+      "status": "tested",
+      "implementation": "npm pack tarballs",
+      "evidence": [
+        {"kind": "ci", "source": ".github/workflows/public-alpha.yml", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"},
+        {"kind": "ci", "source": "tests/release-commissioning.test.mjs", "commitSha": "371b27e265a5922184d0a48f57b966b9fbae959b"}
+      ]
+    },
+    {
+      "id": "model-transport.provider-combinations",
+      "category": "model-transport",
+      "target": "Provider/model endpoint combinations",
+      "status": "experimental",
+      "implementation": "Provider-neutral compatible HTTP transports",
+      "constraints": ["Specific provider, model and endpoint combinations require separate verification before being labelled tested."]
+    },
+    {
+      "id": "adapter.mcp",
+      "category": "adapter",
+      "target": "MCP stdio and Streamable HTTP adapters",
+      "status": "experimental",
+      "implementation": "Built-in MCP transports",
+      "constraints": ["Protocol behavior is covered by runtime tests, but the formal Phase 11 matrix has not yet promoted environment/server combinations to tested."]
+    },
+    {
+      "id": "adapter.a2a",
+      "category": "adapter",
+      "target": "A2A JSON-RPC agents",
+      "status": "experimental",
+      "implementation": "Built-in A2A transport",
+      "constraints": ["Remote agent implementations and deployment environments vary and require explicit compatibility evidence."]
+    },
+    {
+      "id": "adapter.cli",
+      "category": "adapter",
+      "target": "Local CLI/TUI adapters",
+      "status": "experimental",
+      "implementation": "Direct no-shell stdio transports",
+      "constraints": ["Executable-specific behavior depends on the operator-installed tool and is not universally compatible."]
+    },
+    {
+      "id": "browser.chromium",
+      "category": "browser",
+      "target": "Chromium-family browser control",
+      "status": "experimental",
+      "implementation": "Playwright/CDP backend",
+      "constraints": ["Browser binaries are not bundled and host/browser-version combinations require explicit evidence before promotion to tested."]
+    },
+    {
+      "id": "desktop.stdio",
+      "category": "desktop",
+      "target": "Desktop/application control through the stdio bridge",
+      "status": "experimental",
+      "implementation": "OS-neutral desktop bridge",
+      "constraints": ["Native driver availability and application behavior are host-specific and require explicit evidence before promotion to tested."]
+    },
+    {
+      "id": "protocol.community-adapter",
+      "category": "protocol",
+      "target": "Third-party Community Adapter SDK protocols",
+      "status": "unsupported",
+      "implementation": "Not yet implemented on this matrix baseline",
+      "notes": "Phase 11 will replace this baseline entry with conformance-backed compatibility once the separate adapter SDK is implemented."
+    }
+  ]
+}
