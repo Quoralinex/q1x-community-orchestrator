@@ -42,7 +42,7 @@ function echoAdapter() {
         operations: ['community.echo'],
         modalities: { input: ['structured-data'], output: ['structured-data'] },
         availability: { state: 'available', checkedAt: '2026-09-08T16:00:00.000Z' },
-        cost: { class: 'free' },
+        cost: { class: 'no-usage-fee' },
         privacy: { executionLocation: 'local', dataRetention: 'none' },
         trust: { level: 'validated', source: 'community-adapter-test' },
         platforms: ['linux', 'macos', 'windows'],
