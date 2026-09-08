@@ -1,5 +1,5 @@
 import { CONTRACT_VERSION, SCHEMA_IDS } from '@quoralinex/q1x-community-contracts';
-import type { Approval, ApprovalDecision, AuditReceipt, AuditVerification, Evidence, WorkAssignment, WorkGraph } from '@quoralinex/q1x-community-sdk';
+import type { Approval, ApprovalDecision, AuditReceipt, AuditVerification, Evidence, WorkAssignment, WorkGraph, WorkNode } from '@quoralinex/q1x-community-sdk';
 import { RuntimeError } from './errors.js';
 import { validateContract } from './schema-loader.js';
 import { SecurityAuditStore } from './security-audit.js';
@@ -33,24 +33,60 @@ function withAudit<T>(runtime: OpenControlRuntime, fn: (store: SecurityAuditStor
   try { return fn(store); } finally { store.close(); }
 }
 
-function scopeForSubject(runtime: OpenControlRuntime, subjectId: string): string | undefined {
-  if (runtime.getProgramme(subjectId)) return subjectId;
+interface SubjectMatch {
+  scopeId: string;
+  kind: string;
+  graph?: WorkGraph;
+  node?: WorkNode;
+}
+
+function subjectMatches(runtime: OpenControlRuntime, subjectId: string): SubjectMatch[] {
+  const matches: SubjectMatch[] = [];
+  if (runtime.getProgramme(subjectId)) matches.push({ scopeId: subjectId, kind: 'programme' });
   for (const graph of runtime.listWorkGraphs()) {
-    if (graph.nodes.some(node => node.id === subjectId)) return graph.programmeId;
+    for (const node of graph.nodes) {
+      if (node.id === subjectId) matches.push({ scopeId: graph.programmeId, kind: node.kind, graph, node });
+    }
   }
-  return undefined;
+  return matches;
+}
+
+function exactSubjectMatches(runtime: OpenControlRuntime, subject: { id: string; kind?: string }): SubjectMatch[] {
+  const matches = subjectMatches(runtime, subject.id);
+  if (!subject.kind) return matches;
+  const exact = matches.filter(match => match.kind === subject.kind);
+  if (exact.length === 0 && matches.length > 0) {
+    throw new RuntimeError('INVALID_REFERENCE', `Approval subject kind does not match known subject: ${subject.id}`);
+  }
+  return exact;
+}
+
+function scopeForSubject(runtime: OpenControlRuntime, subject: { id: string; kind?: string }): string | undefined {
+  const matches = exactSubjectMatches(runtime, subject);
+  if (matches.length > 1) throw new RuntimeError('CONFLICT', `Approval subject is ambiguous across programmes: ${subject.id}`);
+  return matches[0]?.scopeId;
+}
+
+function protectedWorkSubject(runtime: OpenControlRuntime, subject: { id: string; kind?: string }): { graph: WorkGraph; node: WorkNode } {
+  const matches = exactSubjectMatches(runtime, subject).filter(match => match.graph && match.node);
+  if (matches.length > 1) throw new RuntimeError('CONFLICT', `Approval subject is ambiguous across programmes: ${subject.id}`);
+  const match = matches[0];
+  if (!match?.graph || !match.node || !match.node.approvalRequired) {
+    throw new RuntimeError('AUTHORIZATION_REQUIRED', `Approval subject is not a protected pending work item: ${subject.id}`);
+  }
+  return { graph: match.graph, node: match.node };
 }
 
 function requestApproval(this: OpenControlRuntime, approval: Approval): Approval {
   validateContract(SCHEMA_IDS.approval, approval);
   if (approval.state !== 'pending' || approval.decision) throw new RuntimeError('CONFLICT', 'New approval requests must be pending and undecided');
-  const scopeId = scopeForSubject(this, approval.subject.id);
+  const scopeId = scopeForSubject(this, approval.subject);
   withStore(this, store => {
     if (store.getHeadRevision('approval', approval.id) !== undefined) throw new RuntimeError('CONFLICT', `Approval already exists: ${approval.id}`);
     store.putDocument({ kind: 'approval', id: approval.id, scopeId: scopeId ?? null, document: approval });
     store.appendEvent('approval.requested', 'approval', approval.id, scopeId ?? null, { subjectId: approval.subject.id, requiredApproverKinds: approval.requiredApproverKinds ?? [] });
   });
-  this.appendAuditReceipt('approval.requested', { id: approval.id, kind: 'approval' }, scopeId, { subjectId: approval.subject.id, requiredApproverKinds: approval.requiredApproverKinds ?? [] });
+  this.appendAuditReceipt('approval.requested', { id: approval.id, kind: 'approval' }, scopeId, { subjectId: approval.subject.id, subjectKind: approval.subject.kind, requiredApproverKinds: approval.requiredApproverKinds ?? [] });
   return approval;
 }
 
@@ -71,7 +107,7 @@ function decideApproval(this: OpenControlRuntime, id: string, decision: Approval
   }
   const approval: Approval = { ...previous, state: decision.action === 'approve' ? 'approved' : 'rejected', decision };
   validateContract(SCHEMA_IDS.approval, approval);
-  const scopeId = scopeForSubject(this, approval.subject.id);
+  const scopeId = scopeForSubject(this, approval.subject);
   withStore(this, store => {
     store.putDocument({ kind: 'approval', id, scopeId: scopeId ?? null, document: approval });
     store.appendEvent('approval.decided', 'approval', id, scopeId ?? null, { action: decision.action, actorId: decision.actor.id, actorKind: decision.actor.kind });
@@ -85,8 +121,7 @@ function applyApproval(this: OpenControlRuntime, id: string): { approval: Approv
   if (!approval || approval.state !== 'approved' || approval.decision?.action !== 'approve') {
     throw new RuntimeError('AUTHORIZATION_REQUIRED', `Approved authorisation required: ${id}`);
   }
-  const graph = this.listWorkGraphs().find(candidate => candidate.nodes.some(node => node.id === approval.subject.id && node.approvalRequired));
-  if (!graph) throw new RuntimeError('AUTHORIZATION_REQUIRED', `Approval subject is not a protected pending work item: ${approval.subject.id}`);
+  const { graph } = protectedWorkSubject(this, approval.subject);
   const checkpoint = this.createCheckpoint(graph.programmeId, `checkpoint.approval.${id}`);
   try {
     const next: WorkGraph = {
@@ -100,9 +135,9 @@ function applyApproval(this: OpenControlRuntime, id: string): { approval: Approv
     validateContract(SCHEMA_IDS.approval, consumed);
     withStore(this, store => {
       store.putDocument({ kind: 'approval', id, scopeId: graph.programmeId, document: consumed });
-      store.appendEvent('approval.consumed', 'approval', id, graph.programmeId, { subjectId: approval.subject.id, workGraphRevision: workGraph.revision, checkpointId: checkpoint.id });
+      store.appendEvent('approval.consumed', 'approval', id, graph.programmeId, { subjectId: approval.subject.id, subjectKind: approval.subject.kind, workGraphRevision: workGraph.revision, checkpointId: checkpoint.id });
     });
-    this.appendAuditReceipt('approval.consumed', { id, kind: 'approval' }, graph.programmeId, { subjectId: approval.subject.id, workGraphRevision: workGraph.revision, checkpointId: checkpoint.id });
+    this.appendAuditReceipt('approval.consumed', { id, kind: 'approval' }, graph.programmeId, { subjectId: approval.subject.id, subjectKind: approval.subject.kind, workGraphRevision: workGraph.revision, checkpointId: checkpoint.id });
     return { approval: consumed, workGraph, checkpointId: checkpoint.id };
   } catch (error) {
     this.restoreCheckpoint(checkpoint.id);
