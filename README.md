@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Pre-alpha foundation. The repository is being built in governed delivery phases. Do not treat the current repository as production-ready.
+> **Status:** Phase 10 public-alpha commissioning is implemented for `0.1.0-alpha.1`. The repository remains experimental and must not be treated as production-ready. The authoritative GitHub prerelease is created only by the governed Public Alpha Commissioning workflow from a verified protected `main` commit.
 
 ## What it is
 
@@ -114,7 +114,7 @@ Supervision remains provider-neutral and uses the existing model, adapter, brows
 
 ## Phase 8: cross-platform packaging and Docker deployment
 
-The pre-alpha runtime now has a verified source-install path for macOS, Windows and Linux plus a reproducible non-root Docker image with persistent `/data`, explicit environment configuration and health/readiness checks. A hardened local Compose profile is also included.
+The runtime has a verified source-install path for macOS, Windows and Linux plus a reproducible non-root Docker image with persistent `/data`, explicit environment configuration and health/readiness checks. A hardened local Compose profile is also included.
 
 ```bash
 npm ci --no-audit --no-fund
@@ -130,7 +130,7 @@ The container exposes only health/readiness on port `8787`; it does not create a
 
 ## Phase 9: security, approvals, evidence, audit and recovery hardening
 
-The runtime now includes single-use fail-closed approvals for protected work, immutable evidence provenance, metadata-only SHA-256-linked audit receipts and checkpoint-backed restart reconciliation. The local service verifies the audit chain and reconciles abandoned running assignments before entering ready state.
+The runtime includes single-use fail-closed approvals for protected work, immutable evidence provenance, metadata-only SHA-256-linked audit receipts and checkpoint-backed restart reconciliation. The local service verifies the audit chain and reconciles abandoned running assignments before entering ready state.
 
 ```bash
 node packages/runtime/dist/cli.js --home .q1x approval request --file examples/security/example.approval-request.json
@@ -140,17 +140,25 @@ node packages/runtime/dist/cli.js --home .q1x recovery reconcile
 
 Audit metadata recursively redacts secret-shaped keys and does not copy prompts, browser/desktop session content or credentials into routine receipts. The current local CLI does not cryptographically authenticate actor identifiers, and the local hash chain is not an externally anchored transparency log. See [`docs/security-hardening.md`](docs/security-hardening.md) for the exact behavior and limitations.
 
+## Phase 10: public alpha commissioning
+
+The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 implements release identity checks, exact internal package version locking, generated contracts/SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
+
+The GitHub prerelease is authoritative even when npm publication is unavailable. npm publication is a separate opt-in Trusted Publishing/OIDC lane and is never required for the GitHub release path. Release creation refuses a stale `main` target or an existing authoritative tag/release and points the tag directly at the exact verified `main` commit.
+
+See [`docs/public-alpha.md`](docs/public-alpha.md), [`docs/known-limitations.md`](docs/known-limitations.md), [`CHANGELOG.md`](CHANGELOG.md) and [`RELEASE_NOTES.md`](RELEASE_NOTES.md). Phase 11 remains separate and will deliver the broader compatibility matrix and Community Adapter SDK.
+
 ## Capability fabric
 
-Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging and security/approval/evidence/audit/recovery hardening. Public-alpha commissioning is the next delivery phase.
+Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening and the Phase 10 public-alpha release pipeline. The broader compatibility matrix and Community Adapter SDK remain Phase 11 work.
 
 ## Deployment profiles
 
-The supported pre-alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
+The supported alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation, governed package tarballs or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
 
 ## Documentation
 
-The detailed architecture, use cases, deployment model, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
+The detailed architecture, use cases, deployment model, public-alpha guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
 
 ## Contributing
 

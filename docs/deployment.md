@@ -1,10 +1,14 @@
 # Deployment Model
 
-## Supported pre-alpha installation profiles
+## Supported alpha installation profiles
 
-Phase 8 supports two local-first deployment paths: a direct Node.js source installation and a reproducible Docker/Compose image. Neither path requires a hosted Q1X service, cloud account, model provider or paid API.
+Q1X Community Orchestrator supports three local-first alpha installation paths: direct Node.js source installation, governed package tarballs attached to the GitHub public-alpha release, and a reproducible Docker/Compose image. None requires a hosted Q1X service, cloud account, model provider or paid API.
 
 The runtime remains single-node and uses Node.js 24+ built-in SQLite. Its persistent state is stored under the runtime home as `state.sqlite` plus SQLite WAL files.
+
+The release-candidate workflow verifies that the three Q1X package tarballs install into a clean external consumer without resolving any Q1X package from the registry. GitHub release artifacts therefore remain usable independently of optional npm Trusted Publishing.
+
+See [Public alpha](public-alpha.md) for release identity, checksum verification, packed-package installation and release-specific upgrade/rollback guidance. See [Known limitations](known-limitations.md) before treating any tested surface as a broader compatibility guarantee.
 
 ## Direct installation on macOS, Windows and Linux
 
@@ -27,11 +31,11 @@ node packages/runtime/dist/cli.js --home ./.q1x status
 
 The cross-platform packaging workflow verifies this source-install path on current GitHub-hosted macOS, Windows and Ubuntu runners using Node.js 24. It also verifies contract/type/distribution checks and the local health/readiness process on each operating system.
 
-Public npm packages remain alpha packages. Until the public-alpha release phase explicitly publishes and supports a registry release, the repository source install above is the authoritative local installation path.
+The root workspace remains private/non-publishable. The three distributable packages are alpha packages. Their governed GitHub release tarballs are authoritative for the first public alpha; npm publication is an optional separate trusted-publishing lane, not a prerequisite for installation.
 
 ## Local health and readiness process
 
-Phase 8 includes a deliberately narrow process for service managers and containers:
+The runtime includes a deliberately narrow process for service managers and containers:
 
 ```bash
 Q1X_HOME=./.q1x \
@@ -49,7 +53,7 @@ It does **not** expose orchestration, model, browser or desktop execution APIs. 
 
 `SIGINT` and `SIGTERM` stop readiness first, close the HTTP listener and then close the SQLite runtime. This is the deterministic shutdown path used by container orchestration.
 
-During Phase 9 delivery, service startup also verifies the security audit receipt chain and reconciles abandoned `running` assignments before entering ready state. Audit-chain corruption prevents readiness; interrupted work is checkpointed and moved into recoverable `interrupted`/`blocked` state rather than assumed successful.
+Service startup verifies the security audit receipt chain and reconciles abandoned `running` assignments before entering ready state. Audit-chain corruption prevents readiness; interrupted work is checkpointed and moved into recoverable `interrupted`/`blocked` state rather than assumed successful.
 
 ## Docker
 
@@ -108,21 +112,22 @@ Provider credentials are not part of this packaging configuration. Existing mode
 
 ## Persistent state and upgrades
 
-The SQLite database is opened in WAL mode and the runtime's current table creation is idempotent. Rebuilding or replacing the process/container while reusing the same `Q1X_HOME` therefore preserves current pre-alpha state.
+The SQLite database is opened in WAL mode and the runtime's current table creation is idempotent. Rebuilding or replacing the process/container while reusing the same `Q1X_HOME` therefore preserves current alpha state.
 
-For upgrades during pre-alpha:
+For upgrades during alpha:
 
 1. stop the runtime cleanly;
 2. copy or snapshot the complete runtime-home directory, including `state.sqlite`, `state.sqlite-wal` and `state.sqlite-shm` when present;
-3. replace the checkout/image;
-4. start against the same runtime home;
-5. run `q1x audit verify` when Phase 9 security receipts are present;
-6. run `q1x recovery reconcile` when an interrupted prior process may have left running assignments;
-7. verify `/readyz` or `q1x status` before resuming work.
+3. verify the new release manifest and SHA-256 checksums;
+4. replace the checkout/package/image;
+5. start against the same runtime home;
+6. run `q1x audit verify`;
+7. run `q1x recovery reconcile` when an interrupted prior process may have left running assignments;
+8. verify `/readyz` or `q1x status` before resuming work.
 
 For online backups, use a SQLite-aware backup mechanism that creates a consistent database snapshot. Do not copy `state.sqlite` alone while WAL state may be active and assume the result contains a complete audit/history boundary.
 
-Phase 8 does not introduce a destructive automatic database migration. Any future schema change requiring a migration must be explicit, tested and documented before the public-alpha release. Downgrading across a future storage-schema migration is not claimed as supported unless that release explicitly documents it.
+The current alpha does not introduce a destructive automatic database migration. Any future schema change requiring a migration must be explicit, tested and documented before release. Downgrading across a future storage-schema migration is not claimed as supported unless that release explicitly documents it.
 
 ## Installation verification matrix
 
@@ -138,11 +143,13 @@ The `Cross-platform Packaging` GitHub Actions workflow provides evidence for:
 | package dry run | ✓ | ✓ | ✓ |
 | Docker image/non-root/persistent restart | ✓ | n/a | n/a |
 
+Phase 10 additionally verifies the generated Q1X contracts/SDK/runtime package tarballs in a clean external consumer and validates their SHA-256 release evidence. The full provider/model/adapter/browser/desktop compatibility matrix remains Phase 11 scope.
+
 Docker is verified on Linux because the produced OCI image is the cross-platform container artifact; host-native Docker Desktop behavior is not separately claimed by this phase.
 
 ## Team / self-hosted future profile
 
-A later team profile may replace embedded state with PostgreSQL, S3-compatible object storage and multiple workers while retaining the same orchestration contracts. Phase 8 does not require or activate that architecture.
+A later team profile may replace embedded state with PostgreSQL, S3-compatible object storage and multiple workers while retaining the same orchestration contracts. The first public alpha does not require or activate that architecture.
 
 ## Distributed / cloud future profile
 

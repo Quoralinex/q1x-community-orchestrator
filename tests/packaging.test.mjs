@@ -47,3 +47,44 @@ test('cross-platform workflow covers Linux, Windows, macOS and pinned actions', 
   assert.match(workflow, /docker build --pull/);
   assert.match(workflow, /npm pack --dry-run --workspace packages\/runtime/);
 });
+
+test('public alpha workflow is manual-release, fail-closed and action-pinned', async () => {
+  const workflow = await text('.github/workflows/public-alpha.yml');
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /release:/);
+  assert.match(workflow, /publish_npm:/);
+  assert.match(workflow, /refs\/heads\/main/);
+  assert.match(workflow, /scripts\/release\/prepare-alpha\.mjs/);
+  assert.match(workflow, /scripts\/release\/verify-packed-consumer\.mjs/);
+  assert.match(workflow, /gh release create/);
+  assert.match(workflow, /--target "\$GITHUB_SHA"/);
+  assert.doesNotMatch(workflow, /git\/refs/);
+  assert.doesNotMatch(workflow, /--verify-tag/);
+  assert.match(workflow, /--provenance/);
+  assert.doesNotMatch(workflow, /NPM_TOKEN|npm_[A-Za-z0-9]/);
+  assert.doesNotMatch(workflow, /push:\s*\n\s*tags:/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 4);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
+
+test('public alpha documentation preserves release and security boundaries', async () => {
+  const quickStart = await text('docs/public-alpha.md');
+  const limitations = await text('docs/known-limitations.md');
+  assert.match(quickStart, /0\.1\.0-alpha\.1/);
+  assert.match(quickStart, /SHA256SUMS/);
+  assert.match(quickStart, /source installation/i);
+  assert.match(quickStart, /packed package installation/i);
+  assert.match(quickStart, /Docker installation/i);
+  assert.match(quickStart, /upgrade/i);
+  assert.match(quickStart, /rollback/i);
+  assert.match(quickStart, /security/i);
+  assert.match(limitations, /actor identity is caller-asserted/i);
+  assert.match(limitations, /not externally witnessed/i);
+  assert.match(limitations, /Browser binaries are not bundled/i);
+  assert.match(limitations, /Native desktop drivers are not universally bundled/i);
+  assert.match(limitations, /single-node/i);
+  assert.match(limitations, /Breaking changes remain possible/i);
+  assert.match(limitations, /npm publication may be unavailable/i);
+  assert.match(limitations, /Phase 11/i);
+});
