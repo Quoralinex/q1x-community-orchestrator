@@ -1,8 +1,8 @@
 # Security, approvals, evidence, audit and recovery
 
-Phase 9 hardens the pre-alpha single-node Community runtime around consequential-action approval, evidence provenance, tamper-evident audit metadata and restart recovery. These controls are provider-neutral and reuse the existing SQLite state, work graph and checkpoint model.
+Phase 9 hardened the single-node Community runtime around consequential-action approval, evidence provenance, tamper-evident audit metadata and restart recovery. These controls are provider-neutral and reuse the existing SQLite state, work graph and checkpoint model.
 
-> **Delivery status:** Phase 9 is in delivery. Treat this page as the contract for the Phase 9 branch until the phase is accepted on protected `main`.
+> **Delivery status:** Phase 9 is implemented on protected `main`. Phase 10 public-alpha commissioning does not widen these security claims; see [Public alpha known limitations](known-limitations.md) for the release boundary.
 
 ## Consequential-action approvals
 
