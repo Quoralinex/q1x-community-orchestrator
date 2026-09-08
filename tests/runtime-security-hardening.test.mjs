@@ -20,26 +20,37 @@ async function fixture(t) {
   return { home, runtime };
 }
 
-test('protected work stays fail-closed until a matching single-use approval is applied', async t => {
-  const { runtime } = await fixture(t);
-  const approval = runtime.requestApproval({
+function pendingApproval(id = 'approval.company-docs') {
+  return {
     contractVersion: '1.0.0',
-    id: 'approval.company-docs',
+    id,
     subject: { id: 'task.company-docs', kind: 'task' },
     state: 'pending',
     requestedAt: new Date().toISOString(),
     requestedBy: { id: 'agent.supervisor', kind: 'agent' },
     requiredApproverKinds: ['human']
-  });
+  };
+}
+
+function humanApprovalDecision() {
+  return {
+    actor: { id: 'human.owner', kind: 'human' },
+    action: 'approve',
+    decidedAt: new Date().toISOString(),
+    reason: 'Reviewed consequential company filing work.'
+  };
+}
+
+test('protected work stays fail-closed until a matching single-use approval is applied', async t => {
+  const { runtime } = await fixture(t);
+  const approval = runtime.requestApproval(pendingApproval());
   assert.equal(approval.state, 'pending');
   assert.throws(() => runtime.applyApproval(approval.id), error => error.code === 'AUTHORIZATION_REQUIRED');
   assert.throws(() => runtime.decideApproval(approval.id, {
     actor: { id: 'agent.other', kind: 'agent' }, action: 'approve', decidedAt: new Date().toISOString()
   }), error => error.code === 'AUTHORIZATION_REQUIRED');
 
-  const decided = runtime.decideApproval(approval.id, {
-    actor: { id: 'human.owner', kind: 'human' }, action: 'approve', decidedAt: new Date().toISOString(), reason: 'Reviewed consequential company filing work.'
-  });
+  const decided = runtime.decideApproval(approval.id, humanApprovalDecision());
   assert.equal(decided.state, 'approved');
   const applied = runtime.applyApproval(approval.id);
   assert.equal(applied.approval.state, 'consumed');
@@ -53,13 +64,8 @@ test('protected work stays fail-closed until a matching single-use approval is a
 test('approval subject kind must exactly match a known work item', async t => {
   const { runtime } = await fixture(t);
   assert.throws(() => runtime.requestApproval({
-    contractVersion: '1.0.0',
-    id: 'approval.wrong-kind',
-    subject: { id: 'task.company-docs', kind: 'programme' },
-    state: 'pending',
-    requestedAt: new Date().toISOString(),
-    requestedBy: { id: 'agent.supervisor', kind: 'agent' },
-    requiredApproverKinds: ['human']
+    ...pendingApproval('approval.wrong-kind'),
+    subject: { id: 'task.company-docs', kind: 'programme' }
   }), error => error.code === 'INVALID_REFERENCE');
 });
 
@@ -76,15 +82,34 @@ test('approval request rejects ambiguous work item ids across programmes', async
     nodes: [{ id: 'task.company-docs', kind: 'task', title: 'Duplicate protected work', parentId: 'ws.duplicate', status: 'ready', approvalRequired: true }],
     edges: [], updatedAt: now
   });
-  assert.throws(() => runtime.requestApproval({
-    contractVersion: '1.0.0',
-    id: 'approval.ambiguous-work',
-    subject: { id: 'task.company-docs', kind: 'task' },
-    state: 'pending',
-    requestedAt: now,
-    requestedBy: { id: 'agent.supervisor', kind: 'agent' },
-    requiredApproverKinds: ['human']
-  }), error => error.code === 'CONFLICT');
+  assert.throws(() => runtime.requestApproval(pendingApproval('approval.ambiguous-work')), error => error.code === 'CONFLICT');
+});
+
+test('approval application restores its checkpoint if post-update security audit fails', async t => {
+  const { runtime } = await fixture(t);
+  const approval = runtime.requestApproval(pendingApproval('approval.rollback'));
+  runtime.decideApproval(approval.id, humanApprovalDecision());
+  const originalAudit = runtime.appendAuditReceipt.bind(runtime);
+  runtime.appendAuditReceipt = (eventType, ...args) => {
+    if (eventType === 'approval.consumed') throw new Error('injected audit failure');
+    return originalAudit(eventType, ...args);
+  };
+  assert.throws(() => runtime.applyApproval(approval.id), /injected audit failure/);
+  runtime.appendAuditReceipt = originalAudit;
+  const graph = runtime.getWorkGraph('graph.company-launch');
+  assert.equal(graph.revision, 1);
+  assert.equal(graph.nodes.find(node => node.id === 'task.company-docs').approvalRequired, true);
+  assert.equal(runtime.getApproval(approval.id).state, 'approved');
+  assert.ok(runtime.listCheckpoints('programme.company-launch').some(checkpoint => checkpoint.id === `checkpoint.approval.${approval.id}`));
+  assert.equal(runtime.verifyAuditChain().valid, true);
+});
+
+test('invalid audit subjects are rejected before any receipt is persisted', async t => {
+  const { runtime } = await fixture(t);
+  const before = runtime.listAuditReceipts().length;
+  assert.throws(() => runtime.appendAuditReceipt('security.invalid', { id: 'invalid subject id', kind: 'programme' }), error => error.code === 'SCHEMA_INVALID');
+  assert.equal(runtime.listAuditReceipts().length, before);
+  assert.equal(runtime.verifyAuditChain().valid, true);
 });
 
 test('evidence is immutable and carries bounded execution/result provenance', async t => {
