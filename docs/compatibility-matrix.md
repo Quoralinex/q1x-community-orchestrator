@@ -16,9 +16,9 @@
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
+| macOS latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
 | Ubuntu 24.04 source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
 | Windows latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
-| macOS latest source install | tested | Node.js 24 | — | ci: `.github/workflows/cross-platform-packaging.yml` @ `371b27e265a5922184d0a48f57b966b9fbae959b` | — |
 
 ## deployment
 
