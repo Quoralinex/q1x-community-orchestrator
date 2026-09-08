@@ -66,6 +66,7 @@ jobs:
           name: q1x-public-alpha-${{ github.sha }}
           path: .release/
           if-no-files-found: error
+          include-hidden-files: true
           retention-days: 14
 
   release:
