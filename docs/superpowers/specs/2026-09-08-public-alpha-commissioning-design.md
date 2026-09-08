@@ -29,7 +29,7 @@ A release is identified by the tuple:
 - generated package tarball names and SHA-256 digests;
 - release manifest version.
 
-The release workflow must reject a tag/version mismatch, package-version mismatch, dirty/stale source reference, or internal dependency version mismatch.
+The release workflow must reject a requested version/package mismatch, package-version mismatch, stale source reference, or internal dependency version mismatch.
 
 ## Package set
 
@@ -53,9 +53,11 @@ Runs on pull requests affecting release, package, documentation or commissioning
 
 ### Release mode
 
-Runs only from an explicit alpha tag matching the package version and only when the tagged commit is on the accepted protected `main` history. Release mode performs the same checks as validation mode, then creates the governed artifact set for a GitHub prerelease.
+Runs only through an explicit manual dispatch against protected `main`. The operator supplies the intended alpha version and the workflow binds the candidate to its exact checked-out `main` commit SHA.
 
-Release mode must not publish to npm merely because a tag exists. npm publication requires a separate explicit condition/input/environment authority and must fail closed if that authority is absent.
+Release mode performs the complete validation suite first. Only after every gate succeeds may the workflow create the matching `v<version>` tag at that exact SHA, generate the governed artifacts and create the GitHub prerelease. If the tag already exists at a different commit, or a release with that tag already exists, the workflow fails closed. Ordinary tag pushes are not an alternate release-authority path.
+
+Release mode must not publish to npm merely because release authority was granted. npm publication requires a separate explicit condition/input/environment authority and must fail closed if that authority is absent.
 
 ## Release gates
 
@@ -76,7 +78,7 @@ A Phase 10 release candidate is accepted only when all of the following succeed 
 13. PolyForm Noncommercial License 1.0.0 inclusion/visibility checks.
 14. Public/private boundary checks.
 
-No release creation occurs if any gate fails.
+No tag or release creation occurs if any gate fails.
 
 ## External consumer verification
 
@@ -231,7 +233,7 @@ The commissioning workflow must:
 - verify package contents before release;
 - retain PolyForm Noncommercial License 1.0.0 as the default public repository licence.
 
-Release workflow permissions that can create releases or publish packages should be isolated from ordinary validation jobs.
+Release workflow permissions that can create tags/releases or publish packages must be isolated from ordinary validation jobs.
 
 ## GitHub Pages and public project surface
 
@@ -245,7 +247,7 @@ A release is not considered commissioned merely because a tag or release object 
 
 Commissioning requires the release object, source SHA, versioned packages, release manifest, checksums and CI evidence to agree. Any mismatch is a commissioning failure and must be corrected with a new candidate rather than hidden by editing generated artifacts in place.
 
-Tags and release artifacts must be derived from protected `main`; feature-branch builds may validate but cannot become authoritative releases.
+The authoritative tag and release artifacts must be created by the governed release-mode workflow from protected `main`; feature-branch builds may validate but cannot become authoritative releases.
 
 ## Phase boundary
 
@@ -271,7 +273,7 @@ Phase 10 is complete only when:
 5. public-alpha quick start, changelog, known limitations, security and upgrade/rollback guidance are published in-repository;
 6. all existing Repository Baseline, Runtime and Contracts, CodeQL and cross-platform packaging gates remain green;
 7. Community/public boundary and PolyForm Noncommercial licensing checks remain green;
-8. a GitHub prerelease for `v0.1.0-alpha.1` can be created only from the accepted `main` commit through the governed release path;
+8. the governed release mode can create the `v0.1.0-alpha.1` tag and matching GitHub prerelease only after validating the exact accepted `main` commit;
 9. any npm publication remains explicit, optional and fail-closed;
 10. the final release status remains `public-alpha`, not production-ready or GA.
 
