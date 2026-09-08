@@ -60,7 +60,7 @@ test('normalized success output preserves ordered action correlation', () => {
     batchId: 'desktop.batch.test',
     status: 'succeeded',
     actions: [
-      { id: 'wait', kind: 'wait', status: 'succeeded' },
+      { id: 'wait', status: 'succeeded', durationMs: 1 },
     ],
     startedAt: '2026-09-09T00:00:00Z',
     finishedAt: '2026-09-09T00:00:00Z',
@@ -72,7 +72,7 @@ test('normalized success output preserves ordered action correlation', () => {
       id: 'desktop.result.test',
       batchId: 'desktop.batch.test',
       status: 'succeeded',
-      actions: [{ id: 'wait', kind: 'wait', status: 'succeeded' }],
+      actions: [{ id: 'wait', status: 'succeeded', durationMs: 1 }],
       startedAt: '2026-09-09T00:00:00Z',
       finishedAt: '2026-09-09T00:00:00Z',
     },
