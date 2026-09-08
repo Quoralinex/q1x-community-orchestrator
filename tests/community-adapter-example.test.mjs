@@ -1,11 +1,12 @@
 import assert from 'node:assert/strict';
-import { readFile, stat } from 'node:fs/promises';
 import { spawnSync } from 'node:child_process';
+import { readFile, stat } from 'node:fs/promises';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import { runAdapterConformance } from '../packages/adapter-sdk/dist/index.js';
 
-const root = new URL('..', import.meta.url);
+const root = fileURLToPath(new URL('..', import.meta.url));
 const example = new URL('../examples/community-adapter/', import.meta.url);
 
 const endpoint = {
@@ -43,8 +44,9 @@ test('community adapter reference template has the required public files and saf
 });
 
 test('community adapter reference template builds and passes public conformance without network or secrets', async () => {
-  const tsc = new URL('../node_modules/typescript/bin/tsc', import.meta.url);
-  const build = spawnSync(process.execPath, [tsc.pathname, '-p', new URL('tsconfig.json', example).pathname], {
+  const tsc = fileURLToPath(new URL('../node_modules/typescript/bin/tsc', import.meta.url));
+  const tsconfig = fileURLToPath(new URL('tsconfig.json', example));
+  const build = spawnSync(process.execPath, [tsc, '-p', tsconfig], {
     cwd: root,
     encoding: 'utf8',
   });
