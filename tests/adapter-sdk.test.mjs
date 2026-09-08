@@ -74,6 +74,23 @@ function validAdapter(overrides = {}) {
   };
 }
 
+function validCapability(overrides = {}) {
+  return {
+    contractVersion: '1.0.0',
+    id: 'capability.community.echo',
+    name: 'Community echo',
+    adapterKind: 'cli-tui',
+    operations: ['community.echo'],
+    modalities: { input: ['text'], output: ['text'] },
+    availability: { state: 'available', checkedAt: '2026-09-08T15:00:00Z' },
+    cost: { class: 'no-usage-fee' },
+    privacy: { executionLocation: 'local', dataRetention: 'none' },
+    trust: { level: 'validated', validatedAt: '2026-09-08T15:00:00Z', source: 'community-conformance' },
+    platforms: ['linux'],
+    ...overrides,
+  };
+}
+
 test('community adapter SDK exposes the exact alpha compatibility tuple', () => {
   assert.equal(ADAPTER_SDK_VERSION, '0.1.0-alpha.1');
   assert.deepEqual(createAdapterCompatibility(), {
@@ -143,19 +160,7 @@ test('conformance suite accepts a deterministic adapter and propagates the suppl
       };
     },
     async discover() {
-      return [{
-        contractVersion: '1.0.0',
-        id: 'capability.community.echo',
-        name: 'Community echo',
-        adapterKind: 'cli-tui',
-        operations: ['community.echo'],
-        modalities: { input: ['text'], output: ['text'] },
-        availability: { state: 'available', checkedAt: '2026-09-08T15:00:00Z' },
-        cost: { class: 'free' },
-        privacy: { executionLocation: 'local', dataRetention: 'none' },
-        trust: { level: 'validated', validatedAt: '2026-09-08T15:00:00Z', source: 'community-conformance' },
-        platforms: ['linux'],
-      }];
+      return [validCapability()];
     },
   });
 
@@ -193,6 +198,12 @@ test('conformance suite rejects invalid execution results and discovery values',
   }), { endpoint: endpoint(), request: request() });
   assert.equal(badDiscovery.ok, false);
   assert.ok(badDiscovery.checks.some(check => check.name === 'discover-result' && !check.ok));
+
+  const badCapability = await runAdapterConformance(validAdapter({
+    async discover() { return [validCapability({ cost: { class: 'free' } })]; },
+  }), { endpoint: endpoint(), request: request() });
+  assert.equal(badCapability.ok, false);
+  assert.ok(badCapability.checks.some(check => check.name === 'discover-result' && !check.ok));
 });
 
 test('conformance suite detects mutation of endpoint or request fixtures', async () => {
