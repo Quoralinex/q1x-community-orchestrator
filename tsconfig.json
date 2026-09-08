@@ -5,6 +5,7 @@
     { "path": "./packages/sdk-typescript" },
     { "path": "./packages/adapter-sdk" },
     { "path": "./packages/desktop-bridge-common" },
+    { "path": "./packages/desktop-bridge-macos" },
     { "path": "./packages/runtime" }
   ]
 }
