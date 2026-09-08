@@ -13,7 +13,8 @@
   },
   "references": [
     { "path": "../contracts" },
-    { "path": "../sdk-typescript" }
+    { "path": "../sdk-typescript" },
+    { "path": "../adapter-sdk" }
   ],
   "include": ["src/**/*.ts"]
 }
