@@ -1,0 +1,19 @@
+name: Q1X Goose Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+  pull-requests: read
+  checks: read
+  statuses: read
+
+jobs:
+  q1x-review:
+    if: ${{ github.event.pull_request.draft == false }}
+    uses: Quoralinex/goose/.github/workflows/q1x-pr-review.yml@main
+    with:
+      pr_number: ${{ github.event.pull_request.number }}
+      head_sha: ${{ github.event.pull_request.head.sha }}
