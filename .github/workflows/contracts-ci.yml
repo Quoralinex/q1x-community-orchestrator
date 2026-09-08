@@ -38,6 +38,8 @@ jobs:
         run: node --test tests/schema-contracts.test.mjs
       - name: Validate existing contract examples
         run: node --test tests/examples.test.mjs
+      - name: Validate release commissioning contracts
+        run: node --test tests/release-commissioning.test.mjs
       - name: Compile desktop action schema
         run: node --test --test-name-pattern="desktop action schema compiles" tests/desktop-examples.test.mjs
       - name: Validate desktop endpoint example
