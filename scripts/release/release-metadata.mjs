@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
@@ -63,4 +64,58 @@ export function assertReleaseIdentity(identity) {
   }
 
   return identity;
+}
+
+export async function sha256File(path) {
+  const content = await readFile(path);
+  return createHash('sha256').update(content).digest('hex');
+}
+
+function validateArtifact(artifact) {
+  if (!artifact || typeof artifact.filename !== 'string' || !artifact.filename) {
+    throw new Error('Release artifact filename is required');
+  }
+  if (!/^[0-9a-f]{64}$/.test(artifact.sha256 ?? '')) {
+    throw new Error(`Release artifact ${artifact.filename} must carry a SHA-256 digest`);
+  }
+  if (artifact.version !== RELEASE_VERSION) {
+    throw new Error(`Release artifact ${artifact.filename} must use version ${RELEASE_VERSION}`);
+  }
+  return artifact;
+}
+
+export function formatChecksums(artifacts) {
+  return [...artifacts]
+    .map(validateArtifact)
+    .sort((left, right) => left.filename.localeCompare(right.filename))
+    .map(artifact => `${artifact.sha256}  ${artifact.filename}\n`)
+    .join('');
+}
+
+export function buildReleaseManifest({ identity, sourceSha, artifacts, generatedAt }) {
+  assertReleaseIdentity(identity);
+  if (!/^[0-9a-f]{40}$/.test(sourceSha ?? '')) {
+    throw new Error('Release source SHA must be an exact 40-character lowercase hexadecimal commit SHA');
+  }
+  if (Number.isNaN(Date.parse(generatedAt))) throw new Error('Release generation timestamp must be ISO-8601 compatible');
+  const normalizedArtifacts = [...artifacts]
+    .map(validateArtifact)
+    .sort((left, right) => left.filename.localeCompare(right.filename));
+  return {
+    manifestVersion: '1.0.0',
+    version: identity.version,
+    tag: identity.tag,
+    sourceSha,
+    node: '>=24',
+    status: 'public-alpha',
+    license: 'PolyForm Noncommercial License 1.0.0',
+    targets: ['macOS', 'Windows', 'Linux', 'Docker'],
+    packages: identity.packages.map(packageInfo => ({
+      name: packageInfo.name,
+      version: packageInfo.version,
+      directory: packageInfo.directory
+    })),
+    artifacts: normalizedArtifacts,
+    generatedAt
+  };
 }
