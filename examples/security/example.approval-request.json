@@ -1,0 +1,9 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "approval.example.release",
+  "subject": { "id": "task.publish-release", "kind": "task" },
+  "state": "pending",
+  "requestedAt": "2026-09-08T10:00:00Z",
+  "requestedBy": { "id": "agent.release-coordinator", "kind": "agent" },
+  "requiredApproverKinds": ["human"]
+}
