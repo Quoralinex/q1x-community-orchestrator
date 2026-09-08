@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Pre-alpha foundation. The repository is being built in governed delivery phases. Do not treat the current repository as production-ready.
+> **Status:** Public-alpha commissioning candidate. The repository is still experimental and must not be treated as production-ready. Phase 10 is not accepted until the exact release-candidate head passes all required CI/security/release gates and is merged to protected `main`.
 
 ## What it is
 
@@ -140,17 +140,25 @@ node packages/runtime/dist/cli.js --home .q1x recovery reconcile
 
 Audit metadata recursively redacts secret-shaped keys and does not copy prompts, browser/desktop session content or credentials into routine receipts. The current local CLI does not cryptographically authenticate actor identifiers, and the local hash chain is not an externally anchored transparency log. See [`docs/security-hardening.md`](docs/security-hardening.md) for the exact behavior and limitations.
 
+## Phase 10: public alpha commissioning candidate
+
+The first governed public-alpha candidate is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 adds release identity checks, exact internal package version locking, generated contracts/SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
+
+The GitHub prerelease is designed to be authoritative even when npm publication is unavailable. npm publication is a separate opt-in Trusted Publishing/OIDC lane and is never required for the GitHub release path.
+
+See [`docs/public-alpha.md`](docs/public-alpha.md), [`docs/known-limitations.md`](docs/known-limitations.md), [`CHANGELOG.md`](CHANGELOG.md) and [`RELEASE_NOTES.md`](RELEASE_NOTES.md). Phase 11 remains separate and will deliver the broader compatibility matrix and Community Adapter SDK.
+
 ## Capability fabric
 
-Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging and security/approval/evidence/audit/recovery hardening. Public-alpha commissioning is the next delivery phase.
+Implemented foundations cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging and security/approval/evidence/audit/recovery hardening. Public-alpha commissioning is the current delivery phase; broad compatibility declarations and the Community Adapter SDK remain Phase 11 work.
 
 ## Deployment profiles
 
-The supported pre-alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
+The supported alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
 
 ## Documentation
 
-The detailed architecture, use cases, deployment model, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
+The detailed architecture, use cases, deployment model, public-alpha guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
 
 ## Contributing
 
