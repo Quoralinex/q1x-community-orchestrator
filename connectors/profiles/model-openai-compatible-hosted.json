@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "kind": "model-openai-compatible-hosted",
   "protocol": "openai-responses",
-  "adapterKind": "hosted-api",
+  "adapterKind": "provider-http",
   "scope": "hosted",
   "defaultTimeoutMs": 30000,
   "credential": {
