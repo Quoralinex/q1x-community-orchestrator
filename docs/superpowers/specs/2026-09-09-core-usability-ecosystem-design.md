@@ -1,9 +1,9 @@
 # Phase 12 Core Usability & Ecosystem Completion Design
 
 **Repository:** `Quoralinex/q1x-community-orchestrator`  
-**Base:** commissioned public-alpha closeout on protected `main` at `65fa59728eae681147b3581c4ba52301e7f4870c`  
+**Base:** commissioned public-alpha closeout on protected `main`  
 **Date:** 9 September 2026  
-**Status:** Approved product-continuation scope
+**Status:** Approved standalone product-continuation scope
 
 ## Purpose
 
@@ -17,9 +17,32 @@ A core advertised capability is complete only when a user can install Q1X, confi
 
 Legitimate user prerequisites include supplying an API key, selecting a local model server, granting macOS Accessibility permission, installing a supported browser, or supplying credentials to an MCP/A2A service. They do not include writing a native desktop bridge, writing a Q1X connector for a baseline supported service, editing internal registry code, discovering undocumented endpoint JSON by trial and error, or compiling a first-party integration from source when a normal install route should exist.
 
+## Standalone architecture boundary
+
+Q1X Community Orchestrator is a complete standalone product. Its runtime, mission state, programme/work-graph state, approvals, evidence, audit, recovery, supervision, connector configuration and diagnostics are owned by the Community Orchestrator itself.
+
+The Q1X Control Plane is not part of this architecture. Phase 12 must not add a Control Plane client, API call, authority callback, continuity/capsule callback, endpoint, environment variable, connector profile, doctor check, release dependency, test fixture or privileged adapter path. No Community Orchestrator feature may require that system to be available.
+
+The active product dependency graph is therefore only:
+
+```text
+Q1X Community Orchestrator
+  -> models
+  -> MCP
+  -> A2A
+  -> local CLI/TUI tools
+  -> browser control
+  -> first-party desktop bridges
+  -> explicitly registered public community adapters
+```
+
+Public extension interfaces remain generic. They may connect to operator-selected external systems through documented public protocols, but this repository contains no privileged Quoralinex-private integration route.
+
+Active product documentation should describe this standalone boundary directly. Historical design records may retain historical wording, but they do not create current runtime dependencies or supported integration paths.
+
 ## Architecture
 
-Phase 12 keeps the provider-neutral core unchanged and adds a first-party usability layer around the existing extension seams:
+Phase 12 keeps the provider-neutral standalone core unchanged and adds a first-party usability layer around the existing extension seams:
 
 1. **First-party native desktop bridges** implement the existing `q1x-desktop-bridge/1` protocol for macOS Accessibility, Windows UI Automation and Linux AT-SPI.
 2. **Connector catalogue and profiles** describe supported model, MCP, A2A, CLI/browser and desktop integrations using declarative manifests rather than hard-coded vendor switches.
@@ -28,7 +51,7 @@ Phase 12 keeps the provider-neutral core unchanged and adds a first-party usabil
 5. **First-party starter integrations** provide working profiles/templates for baseline model transports, MCP, A2A, browser and local CLI use.
 6. **End-to-end usability tests** prove representative flows on Windows, macOS and Linux and feed evidence into the compatibility matrix.
 
-No marketplace, arbitrary package auto-loading, remote code execution service or proprietary Q1X control-plane dependency is introduced. Installation remains explicit and operator-controlled.
+No marketplace, arbitrary package auto-loading, remote code execution service or proprietary Quoralinex service dependency is introduced. Installation remains explicit and operator-controlled.
 
 ## Workstream 1 — First-party native desktop bridges
 
@@ -48,11 +71,13 @@ Provide a shipped Linux bridge using AT-SPI for accessibility-driven application
 
 Each bridge has a repository-owned package/install path, versioned bridge-protocol compatibility, deterministic tests, PolyForm Noncommercial licensing metadata and an executable entrypoint usable by the existing `stdio-bridge` backend. Users may grant OS permissions but must not build bridge code themselves.
 
+Desktop bridges communicate only through their local normalized stdio envelope and operating-system APIs. They do not make calls to private or proprietary Quoralinex services.
+
 ## Workstream 2 — Connector catalogue
 
 Add a local repository catalogue with deterministic JSON manifests. Each entry records a stable connector id/name, category (`model`, `mcp`, `a2a`, `cli`, `browser`, `desktop`), implementation/protocol, supported operating systems, required commands/binaries, required environment-variable names without secret values, optional endpoint/profile template, compatibility status/evidence, configure/test guidance and first-party/community provenance.
 
-The built-in catalogue contains only repository-reviewed first-party profiles. Phase 12 does not auto-download or execute arbitrary third-party packages.
+The built-in catalogue contains only repository-reviewed first-party profiles. Phase 12 does not auto-download or execute arbitrary third-party packages. It contains no profile for a private or proprietary Quoralinex service.
 
 ## Workstream 3 — Ready-to-use model profiles
 
@@ -88,11 +113,15 @@ q1x doctor --json
 
 Commands are deterministic and non-interactive by default. Optional prompts may only wrap explicit flags; CI never depends on interactive input. Configuration stores only non-secret state; secrets remain environment references.
 
+All connector state is stored and resolved by the Community Orchestrator runtime. No external authority or continuity service participates in connector configuration or enablement.
+
 ## Workstream 7 — Diagnostics and preflight
 
 `q1x doctor` returns structured checks for runtime/version/state readiness, recognized host OS, first-party desktop bridge executable status, desktop permission/session status where detectable, browser availability, configured model reachability, required environment-variable presence without values, configured MCP/A2A discovery health, local CLI executable presence, compatibility-matrix status and exact remediation.
 
 Diagnostic states are exactly `ok`, `warning`, `blocked`, `unsupported` and `not-configured`.
+
+Doctor is local to the Community Orchestrator and its configured public endpoints. It contains no check for, or dependency on, a private Quoralinex service.
 
 ## Workstream 8 — End-to-end product acceptance
 
@@ -116,6 +145,10 @@ The same acceptance chain runs with the macOS first-party bridge. Hosted-runner 
 
 The same acceptance chain runs on Ubuntu. If CI lacks a graphical session, a deterministic virtual display/accessibility test environment must exercise the shipped AT-SPI bridge rather than only protocol serialization.
 
+### Standalone acceptance
+
+A deterministic repository audit must prove that active runtime/package/workflow/connector/release surfaces contain no dependency, endpoint, environment variable, callback or connector for a private/proprietary Quoralinex service. This audit is a Phase 12 completion requirement.
+
 ## Compatibility evidence
 
 `compatibility/matrix.json` and generated documentation move a surface from `experimental` to `tested` only when a named integration/environment has concrete evidence. Protocol support alone is insufficient.
@@ -126,13 +159,19 @@ The matrix covers at minimum Windows/macOS/Linux source install, each first-part
 
 The current commissioned `v0.1.0-alpha.1` release is immutable. Phase 12 development does not mutate that tag or its assets. A later explicitly commissioned alpha version must include the first-party packages/configurations required by the completed baseline product surface. GitHub release artifacts remain a valid authoritative distribution path even if npm Trusted Publishing is not enabled.
 
+Release artifacts must remain standalone. They must not require private service credentials, private service endpoints or private Quoralinex packages to install, start or perform baseline operations.
+
 ## Security boundaries
 
 Phase 12 preserves all Phase 9–11 safety boundaries: no persisted secret values, no shell-string execution, no arbitrary package auto-loading, no silent privilege escalation, no bypass of OS accessibility/privacy controls, metadata-only audit for sensitive execution, bounded process output/timeouts, explicit connector enablement and no claim that compatibility evidence is a security/trust certificate.
 
+The Community Orchestrator's own local governance, approvals, audit, evidence and recovery remain authoritative for this product. No private external authority is introduced.
+
 ## Documentation and claim integrity
 
 README, GitHub Pages and user documentation are audited against actual product acceptance evidence. A core capability described as available must be either directly usable through a shipped first-party path or clearly labelled optional/experimental extension functionality. No extension interface may be presented as if the corresponding integration were bundled and ready to use.
+
+Active product documentation must describe the Community Orchestrator as standalone and must not instruct users to configure or connect to a private/proprietary Quoralinex service.
 
 ## Completion gate
 
@@ -145,6 +184,7 @@ Phase 12 is **100% complete** only when:
 - end-to-end Windows/macOS/Linux product acceptance is green;
 - compatibility evidence is updated from actual tests;
 - public documentation matches tested reality;
+- standalone architecture audit proves no private/proprietary Quoralinex service dependency exists in active product surfaces;
 - no advertised baseline capability requires a user to develop a missing Q1X component.
 
 Only after this gate passes does the project proceed to product hardening, security/reliability testing or beta-readiness work.
