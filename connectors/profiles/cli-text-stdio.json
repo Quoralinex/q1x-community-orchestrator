@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "kind": "cli-text-stdio",
+  "protocol": "cli-text-stdio",
+  "transport": "stdio",
+  "inputMode": "text",
+  "outputMode": "text",
+  "defaultTimeoutMs": 30000,
+  "defaultMaxOutputBytes": 1048576
+}
