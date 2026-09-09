@@ -28,6 +28,7 @@ test('Docker dependency layer stages every workspace manifest required by packag
     'desktop-bridge-common',
     'desktop-bridge-macos',
     'desktop-bridge-windows',
+    'desktop-bridge-linux',
     'runtime',
   ]) {
     const escaped = workspace.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
