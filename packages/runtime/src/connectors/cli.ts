@@ -71,11 +71,11 @@ export function executeConnectorCli(home: string | undefined, action: string | u
   }
 
   if (action === 'configure') {
-    const current = getConfiguredConnector(home, definition.id);
-    if (!current) throw new RuntimeError('NOT_FOUND', `Configured connector not found: ${definition.id}; run connectors add first`);
     const parameterPairs = takePairs(args, '--parameter');
     const environmentKeys = takePairs(args, '--environment');
     assertNoUnexpectedArgs(args);
+    const current = getConfiguredConnector(home, definition.id);
+    if (!current) throw new RuntimeError('NOT_FOUND', `Configured connector not found: ${definition.id}; run connectors add first`);
     return configureConnector(home, {
       id: definition.id,
       profile: definition.profile.kind,
