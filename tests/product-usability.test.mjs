@@ -102,3 +102,39 @@ test('product user configures and invokes a local model through connector CLI wi
   const response = success(await runCli(home, 'model', 'invoke', '--file', requestPath));
   assert.equal(response.outputText, 'phase12-product-model-ok');
 });
+
+test('product user configures, discovers and invokes MCP stdio through connector CLI without endpoint JSON', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-product-mcp-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+
+  success(await runCli(home, 'connectors', 'add', 'mcp.stdio'));
+  success(await runCli(
+    home,
+    'connectors', 'configure', 'mcp.stdio',
+    '--parameter', `command=${process.execPath}`,
+    '--parameter', `args=${JSON.stringify(['tests/fixtures/product-usability/mcp-server.mjs'])}`,
+    '--parameter', `cwd=${root}`,
+    '--parameter', 'timeoutMs=5000',
+  ));
+  success(await runCli(home, 'connectors', 'enable', 'mcp.stdio'));
+  const preflight = success(await runCli(home, 'connectors', 'test', 'mcp.stdio'));
+  assert.notEqual(preflight.state, 'blocked');
+  const applied = success(await runCli(home, 'connectors', 'apply', 'mcp.stdio'));
+  assert.equal(applied.endpointId, 'adapter.mcp.stdio');
+
+  const discovered = success(await runCli(home, 'adapter', 'discover', applied.endpointId));
+  assert.equal(discovered.some(capability => capability.operations.includes('mcp-tool:echo')), true);
+
+  const requestPath = join(home, 'mcp-request.json');
+  await writeFile(requestPath, JSON.stringify({
+    contractVersion: '1.0.0',
+    id: 'exec.mcp.phase12.product',
+    workItemId: 'work.mcp.phase12.product',
+    requirements: { operations: ['mcp-tool:echo'], adapterKinds: ['mcp'] },
+    input: { tool: 'echo', arguments: { text: 'phase12-product-mcp' } },
+    createdAt: '2026-09-09T17:31:00.000Z',
+  }));
+  const executed = success(await runCli(home, 'adapter', 'execute', applied.endpointId, '--file', requestPath));
+  assert.equal(executed.status, 'succeeded');
+  assert.deepEqual(executed.output.structuredContent, { text: 'phase12-product-mcp' });
+});
