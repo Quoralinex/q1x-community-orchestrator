@@ -8,6 +8,7 @@ import { RuntimeError } from '../errors.js';
 import { desktopPlatformForHost } from '../desktop-security.js';
 import { getBuiltInConnector } from './catalogue.js';
 import { getConfiguredConnector } from './configuration.js';
+import { materializeModelConnector } from './materialize-model.js';
 
 export type DiagnosticState = 'ok' | 'warning' | 'blocked' | 'unsupported' | 'not-configured';
 
@@ -43,6 +44,7 @@ export interface ConnectorPreflightOptions {
   env?: NodeJS.ProcessEnv;
   commandExists?: (command: string) => Promise<boolean>;
   desktopDoctor?: (platform: 'macos' | 'windows' | 'linux') => Promise<NativeDoctorReport>;
+  fetch?: typeof globalThis.fetch;
 }
 
 const stateOrder: DiagnosticState[] = ['blocked', 'unsupported', 'warning', 'not-configured', 'ok'];
@@ -78,6 +80,45 @@ async function runDesktopDoctor(platform: 'macos' | 'windows' | 'linux'): Promis
 
 function expectedHostPlatform(platform: NodeJS.Platform): 'macos' | 'windows' | 'linux' | undefined {
   return desktopPlatformForHost(platform);
+}
+
+async function modelReachabilityCheck(
+  definition: NonNullable<ReturnType<typeof getBuiltInConnector>>,
+  configured: NonNullable<ReturnType<typeof getConfiguredConnector>>,
+  options: ConnectorPreflightOptions,
+): Promise<DiagnosticCheck> {
+  let endpoint;
+  try {
+    endpoint = materializeModelConnector(definition, configured);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      id: 'live:model', state: 'blocked',
+      message: `Model endpoint configuration is not usable: ${message}`,
+      remediation: 'Correct the model connector URL/model configuration, then run connectors test again.',
+    };
+  }
+
+  const fetchImpl = options.fetch ?? globalThis.fetch;
+  try {
+    const response = await fetchImpl(endpoint.url, {
+      method: 'HEAD',
+      redirect: 'manual',
+      signal: AbortSignal.timeout(Math.min(endpoint.timeoutMs ?? 30_000, 10_000)),
+    });
+    return {
+      id: 'live:model', state: 'ok',
+      message: `Configured model endpoint is reachable (HTTP ${response.status}).`,
+      evidence: { protocol: endpoint.protocol, status: response.status },
+    };
+  } catch {
+    return {
+      id: 'live:model', state: 'blocked',
+      message: 'Configured model endpoint could not be reached.',
+      remediation: 'Start or connect the configured model service and verify the endpoint URL/network path, then run connectors test again.',
+      evidence: { protocol: endpoint.protocol },
+    };
+  }
 }
 
 export async function runConnectorPreflight(
@@ -129,6 +170,10 @@ export async function runConnectorPreflight(
     checks.push(present
       ? { id: `environment:${logicalName}`, state: 'ok', message: `Required environment reference is present: ${environmentKey}.`, evidence: { environmentKey, present: true } }
       : { id: `environment:${logicalName}`, state: 'blocked', message: `Required environment reference is missing: ${environmentKey}.`, remediation: `Set ${environmentKey} in the Q1X host environment.`, evidence: { environmentKey, present: false } });
+  }
+
+  if (definition.category === 'model' && configured.enabled) {
+    checks.push(await modelReachabilityCheck(definition, configured, options));
   }
 
   if (definition.category === 'desktop' && definition.profile.platform) {
