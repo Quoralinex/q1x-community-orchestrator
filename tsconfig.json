@@ -6,6 +6,7 @@
     { "path": "./packages/adapter-sdk" },
     { "path": "./packages/desktop-bridge-common" },
     { "path": "./packages/desktop-bridge-macos" },
+    { "path": "./packages/desktop-bridge-windows" },
     { "path": "./packages/runtime" }
   ]
 }
