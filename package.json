@@ -3,18 +3,23 @@
   "version": "0.0.0",
   "private": true,
   "description": "Provider-neutral orchestration contracts and runtime workspace for Q1X Community Orchestrator.",
-  "engines": { "node": ">=24" },
-  "workspaces": ["packages/*"],
+  "engines": {
+    "node": ">=24"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
   "scripts": {
     "build": "tsc -b --force",
     "clean": "tsc -b --clean",
     "start": "node packages/runtime/dist/service.js",
-    "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs tests/desktop-examples.test.mjs tests/packaging.test.mjs tests/release-commissioning.test.mjs tests/release-adapter-governance.test.mjs tests/compatibility-matrix.test.mjs tests/adapter-sdk.test.mjs tests/community-adapter-example.test.mjs tests/phase11-docs.test.mjs tests/desktop-bridge-common.test.mjs tests/desktop-bridge-macos.test.mjs tests/desktop-bridge-windows.test.mjs tests/desktop-bridge-linux.test.mjs",
-    "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist",
+    "test": "node --test tests/schema-contracts.test.mjs tests/examples.test.mjs tests/desktop-examples.test.mjs tests/packaging.test.mjs tests/release-commissioning.test.mjs tests/release-adapter-governance.test.mjs tests/compatibility-matrix.test.mjs tests/adapter-sdk.test.mjs tests/community-adapter-example.test.mjs tests/phase11-docs.test.mjs tests/desktop-bridge-common.test.mjs tests/desktop-bridge-macos.test.mjs tests/desktop-bridge-windows.test.mjs tests/desktop-bridge-linux.test.mjs tests/phase12-standalone.test.mjs",
+    "check": "npm run build && npm test && npm run test:runtime && npm run test:types && npm run test:dist && npm run verify:standalone",
     "test:compatibility": "node --test tests/compatibility-matrix.test.mjs && node scripts/compatibility/generate-matrix.mjs --check",
     "test:types": "tsc --ignoreConfig --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --lib ES2022,DOM tests/sdk-types.test.ts tests/adapter-sdk-types.test.ts",
     "test:dist": "node --test tests/dist-contracts.test.mjs",
-    "test:runtime": "node --test --test-concurrency=4 tests/runtime-*.test.mjs"
+    "test:runtime": "node --test --test-concurrency=4 tests/runtime-*.test.mjs",
+    "verify:standalone": "node scripts/phase12/verify-standalone.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/server": "2.0.0",
