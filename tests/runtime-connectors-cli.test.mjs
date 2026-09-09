@@ -12,6 +12,8 @@ function runCli(home, ...args) {
 
 const implementedIds = [
   'a2a.jsonrpc',
+  'browser.chromium.cdp',
+  'browser.chromium.managed',
   'cli.json',
   'cli.text',
   'desktop.linux.first-party',
@@ -41,6 +43,8 @@ test('connectors list/show expose the deterministic built-in catalogue', async (
       ['a2a.jsonrpc', 'a2a-jsonrpc'],
       ['cli.json', 'cli-json-stdio'],
       ['cli.text', 'cli-text-stdio'],
+      ['browser.chromium.managed', 'browser-managed-chromium'],
+      ['browser.chromium.cdp', 'browser-cdp-chromium'],
     ]) {
       const shown = runCli(home, 'connectors', 'show', id);
       assert.equal(shown.status, 0, shown.stderr);
