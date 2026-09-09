@@ -9,6 +9,16 @@ import {
 
 const source = JSON.parse(await readFile(new URL('../connectors/catalogue.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(await readFile(new URL('../connectors/schema/connector.schema.json', import.meta.url), 'utf8'));
+const implementedIds = [
+  'desktop.linux.first-party',
+  'desktop.macos.first-party',
+  'desktop.windows.first-party',
+  'model.anthropic-compatible.hosted',
+  'model.anthropic-messages.local',
+  'model.openai-chat.local',
+  'model.openai-compatible.hosted',
+  'model.openai-responses.local',
+];
 
 test('connector schema is closed and defines the supported baseline categories/platforms', () => {
   assert.equal(schema.additionalProperties, false);
@@ -22,12 +32,9 @@ test('built-in connector catalogue validates, is deterministic, and contains onl
   assert.equal(result.ok, true, result.ok ? '' : result.errors.join('; '));
   const catalogue = loadBuiltInConnectorCatalogue();
   assert.deepEqual(catalogue.map(item => item.id), [...catalogue.map(item => item.id)].sort());
-  assert.deepEqual(catalogue.map(item => item.id), [
-    'desktop.linux.first-party',
-    'desktop.macos.first-party',
-    'desktop.windows.first-party',
-  ]);
-  assert.equal(catalogue.every(item => item.category === 'desktop' && item.provenance === 'first-party'), true);
+  assert.deepEqual(catalogue.map(item => item.id), implementedIds);
+  assert.equal(catalogue.every(item => item.provenance === 'first-party'), true);
+  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['desktop', 'model']);
 });
 
 test('catalogue rejects duplicate ids and compatibility tuples', () => {
