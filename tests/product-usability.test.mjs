@@ -174,3 +174,50 @@ test('product user configures, discovers and invokes A2A JSON-RPC through connec
   assert.equal(executed.status, 'succeeded');
   assert.equal(executed.output.text, 'phase12-product-a2a-ok');
 });
+
+test('product user configures and invokes JSON and text CLI tools through connector CLI without endpoint JSON', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-product-cli-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+
+  for (const connectorId of ['cli.json', 'cli.text']) {
+    success(await runCli(home, 'connectors', 'add', connectorId));
+    success(await runCli(
+      home,
+      'connectors', 'configure', connectorId,
+      '--parameter', `command=${process.execPath}`,
+      '--parameter', `args=${JSON.stringify(['tests/fixtures/product-usability/cli-tool.mjs', connectorId === 'cli.json' ? 'json' : 'text'])}`,
+      '--parameter', `cwd=${root}`,
+      '--parameter', 'timeoutMs=5000',
+    ));
+    success(await runCli(home, 'connectors', 'enable', connectorId));
+    const preflight = success(await runCli(home, 'connectors', 'test', connectorId));
+    assert.notEqual(preflight.state, 'blocked');
+    success(await runCli(home, 'connectors', 'apply', connectorId));
+  }
+
+  const jsonRequestPath = join(home, 'cli-json-request.json');
+  await writeFile(jsonRequestPath, JSON.stringify({
+    contractVersion: '1.0.0',
+    id: 'exec.cli.json.phase12.product',
+    workItemId: 'work.cli.json.phase12.product',
+    requirements: { operations: ['execute'], adapterKinds: ['cli-tui'] },
+    input: { text: 'phase12-product-cli-json' },
+    createdAt: '2026-09-09T17:33:00.000Z',
+  }));
+  const jsonExecuted = success(await runCli(home, 'adapter', 'execute', 'adapter.cli.json', '--file', jsonRequestPath));
+  assert.equal(jsonExecuted.status, 'succeeded');
+  assert.deepEqual(jsonExecuted.output, { text: 'phase12-product-cli-json', mode: 'json' });
+
+  const textRequestPath = join(home, 'cli-text-request.json');
+  await writeFile(textRequestPath, JSON.stringify({
+    contractVersion: '1.0.0',
+    id: 'exec.cli.text.phase12.product',
+    workItemId: 'work.cli.text.phase12.product',
+    requirements: { operations: ['execute'], adapterKinds: ['cli-tui'] },
+    input: 'phase12-product-cli-text; no-shell',
+    createdAt: '2026-09-09T17:34:00.000Z',
+  }));
+  const textExecuted = success(await runCli(home, 'adapter', 'execute', 'adapter.cli.text', '--file', textRequestPath));
+  assert.equal(textExecuted.status, 'succeeded');
+  assert.equal(textExecuted.output, 'phase12-product-cli-text; no-shell|mode=text');
+});
