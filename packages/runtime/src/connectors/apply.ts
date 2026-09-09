@@ -40,11 +40,14 @@ export async function applyConfiguredConnector(
   if (!definition) throw new RuntimeError('NOT_FOUND', `Unknown connector: ${connectorId}`);
   const configuration = getConfiguredConnector(runtime.home, connectorId);
   if (!configuration) throw new RuntimeError('NOT_FOUND', `Configured connector not found: ${connectorId}; run connectors add first`);
-  if (!configuration.enabled) throw new RuntimeError('INVALID_STATE', `Connector ${connectorId} is disabled; enable it before apply`);
+  if (!configuration.enabled) throw new RuntimeError('INVALID_TRANSITION', `Connector ${connectorId} is disabled; enable it before apply`);
 
   const preflight = await runConnectorPreflight(runtime.home, connectorId, options.preflight);
-  if (preflight.state === 'blocked' || preflight.state === 'unsupported' || preflight.state === 'not-configured') {
-    throw new RuntimeError('INVALID_STATE', `Connector ${connectorId} preflight is ${preflight.state}`);
+  if (preflight.state === 'unsupported') {
+    throw new RuntimeError('UNSUPPORTED_PLATFORM', `Connector ${connectorId} preflight is unsupported`);
+  }
+  if (preflight.state === 'blocked' || preflight.state === 'not-configured') {
+    throw new RuntimeError('INVALID_REFERENCE', `Connector ${connectorId} preflight is ${preflight.state}`);
   }
 
   let endpointId: string;
