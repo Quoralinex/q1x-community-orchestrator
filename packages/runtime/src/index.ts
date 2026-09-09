@@ -31,6 +31,7 @@ export * from './connectors/types.js';
 export * from './connectors/catalogue.js';
 export * from './connectors/configuration.js';
 export * from './connectors/preflight.js';
+export * from './doctor.js';
 export * from './supervision-allocator.js';
 export * from './work-executor.js';
 export * from './planning-strategy.js';
