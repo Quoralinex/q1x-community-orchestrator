@@ -110,6 +110,35 @@ test('checked-in matrix source validates and generated markdown is current', asy
   assert.equal(normalizeLineEndings(markdown), normalizeLineEndings(generated));
 });
 
+test('Phase 12 matrix records tested baseline product surfaces with concrete evidence', async () => {
+  const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
+  const byId = new Map(source.entries.map(entry => [entry.id, entry]));
+  const required = [
+    'desktop.macos.first-party',
+    'desktop.windows.first-party',
+    'desktop.linux.first-party',
+    'model.openai-chat.local.fixture',
+    'model.openai-responses.local.fixture',
+    'model.anthropic-messages.local.fixture',
+    'adapter.mcp.stdio.fixture',
+    'adapter.mcp.streamable-http.fixture',
+    'adapter.a2a.jsonrpc.fixture',
+    'adapter.cli.json.fixture',
+    'adapter.cli.text.fixture',
+    'browser.chromium.managed.runner',
+    'protocol.connector-management',
+  ];
+  for (const id of required) {
+    const entry = byId.get(id);
+    assert.ok(entry, `missing Phase 12 compatibility entry: ${id}`);
+    assert.equal(entry.status, 'tested', `${id} must be tested`);
+    assert.ok(Array.isArray(entry.evidence) && entry.evidence.length > 0, `${id} requires evidence`);
+    for (const item of entry.evidence) assert.match(item.commitSha, /^[0-9a-f]{40}$/);
+  }
+  assert.equal(byId.get('desktop.macos.first-party').notes?.includes('physical-host'), true);
+  assert.equal(byId.get('desktop.windows.first-party').notes?.includes('physical-host'), true);
+});
+
 test('generator check mode succeeds only when checked-in markdown matches', () => {
   const result = spawnSync(process.execPath, ['scripts/compatibility/generate-matrix.mjs', '--check'], {
     cwd: new URL('..', import.meta.url),

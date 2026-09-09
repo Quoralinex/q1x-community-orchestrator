@@ -154,8 +154,8 @@ export function renderCompatibilityMarkdown(matrix) {
   const lines = [
     '# Compatibility Matrix',
     '',
-    `**Matrix version:** ${normalized.matrixVersion}  `,
-    `**Project version:** ${normalized.projectVersion}  `,
+    `**Matrix version:** ${normalized.matrixVersion}`,
+    `**Project version:** ${normalized.projectVersion}`,
     `**Evidence baseline:** \`${normalized.generatedFrom}\``,
     '',
     '## Status legend',
