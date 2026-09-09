@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "kind": "model-anthropic-compatible-hosted",
   "protocol": "anthropic-messages",
-  "adapterKind": "hosted-api",
+  "adapterKind": "provider-http",
   "scope": "hosted",
   "defaultTimeoutMs": 30000,
   "credential": {
