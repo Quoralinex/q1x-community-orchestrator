@@ -1,0 +1,39 @@
+{
+  "contractVersion": "1.0.0",
+  "id": "desktop.linux-first-party",
+  "name": "Q1X first-party Linux AT-SPI desktop bridge",
+  "backend": "stdio-bridge",
+  "platform": "linux",
+  "executionLocation": "local",
+  "supportedActions": [
+    "list-applications",
+    "launch-application",
+    "focus-application",
+    "close-application",
+    "list-windows",
+    "focus-window",
+    "inspect",
+    "find",
+    "click",
+    "double-click",
+    "type",
+    "press",
+    "set-value",
+    "select",
+    "toggle",
+    "mouse-move",
+    "mouse-down",
+    "mouse-up",
+    "wheel",
+    "drag",
+    "wait",
+    "screenshot"
+  ],
+  "transport": {
+    "command": "q1x-desktop-bridge-linux",
+    "args": [],
+    "timeoutMs": 30000,
+    "maxOutputBytes": 4194304
+  },
+  "outputDir": "./desktop-output"
+}
