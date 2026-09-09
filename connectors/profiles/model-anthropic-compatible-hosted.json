@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "kind": "model-anthropic-compatible-hosted",
+  "protocol": "anthropic-messages",
+  "adapterKind": "hosted-api",
+  "scope": "hosted",
+  "defaultTimeoutMs": 30000,
+  "credential": {
+    "environmentName": "apiKey",
+    "header": "x-api-key"
+  }
+}
