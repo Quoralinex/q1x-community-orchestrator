@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Make baseline Q1X integrations discoverable, configurable, testable and diagnosable without editing internal files or writing connector code.
+**Goal:** Make baseline Q1X integrations discoverable, configurable, testable and diagnosable without editing internal files, writing connector code, or depending on a private external authority service.
 
-**Architecture:** Add a deterministic first-party connector catalogue under `connectors/`, a runtime catalogue service, persisted non-secret enable/configuration state, and JSON-first CLI commands. `q1x doctor` composes runtime, connector, model, browser, adapter and desktop preflight checks while never exposing secret values.
+**Architecture:** Add a deterministic first-party connector catalogue under `connectors/`, a runtime catalogue service, persisted non-secret enable/configuration state, and JSON-first CLI commands. `q1x doctor` composes runtime, connector, model, browser, adapter and desktop preflight checks while never exposing secret values. All state and authority for these flows remain inside the Community Orchestrator runtime.
 
 **Tech Stack:** Node.js 24 ESM, TypeScript, JSON manifests, existing SQLite runtime state, existing endpoint registries and compatibility matrix.
 
@@ -18,6 +18,8 @@
 - Commands are non-interactive and machine-readable by default.
 - Diagnostic states are exactly `ok`, `warning`, `blocked`, `unsupported`, `not-configured`.
 - Existing endpoint/security validation remains authoritative.
+- Connector configuration, enablement, diagnostics and compatibility lookup are local Community Orchestrator responsibilities.
+- No private/proprietary Quoralinex service client, endpoint, environment variable, authority callback, continuity callback or connector profile may be introduced.
 
 ---
 
@@ -38,6 +40,7 @@
 - `loadBuiltInConnectorCatalogue(): readonly ConnectorDefinition[]`.
 
 - [ ] Write RED tests for schema closure, duplicate ids, deterministic sort, forbidden embedded secret values and invalid protocol/category/platform values.
+- [ ] Add RED assertions that built-in entries cannot reference private package namespaces, private service URLs or reserved private-service environment keys.
 - [ ] Implement strict manifest validation and deterministic loader.
 - [ ] Seed only connector definitions that have an implementation path in this phase; do not create aspirational entries.
 - [ ] Run schema/runtime tests and commit.
@@ -76,7 +79,7 @@
 
 - [ ] RED tests invoke CLI process and assert deterministic JSON, exit codes and error codes.
 - [ ] Implement `list/show` from catalogue and `add/configure` through configuration store.
-- [ ] `enable/disable` updates only connector state, not secrets or unrelated endpoints.
+- [ ] `enable/disable` updates only local connector state, not secrets or unrelated endpoints.
 - [ ] `test` delegates to category-specific preflight adapters defined in Task 4.
 - [ ] Verify CLI and commit.
 
@@ -130,6 +133,7 @@ export interface ConnectorPreflightReport {
 - CLI `q1x doctor --json`.
 
 - [ ] RED tests require runtime readiness, OS, desktop bridge, browser, configured connectors, environment references and compatibility matrix statuses in one report.
+- [ ] Add RED assertion that doctor has no check, remediation or configuration field for a private/proprietary Quoralinex service.
 - [ ] Implement aggregate state precedence: `blocked` > `unsupported` > `warning` > `not-configured` > `ok`, while preserving every individual check.
 - [ ] Ensure doctor never writes configuration and never prints secret values.
 - [ ] Add exact remediation strings for each first-party prerequisite.
@@ -152,3 +156,19 @@ export interface ConnectorPreflightReport {
 - [ ] Implement lookup against bundled/generated matrix data.
 - [ ] Keep current experimental statuses until later end-to-end evidence exists.
 - [ ] Verify matrix generator and commit.
+
+---
+
+### Task 7: Standalone connector boundary
+
+**Files:**
+- Create: `tests/phase12-standalone-connectors.test.mjs`
+- Modify: `package.json`
+
+**Interfaces:**
+- Test-only repository audit of active connector/runtime surfaces.
+
+- [ ] Write RED audit that scans `connectors/`, `packages/runtime/src/connectors/` and `packages/runtime/src/doctor.ts` for forbidden private-service dependency patterns defined by the Phase 12 spec.
+- [ ] Ensure catalogue and doctor remain entirely functional with no private service configuration present.
+- [ ] Add the audit to the root test surface.
+- [ ] Verify and commit.
