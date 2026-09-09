@@ -1,0 +1,56 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import test from 'node:test';
+
+import {
+  loadBuiltInConnectorCatalogue,
+  validateConnectorCatalogue,
+} from '../packages/runtime/dist/connectors/catalogue.js';
+
+const source = JSON.parse(await readFile(new URL('../connectors/catalogue.json', import.meta.url), 'utf8'));
+const schema = JSON.parse(await readFile(new URL('../connectors/schema/connector.schema.json', import.meta.url), 'utf8'));
+
+test('connector schema is closed and defines the supported baseline categories/platforms', () => {
+  assert.equal(schema.additionalProperties, false);
+  assert.deepEqual(schema.properties.category.enum, ['model', 'mcp', 'a2a', 'cli', 'browser', 'desktop']);
+  assert.deepEqual(schema.properties.platforms.items.enum, ['macos', 'windows', 'linux', 'any']);
+  assert.deepEqual(schema.properties.provenance.enum, ['first-party', 'community']);
+});
+
+test('built-in connector catalogue validates, is deterministic, and contains only implemented entries', () => {
+  const result = validateConnectorCatalogue(source);
+  assert.equal(result.ok, true, result.ok ? '' : result.errors.join('; '));
+  const catalogue = loadBuiltInConnectorCatalogue();
+  assert.deepEqual(catalogue.map(item => item.id), [...catalogue.map(item => item.id)].sort());
+  assert.deepEqual(catalogue.map(item => item.id), [
+    'desktop.linux.first-party',
+    'desktop.macos.first-party',
+    'desktop.windows.first-party',
+  ]);
+  assert.equal(catalogue.every(item => item.category === 'desktop' && item.provenance === 'first-party'), true);
+});
+
+test('catalogue rejects duplicate ids and compatibility tuples', () => {
+  const duplicateId = structuredClone(source);
+  duplicateId.connectors.push(structuredClone(duplicateId.connectors[0]));
+  assert.equal(validateConnectorCatalogue(duplicateId).ok, false);
+
+  const duplicateTuple = structuredClone(source);
+  const copy = structuredClone(duplicateTuple.connectors[0]);
+  copy.id = 'desktop.linux.duplicate';
+  duplicateTuple.connectors.push(copy);
+  assert.equal(validateConnectorCatalogue(duplicateTuple).ok, false);
+});
+
+test('catalogue rejects unsupported category/platform/protocol and embedded secret-like properties', () => {
+  for (const mutate of [
+    value => { value.connectors[0].category = 'database'; },
+    value => { value.connectors[0].platforms = ['solaris']; },
+    value => { value.connectors[0].protocol = 'Not A Protocol'; },
+    value => { value.connectors[0].secretValue = 'should-never-be-stored'; },
+  ]) {
+    const value = structuredClone(source);
+    mutate(value);
+    assert.equal(validateConnectorCatalogue(value).ok, false);
+  }
+});
