@@ -11,6 +11,8 @@ const source = JSON.parse(await readFile(new URL('../connectors/catalogue.json',
 const schema = JSON.parse(await readFile(new URL('../connectors/schema/connector.schema.json', import.meta.url), 'utf8'));
 const implementedIds = [
   'a2a.jsonrpc',
+  'browser.chromium.cdp',
+  'browser.chromium.managed',
   'cli.json',
   'cli.text',
   'desktop.linux.first-party',
@@ -39,7 +41,7 @@ test('built-in connector catalogue validates, is deterministic, and contains onl
   assert.deepEqual(catalogue.map(item => item.id), [...catalogue.map(item => item.id)].sort());
   assert.deepEqual(catalogue.map(item => item.id), implementedIds);
   assert.equal(catalogue.every(item => item.provenance === 'first-party'), true);
-  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['a2a', 'cli', 'desktop', 'mcp', 'model']);
+  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['a2a', 'browser', 'cli', 'desktop', 'mcp', 'model']);
 });
 
 test('catalogue rejects duplicate ids and compatibility tuples', () => {
