@@ -5,6 +5,7 @@ import {
   getConfiguredConnector,
   setConnectorEnabled,
 } from './configuration.js';
+import { runConnectorPreflight } from './preflight.js';
 
 function requiredConnector(id: string | undefined) {
   if (!id) throw new Error('Connector id is required');
@@ -43,7 +44,7 @@ function assertNoUnexpectedArgs(args: string[]): void {
   if (args.length > 0) throw new Error(`Unexpected connector arguments: ${args.join(' ')}`);
 }
 
-export function executeConnectorCli(home: string | undefined, action: string | undefined, args: string[]): unknown {
+export async function executeConnectorCli(home: string | undefined, action: string | undefined, args: string[]): Promise<unknown> {
   if (action === 'list') {
     assertNoUnexpectedArgs(args);
     return loadBuiltInConnectorCatalogue();
@@ -55,6 +56,11 @@ export function executeConnectorCli(home: string | undefined, action: string | u
   if (action === 'show') {
     assertNoUnexpectedArgs(args);
     return definition;
+  }
+
+  if (action === 'test') {
+    assertNoUnexpectedArgs(args);
+    return runConnectorPreflight(home, definition.id);
   }
 
   if (action === 'add') {
