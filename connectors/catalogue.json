@@ -1,0 +1,65 @@
+{
+  "version": "1.0.0",
+  "connectors": [
+    {
+      "id": "desktop.linux.first-party",
+      "name": "Q1X Linux AT-SPI Desktop",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "platforms": ["linux"],
+      "requirements": {
+        "commands": ["q1x-desktop-bridge-linux", "python3"],
+        "environmentKeys": []
+      },
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "linux"
+      },
+      "compatibility": {
+        "status": "experimental",
+        "note": "The shipped bridge and protocol path are implemented; physical graphical-session AT-SPI evidence is promoted only by Phase 12 product-usability CI."
+      },
+      "provenance": "first-party"
+    },
+    {
+      "id": "desktop.macos.first-party",
+      "name": "Q1X macOS Accessibility Desktop",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "platforms": ["macos"],
+      "requirements": {
+        "commands": ["q1x-desktop-bridge-macos", "/usr/bin/osascript"],
+        "environmentKeys": []
+      },
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "macos"
+      },
+      "compatibility": {
+        "status": "experimental",
+        "note": "The shipped bridge and protocol path are implemented; physical-host Accessibility permission evidence is promoted only by Phase 12 product-usability verification."
+      },
+      "provenance": "first-party"
+    },
+    {
+      "id": "desktop.windows.first-party",
+      "name": "Q1X Windows UI Automation Desktop",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "platforms": ["windows"],
+      "requirements": {
+        "commands": ["q1x-desktop-bridge-windows", "powershell.exe"],
+        "environmentKeys": []
+      },
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "windows"
+      },
+      "compatibility": {
+        "status": "experimental",
+        "note": "The shipped bridge and UI Automation worker are implemented; deterministic native-target evidence is promoted only by Phase 12 product-usability CI."
+      },
+      "provenance": "first-party"
+    }
+  ]
+}
