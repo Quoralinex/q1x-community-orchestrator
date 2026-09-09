@@ -60,6 +60,8 @@ jobs:
         run: node --test --test-name-pattern="desktop action batch example validates" tests/desktop-examples.test.mjs
       - name: Run runtime integration tests
         run: npm run test:runtime
+      - name: Run product usability acceptance
+        run: node --test tests/product-usability.test.mjs
       - name: Run strict SDK consumer type test
         run: npm run test:types
       - name: Run distribution and licence tests
