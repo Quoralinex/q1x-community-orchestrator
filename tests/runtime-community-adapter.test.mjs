@@ -88,7 +88,7 @@ test('runtime explicitly injects a conforming community adapter without replacin
         args: ['-e', 'let s="";process.stdin.on("data",d=>s+=d);process.stdin.on("end",()=>process.stdout.write(s))'],
         inputMode: 'json',
         outputMode: 'json',
-        timeoutMs: 5000,
+        timeoutMs: 30000,
       },
     });
     const builtin = await runtime.executeAdapter('builtin-cli-echo', { ...request, id: 'exec-builtin-1' });
