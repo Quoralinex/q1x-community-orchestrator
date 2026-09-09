@@ -4,7 +4,7 @@
 
 **Goal:** Ship ready-to-use first-party connector profiles for models, MCP, A2A, CLI tools and browser control so normal users configure values rather than write Q1X integration code.
 
-**Architecture:** Profiles remain declarative and materialize through the existing model, adapter, browser and desktop endpoint registries. Deterministic local fixtures prove each profile path without external accounts; hosted-provider profiles only add configuration convenience and never move secrets into repository state.
+**Architecture:** Profiles remain declarative and materialize through the existing model, adapter, browser and desktop endpoint registries. Deterministic local fixtures prove each profile path without external accounts; hosted-provider profiles only add configuration convenience and never move secrets into repository state. No private/proprietary Quoralinex service appears as a profile, dependency or privileged route.
 
 **Tech Stack:** Node.js 24, TypeScript runtime, JSON profiles, existing MCP/A2A/CLI/browser/model transports, local HTTP/stdin fixtures.
 
@@ -12,11 +12,12 @@
 
 ## Global Constraints
 
-- Profiles configure existing protocol transports; they do not add provider switches to core.
+- Profiles configure existing public protocol transports; they do not add provider switches to core.
 - Secret values stay in environment variables.
 - Remote HTTP must remain HTTPS except loopback development fixtures.
 - Starter integrations must work without changing Q1X source code.
 - Tests use deterministic local fixtures and do not require paid APIs.
+- No private/proprietary Quoralinex service profile, environment key, endpoint or package dependency is permitted.
 
 ---
 
@@ -154,6 +155,7 @@
 - Every built-in catalogue entry links to a real profile/materializer and concrete `q1x connectors` commands.
 
 - [ ] RED docs tests require one complete configure/test example for each baseline category.
-- [ ] Add only implemented connectors to catalogue.
+- [ ] Add only implemented public-protocol connectors to catalogue.
+- [ ] Add negative assertions that the catalogue contains no private/proprietary Quoralinex service profile or privileged connector route.
 - [ ] Document credential/environment prerequisites clearly and distinguish tested fixtures from provider-specific compatibility claims.
 - [ ] Verify and commit.
