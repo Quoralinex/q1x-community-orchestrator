@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "kind": "model-anthropic-messages-local",
+  "protocol": "anthropic-messages",
+  "adapterKind": "local-inference",
+  "scope": "local",
+  "defaultTimeoutMs": 30000
+}
