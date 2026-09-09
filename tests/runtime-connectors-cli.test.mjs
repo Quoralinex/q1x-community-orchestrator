@@ -12,6 +12,8 @@ function runCli(home, ...args) {
 
 const implementedIds = [
   'a2a.jsonrpc',
+  'cli.json',
+  'cli.text',
   'desktop.linux.first-party',
   'desktop.macos.first-party',
   'desktop.windows.first-party',
@@ -32,21 +34,18 @@ test('connectors list/show expose the deterministic built-in catalogue', async (
     const catalogue = JSON.parse(list.stdout);
     assert.deepEqual(catalogue.map(item => item.id), implementedIds);
 
-    const show = runCli(home, 'connectors', 'show', 'desktop.linux.first-party');
-    assert.equal(show.status, 0, show.stderr);
-    assert.equal(JSON.parse(show.stdout).profile.kind, 'desktop-first-party');
-
-    const model = runCli(home, 'connectors', 'show', 'model.openai-chat.local');
-    assert.equal(model.status, 0, model.stderr);
-    assert.equal(JSON.parse(model.stdout).profile.kind, 'model-openai-chat-local');
-
-    const mcp = runCli(home, 'connectors', 'show', 'mcp.stdio');
-    assert.equal(mcp.status, 0, mcp.stderr);
-    assert.equal(JSON.parse(mcp.stdout).profile.kind, 'mcp-stdio');
-
-    const a2a = runCli(home, 'connectors', 'show', 'a2a.jsonrpc');
-    assert.equal(a2a.status, 0, a2a.stderr);
-    assert.equal(JSON.parse(a2a.stdout).profile.kind, 'a2a-jsonrpc');
+    for (const [id, kind] of [
+      ['desktop.linux.first-party', 'desktop-first-party'],
+      ['model.openai-chat.local', 'model-openai-chat-local'],
+      ['mcp.stdio', 'mcp-stdio'],
+      ['a2a.jsonrpc', 'a2a-jsonrpc'],
+      ['cli.json', 'cli-json-stdio'],
+      ['cli.text', 'cli-text-stdio'],
+    ]) {
+      const shown = runCli(home, 'connectors', 'show', id);
+      assert.equal(shown.status, 0, shown.stderr);
+      assert.equal(JSON.parse(shown.stdout).profile.kind, kind);
+    }
   } finally {
     await rm(home, { recursive: true, force: true });
   }
