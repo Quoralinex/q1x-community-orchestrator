@@ -4,6 +4,11 @@ export const BUILT_IN_CONNECTOR_CATALOGUE: ConnectorCatalogueDocument = {
   version: '1.0.0',
   connectors: [
     {
+      id: 'a2a.jsonrpc', name: 'A2A JSON-RPC Agent', category: 'a2a', protocol: 'a2a-jsonrpc', platforms: ['any'],
+      requirements: { commands: [], environmentKeys: [] }, profile: { kind: 'a2a-jsonrpc' },
+      compatibility: { status: 'experimental', note: 'The A2A JSON-RPC profile is exercised against deterministic Agent Card discovery and message/send fixtures; individual remote agents remain separately compatible only when evidenced.' }, provenance: 'first-party',
+    },
+    {
       id: 'desktop.linux.first-party', name: 'Q1X Linux AT-SPI Desktop', category: 'desktop', protocol: 'q1x-desktop-bridge/1', platforms: ['linux'],
       requirements: { commands: ['q1x-desktop-bridge-linux', 'python3'], environmentKeys: [] }, profile: { kind: 'desktop-first-party', platform: 'linux' },
       compatibility: { status: 'experimental', note: 'The shipped bridge and protocol path are implemented; physical graphical-session AT-SPI evidence is promoted only by Phase 12 product-usability CI.' }, provenance: 'first-party',
