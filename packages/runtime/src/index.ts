@@ -32,6 +32,7 @@ export * from './connectors/catalogue.js';
 export * from './connectors/configuration.js';
 export * from './connectors/preflight.js';
 export * from './connectors/materialize-model.js';
+export * from './connectors/materialize-mcp.js';
 export * from './doctor.js';
 export * from './supervision-allocator.js';
 export * from './work-executor.js';
