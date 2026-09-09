@@ -37,6 +37,16 @@ function scalar(value: string): unknown {
   if (value === 'false') return false;
   if (value === 'null') return null;
   if (/^-?(?:0|[1-9]\d*)(?:\.\d+)?$/.test(value)) return Number(value);
+  if (value.startsWith('[')) {
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(value);
+    } catch {
+      throw new Error('--parameter JSON array value is invalid');
+    }
+    if (!Array.isArray(parsed)) throw new Error('--parameter JSON array value is invalid');
+    return parsed;
+  }
   return value;
 }
 
