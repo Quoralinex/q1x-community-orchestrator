@@ -14,7 +14,10 @@
   "references": [
     { "path": "../contracts" },
     { "path": "../sdk-typescript" },
-    { "path": "../adapter-sdk" }
+    { "path": "../adapter-sdk" },
+    { "path": "../desktop-bridge-macos" },
+    { "path": "../desktop-bridge-windows" },
+    { "path": "../desktop-bridge-linux" }
   ],
   "include": ["src/**/*.ts"]
 }
