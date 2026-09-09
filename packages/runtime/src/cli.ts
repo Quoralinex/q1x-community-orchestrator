@@ -8,6 +8,7 @@ import './supervision-extension.js';
 import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
 import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
+import { executeConnectorCli } from './connectors/cli.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -44,6 +45,7 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
   }
 
   const action = args.shift();
+  if (command === 'connectors') return executeConnectorCli(runtime.home, action, args);
   if (command === 'capabilities') {
     if (action === 'put') return runtime.putCapability(readJsonFile(requiredOption(args, '--file')) as CapabilityDescriptor);
     if (action === 'list') return runtime.listCapabilities();
