@@ -26,6 +26,7 @@ export * from './browser-actions.js';
 export * from './desktop-security.js';
 export * from './desktop-backend.js';
 export * from './stdio-desktop.js';
+export * from './first-party-desktop.js';
 export * from './supervision-allocator.js';
 export * from './work-executor.js';
 export * from './planning-strategy.js';
