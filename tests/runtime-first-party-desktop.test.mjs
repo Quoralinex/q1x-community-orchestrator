@@ -3,6 +3,7 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
 import {
@@ -42,8 +43,8 @@ test('first-party desktop endpoint is a complete stdio endpoint without user-sup
 test('CLI setup-first-party persists the current-platform endpoint without endpoint JSON', async () => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-first-party-desktop-'));
   try {
-    const cli = new URL('../packages/runtime/dist/cli.js', import.meta.url);
-    const setup = spawnSync(process.execPath, [cli.pathname, '--home', home, 'desktop', 'setup-first-party', '--id', 'desktop.local'], { encoding: 'utf8' });
+    const cli = fileURLToPath(new URL('../packages/runtime/dist/cli.js', import.meta.url));
+    const setup = spawnSync(process.execPath, [cli, '--home', home, 'desktop', 'setup-first-party', '--id', 'desktop.local'], { encoding: 'utf8' });
     assert.equal(setup.status, 0, setup.stderr);
     const endpoint = JSON.parse(setup.stdout);
     assert.equal(endpoint.id, 'desktop.local');
@@ -51,7 +52,7 @@ test('CLI setup-first-party persists the current-platform endpoint without endpo
     assert.equal(typeof endpoint.transport?.command, 'string');
     assert.ok(endpoint.transport.command.startsWith('q1x-desktop-bridge-'));
 
-    const get = spawnSync(process.execPath, [cli.pathname, '--home', home, 'desktop-endpoints', 'get', 'desktop.local'], { encoding: 'utf8' });
+    const get = spawnSync(process.execPath, [cli, '--home', home, 'desktop-endpoints', 'get', 'desktop.local'], { encoding: 'utf8' });
     assert.equal(get.status, 0, get.stderr);
     assert.deepEqual(JSON.parse(get.stdout), endpoint);
   } finally {
