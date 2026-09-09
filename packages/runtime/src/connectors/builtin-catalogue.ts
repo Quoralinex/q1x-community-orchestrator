@@ -9,6 +9,16 @@ export const BUILT_IN_CONNECTOR_CATALOGUE: ConnectorCatalogueDocument = {
       compatibility: { status: 'experimental', note: 'The A2A JSON-RPC profile is exercised against deterministic Agent Card discovery and message/send fixtures; individual remote agents remain separately compatible only when evidenced.' }, provenance: 'first-party',
     },
     {
+      id: 'cli.json', name: 'CLI JSON stdio Tool', category: 'cli', protocol: 'cli-json-stdio', platforms: ['any'],
+      requirements: { commands: [], environmentKeys: [] }, profile: { kind: 'cli-json-stdio' },
+      compatibility: { status: 'experimental', note: 'The JSON stdio profile is exercised through direct no-shell process execution with deterministic stdin/stdout and environment allowlisting; individual tools remain separately compatible only when evidenced.' }, provenance: 'first-party',
+    },
+    {
+      id: 'cli.text', name: 'CLI Text stdio Tool', category: 'cli', protocol: 'cli-text-stdio', platforms: ['any'],
+      requirements: { commands: [], environmentKeys: [] }, profile: { kind: 'cli-text-stdio' },
+      compatibility: { status: 'experimental', note: 'The text stdio profile is exercised through direct no-shell process execution and preserves shell metacharacters as ordinary input text; individual tools remain separately compatible only when evidenced.' }, provenance: 'first-party',
+    },
+    {
       id: 'desktop.linux.first-party', name: 'Q1X Linux AT-SPI Desktop', category: 'desktop', protocol: 'q1x-desktop-bridge/1', platforms: ['linux'],
       requirements: { commands: ['q1x-desktop-bridge-linux', 'python3'], environmentKeys: [] }, profile: { kind: 'desktop-first-party', platform: 'linux' },
       compatibility: { status: 'experimental', note: 'The shipped bridge and protocol path are implemented; physical graphical-session AT-SPI evidence is promoted only by Phase 12 product-usability CI.' }, provenance: 'first-party',
