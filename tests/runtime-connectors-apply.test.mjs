@@ -17,6 +17,7 @@ function healthyPreflight() {
   return {
     commandExists: async () => true,
     desktopDoctor: async platform => ({ platform, state: 'ok', checks: [] }),
+    fetch: async () => new Response(null, { status: 405 }),
   };
 }
 
