@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "kind": "mcp-streamable-http",
+  "protocol": "mcp-streamable-http-v2",
+  "transport": "http",
+  "defaultTimeoutMs": 30000,
+  "credential": {
+    "environmentName": "apiKey",
+    "header": "Authorization",
+    "prefix": "Bearer "
+  }
+}
