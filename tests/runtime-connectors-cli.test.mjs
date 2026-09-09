@@ -11,6 +11,7 @@ function runCli(home, ...args) {
 }
 
 const implementedIds = [
+  'a2a.jsonrpc',
   'desktop.linux.first-party',
   'desktop.macos.first-party',
   'desktop.windows.first-party',
@@ -42,6 +43,10 @@ test('connectors list/show expose the deterministic built-in catalogue', async (
     const mcp = runCli(home, 'connectors', 'show', 'mcp.stdio');
     assert.equal(mcp.status, 0, mcp.stderr);
     assert.equal(JSON.parse(mcp.stdout).profile.kind, 'mcp-stdio');
+
+    const a2a = runCli(home, 'connectors', 'show', 'a2a.jsonrpc');
+    assert.equal(a2a.status, 0, a2a.stderr);
+    assert.equal(JSON.parse(a2a.stdout).profile.kind, 'a2a-jsonrpc');
   } finally {
     await rm(home, { recursive: true, force: true });
   }
