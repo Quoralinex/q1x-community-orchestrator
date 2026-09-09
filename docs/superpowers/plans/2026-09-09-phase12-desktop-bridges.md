@@ -4,7 +4,7 @@
 
 **Goal:** Ship ready-to-run first-party desktop bridge packages for macOS, Windows and Linux behind the existing `q1x-desktop-bridge/1` stdio contract.
 
-**Architecture:** Keep `packages/runtime/src/stdio-desktop.ts` unchanged as the transport/security boundary. Add three workspace packages whose executable entrypoints read one JSON envelope from stdin, validate platform/protocol, execute native accessibility/window operations through platform-native facilities, and write one normalized JSON result to stdout. Each bridge also exposes a `--doctor` mode for non-destructive preflight.
+**Architecture:** Keep `packages/runtime/src/stdio-desktop.ts` unchanged as the transport/security boundary. Add three workspace packages whose executable entrypoints read one JSON envelope from stdin, validate platform/protocol, execute native accessibility/window operations through platform-native facilities, and write one normalized JSON result to stdout. Each bridge also exposes a `--doctor` mode for non-destructive preflight. Desktop bridges remain purely local OS integrations and have no private service dependency.
 
 **Tech Stack:** Node.js 24 ESM, macOS `osascript`/System Events accessibility, Windows PowerShell/.NET UI Automation, Linux Python 3 + GI/AT-SPI when available, Node test runner, TypeScript.
 
@@ -20,6 +20,7 @@
 - Public package licence remains PolyForm Noncommercial License 1.0.0.
 - Bridge output is bounded and normalized; UI content is not copied into audit logs.
 - Physical-host permission restrictions must be reported as diagnostics, not hidden by a success result.
+- Bridges may call only local OS facilities required for desktop control; no private/proprietary Quoralinex service client, endpoint or authority callback is permitted.
 
 ---
 
@@ -142,7 +143,7 @@ Use a deterministic test target available on the runner or a packaged test windo
 
 - [ ] **Step 5: Commit**
 
-Require build/tests/package dry-run and no shell invocation regression.
+Require build/tests/package dry-run, no shell invocation regression and no external-service dependency.
 
 ---
 
@@ -183,7 +184,7 @@ Use an Ubuntu virtual display/accessibility test fixture where feasible; otherwi
 
 - [ ] **Step 5: Commit**
 
-Require focused tests, runtime bridge integration and package verification.
+Require focused tests, runtime bridge integration, package verification and no external-service dependency.
 
 ---
 
@@ -212,6 +213,6 @@ Map `darwin -> q1x-desktop-bridge-macos`, `win32 -> q1x-desktop-bridge-windows`,
 
 Expose a machine-readable command used later by connector configuration rather than forcing users to author endpoint JSON.
 
-- [ ] **Step 4: Verify and commit**
+- [ ] **Step 4: Verify standalone resolution and commit**
 
-Run runtime tests on all three OS matrices.
+Run runtime tests on all three OS matrices and assert the resolver has no private/proprietary Quoralinex service configuration or callback path.
