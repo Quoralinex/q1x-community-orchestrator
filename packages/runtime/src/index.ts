@@ -35,6 +35,7 @@ export * from './connectors/materialize-model.js';
 export * from './connectors/materialize-mcp.js';
 export * from './connectors/materialize-a2a.js';
 export * from './connectors/materialize-cli.js';
+export * from './connectors/materialize-browser.js';
 export * from './doctor.js';
 export * from './supervision-allocator.js';
 export * from './work-executor.js';
