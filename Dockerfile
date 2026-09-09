@@ -9,6 +9,7 @@ COPY packages/adapter-sdk/package.json packages/adapter-sdk/package.json
 COPY packages/desktop-bridge-common/package.json packages/desktop-bridge-common/package.json
 COPY packages/desktop-bridge-macos/package.json packages/desktop-bridge-macos/package.json
 COPY packages/desktop-bridge-windows/package.json packages/desktop-bridge-windows/package.json
+COPY packages/desktop-bridge-linux/package.json packages/desktop-bridge-linux/package.json
 COPY packages/runtime/package.json packages/runtime/package.json
 RUN npm ci --no-audit --no-fund
 
