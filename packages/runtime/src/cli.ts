@@ -9,6 +9,7 @@ import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
 import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
 import { executeConnectorCli } from './connectors/cli.js';
+import { runDoctor } from './doctor.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -39,6 +40,12 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
   if (!command) throw new Error('A command is required');
   if (command === 'init') return runtime.getStatus();
   if (command === 'status') return runtime.getStatus(takeOption(args, '--programme'));
+  if (command === 'doctor') {
+    const jsonIndex = args.indexOf('--json');
+    if (jsonIndex >= 0) args.splice(jsonIndex, 1);
+    if (args.length > 0) throw new Error(`Unexpected doctor arguments: ${args.join(' ')}`);
+    return runDoctor(runtime);
+  }
   if (command === 'discover') {
     const manifests = loadDiscoveryManifests(requiredOption(args, '--manifest'));
     return runtime.discoverMany(manifests);
