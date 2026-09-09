@@ -52,7 +52,7 @@
 - Modify: `tests/packaging.test.mjs`
 
 **Interfaces:**
-- Jobs: `product-ubuntu-24.04`, `product-macos-latest`, `product-windows-latest`.
+- Jobs: `product-ubuntu-24-04`, `product-macos-latest`, `product-windows-latest`.
 - All third-party Actions remain pinned to full commit SHAs.
 
 - [ ] RED packaging test requires the workflow, read-only permissions, Node 24, clean `npm ci`, build and product-usability command on all three OS families.
