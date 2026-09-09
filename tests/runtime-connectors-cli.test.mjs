@@ -14,6 +14,8 @@ const implementedIds = [
   'desktop.linux.first-party',
   'desktop.macos.first-party',
   'desktop.windows.first-party',
+  'mcp.stdio',
+  'mcp.streamable-http',
   'model.anthropic-compatible.hosted',
   'model.anthropic-messages.local',
   'model.openai-chat.local',
@@ -36,6 +38,10 @@ test('connectors list/show expose the deterministic built-in catalogue', async (
     const model = runCli(home, 'connectors', 'show', 'model.openai-chat.local');
     assert.equal(model.status, 0, model.stderr);
     assert.equal(JSON.parse(model.stdout).profile.kind, 'model-openai-chat-local');
+
+    const mcp = runCli(home, 'connectors', 'show', 'mcp.stdio');
+    assert.equal(mcp.status, 0, mcp.stderr);
+    assert.equal(JSON.parse(mcp.stdout).profile.kind, 'mcp-stdio');
   } finally {
     await rm(home, { recursive: true, force: true });
   }
