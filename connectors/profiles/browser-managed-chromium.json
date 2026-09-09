@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "kind": "browser-managed-chromium",
+  "protocol": "browser-playwright-managed",
+  "backend": "playwright",
+  "mode": "managed",
+  "engine": "chromium",
+  "defaultHeadless": true,
+  "defaultTimeoutMs": 30000
+}
