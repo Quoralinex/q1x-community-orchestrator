@@ -32,3 +32,27 @@ test('model connector preflight records live endpoint reachability without invok
   assert.equal(live?.state, 'ok');
   assert.match(live?.message ?? '', /reachable/i);
 });
+
+test('MCP stdio connector preflight performs live tool discovery', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-preflight-live-mcp-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+
+  configureConnector(home, {
+    id: 'mcp.stdio',
+    profile: 'mcp-stdio',
+    parameters: {
+      command: process.execPath,
+      args: ['tests/fixtures/mcp-stdio-server.mjs'],
+      cwd: process.cwd(),
+      timeoutMs: 5000,
+    },
+    environmentKeys: {},
+    enabled: true,
+  });
+
+  const report = await runConnectorPreflight(home, 'mcp.stdio');
+  const live = report.checks.find(check => check.id === 'live:mcp');
+  assert.equal(live?.state, 'ok');
+  assert.match(live?.message ?? '', /discover/i);
+  assert.equal(live?.evidence?.capabilityCount, 1);
+});
