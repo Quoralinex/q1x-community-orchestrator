@@ -1,0 +1,9 @@
+{
+  "version": "1.0.0",
+  "kind": "browser-cdp-chromium",
+  "protocol": "browser-playwright-cdp",
+  "backend": "playwright",
+  "mode": "cdp",
+  "engine": "chromium",
+  "defaultTimeoutMs": 30000
+}
