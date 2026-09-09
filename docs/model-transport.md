@@ -12,6 +12,21 @@ Q1X separates **where a model runs** from **which wire protocol it speaks**. A m
 
 Those names describe compatible HTTP message formats. They do not require OpenAI or Anthropic accounts. Additional native or provider-specific protocols can be registered through the public `ModelTransport` interface without modifying the core router.
 
+## Phase 12 ready-to-use connector profiles
+
+Phase 12 exposes the implemented protocol families through the built-in connector catalogue, so a baseline user does not need to construct endpoint JSON or modify Q1X source. Named profiles cover local/self-hosted and hosted HTTPS configurations where applicable.
+
+```bash
+q1x --home .q1x connectors list
+q1x --home .q1x connectors add model.openai-chat.local
+q1x --home .q1x connectors configure model.openai-chat.local --parameter url=http://127.0.0.1:8000/v1/chat/completions --parameter model=my-model
+q1x --home .q1x connectors test model.openai-chat.local
+q1x --home .q1x connectors enable model.openai-chat.local
+q1x --home .q1x connectors apply model.openai-chat.local
+```
+
+Hosted profiles store only environment-key references for credentials. These profiles prove protocol-level usability; they do not claim that every provider/model combination is compatible. See the [Compatibility Matrix](compatibility-matrix.md) for exact tested tuples.
+
 ## Local-first endpoints
 
 Loopback HTTP is permitted so local inference servers can run without TLS. Remote plain HTTP is rejected.

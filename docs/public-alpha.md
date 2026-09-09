@@ -1,17 +1,17 @@
 # Q1X Community Orchestrator public alpha
 
-Q1X Community Orchestrator `0.1.0-alpha.1` is an experimental public alpha. It is intended for evaluation, local development and Community testing. It is not a production-ready or generally available release and may introduce breaking changes before a stable version.
+Q1X Community Orchestrator remains experimental software intended for evaluation, local development and Community testing. The commissioned `v0.1.0-alpha.1` release is immutable. This document describes the separately governed Phase 12 `v0.1.0-alpha.2` candidate and its commissioning path; it is not production-ready or generally available.
 
-The public alpha keeps the zero-provider-bill baseline: the runtime itself can operate locally without a hosted Q1X service, cloud account or paid model API. External providers, models, browsers, desktop bridges and third-party adapters remain optional capabilities supplied by the operator.
+The Community baseline remains standalone and can operate locally without a hosted Q1X service, cloud account or paid model API. External model/MCP/A2A services and their credentials remain operator-selected. Phase 12 itself ships the first-party macOS, Windows and Linux desktop bridge packages; a compatible browser binary is still supplied by the operator.
 
 ## Release identity and verification
 
 The governed GitHub prerelease is identified by:
 
-- version `0.1.0-alpha.1`;
-- tag `v0.1.0-alpha.1`;
+- version `0.1.0-alpha.2`;
+- tag `v0.1.0-alpha.2`;
 - the exact protected `main` source commit recorded in `release-manifest.json`;
-- four package tarballs for contracts, core SDK, Adapter SDK and runtime;
+- eight package tarballs for contracts, core SDK, Adapter SDK, desktop bridge common, first-party macOS/Windows/Linux desktop bridges and runtime;
 - `SHA256SUMS` containing the SHA-256 digest of every package tarball.
 
 After downloading the release bundle, verify package integrity before installation:
@@ -41,34 +41,42 @@ From the tagged source:
 ```bash
 git clone https://github.com/Quoralinex/q1x-community-orchestrator.git
 cd q1x-community-orchestrator
-git checkout v0.1.0-alpha.1
+git checkout v0.1.0-alpha.2
 npm ci --no-audit --no-fund
 npm run build
 node packages/runtime/dist/cli.js --home ./.q1x init
 node packages/runtime/dist/cli.js --home ./.q1x status
 ```
 
-The root workspace is deliberately private/non-publishable. Only the contracts, TypeScript core SDK, Community Adapter SDK and runtime packages are governed release artifacts.
+The root workspace is deliberately private/non-publishable. The governed Phase 12 release set contains exactly eight public packages: contracts, TypeScript core SDK, Community Adapter SDK, desktop bridge common, macOS bridge, Windows bridge, Linux bridge and runtime.
 
 ## Packed package installation
 
 The GitHub prerelease package tarballs remain a supported alpha installation path even if the Q1X packages have not been published to npm.
 
-Download these four files from the same governed release:
+Download these eight files from the same governed release:
 
-- `quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz`;
-- `quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz`;
-- `quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz`;
-- `quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz`.
+- `quoralinex-q1x-community-contracts-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-sdk-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-desktop-bridge-common-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-desktop-bridge-macos-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-desktop-bridge-windows-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-desktop-bridge-linux-0.1.0-alpha.2.tgz`;
+- `quoralinex-q1x-community-runtime-0.1.0-alpha.2.tgz`.
 
 After verifying `SHA256SUMS`, install them together into a project:
 
 ```bash
 npm install \
-  ./quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz \
-  ./quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz \
-  ./quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz \
-  ./quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz
+  ./quoralinex-q1x-community-contracts-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-sdk-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-desktop-bridge-common-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-desktop-bridge-macos-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-desktop-bridge-windows-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-desktop-bridge-linux-0.1.0-alpha.2.tgz \
+  ./quoralinex-q1x-community-runtime-0.1.0-alpha.2.tgz
 ```
 
 The runtime's public third-party dependencies are resolved by npm in the normal way. Q1X provider credentials are not required merely to initialise the runtime.
@@ -80,11 +88,11 @@ npx q1x --home ./.q1x init
 npx q1x --home ./.q1x status
 ```
 
-The commissioning workflow independently verifies the same four Q1X tarballs in a clean external consumer with Q1X package registry access disabled, so workspace links cannot hide missing Q1X package contents. The verifier supplies already-installed third-party dependency directories locally for that CI check; a normal user installation still resolves third-party packages through npm.
+The commissioning workflow independently verifies the same eight Q1X tarballs in a clean external consumer with Q1X package registry access disabled, so workspace links cannot hide missing Q1X package contents. The verifier supplies already-installed third-party dependency directories locally for that CI check; a normal user installation still resolves third-party packages through npm.
 
 ## Community Adapter SDK
 
-The public `@quoralinex/q1x-community-adapter-sdk` package is part of the governed alpha package set. Its compatibility line is SDK `0.1.0-alpha.1`, contract `1.0.0`, runtime `0.1.x`.
+The public `@quoralinex/q1x-community-adapter-sdk` package is part of the governed alpha package set. Its compatibility line is SDK `0.1.0-alpha.2`, contract `1.0.0`, runtime `0.1.x`.
 
 Community adapters are installed and registered explicitly by the operator. The SDK provides validation and `runAdapterConformance(...)`; the runtime provides the narrow `communityAdapterTransport(...)` bridge. The SDK is **not a sandbox**, and passing conformance does not establish trust or replace source/dependency/security review.
 
@@ -95,7 +103,7 @@ See [Community Adapter SDK](community-adapter-sdk.md), the local `examples/commu
 Build from the tagged source:
 
 ```bash
-docker build --pull -t q1x-community-orchestrator:0.1.0-alpha.1 .
+docker build --pull -t q1x-community-orchestrator:0.1.0-alpha.2 .
 ```
 
 Run with persistent state:
@@ -107,7 +115,7 @@ docker run --rm \
   --name q1x-community \
   -p 127.0.0.1:8787:8787 \
   -v q1x-state:/data \
-  q1x-community-orchestrator:0.1.0-alpha.1
+  q1x-community-orchestrator:0.1.0-alpha.2
 ```
 
 Or use the hardened local Compose profile:
@@ -157,7 +165,7 @@ See [Browser and web control](browser-control.md) for endpoint configuration and
 
 ## Desktop/application setup
 
-The Community runtime provides provider-neutral desktop contracts and a portable stdio-bridge boundary. Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific controllers are optional bridge implementations; they are not universally bundled platform drivers.
+The Phase 12 package set ships first-party macOS Accessibility, Windows UI Automation and Linux AT-SPI bridge packages behind the provider-neutral stdio-bridge boundary. macOS Accessibility permission, Windows protected/elevated process boundaries and Linux AT-SPI/graphical-session prerequisites remain host constraints; application-specific controllers remain optional extensions.
 
 See [Desktop and application control](desktop-control.md) and [Compatibility Matrix](compatibility-matrix.md).
 
@@ -203,6 +211,6 @@ Do not mix an older executable with durable state that a newer incompatible migr
 
 ## What is tested
 
-Commissioning verifies the source-install lifecycle on GitHub-hosted Ubuntu, macOS and Windows runners, plus the Linux OCI/Docker path. It verifies all four generated package tarballs as an external consumer and checks their SHA-256 release evidence.
+Commissioning verifies the source-install lifecycle on GitHub-hosted Ubuntu, macOS and Windows runners, plus the Linux OCI/Docker path. It verifies all eight generated package tarballs as an external consumer, checks their SHA-256 release evidence, exercises the connector catalogue and doctor, and runs each first-party desktop bridge doctor.
 
-Phase 11 additionally maintains a machine-readable compatibility declaration and deterministic [Compatibility Matrix](compatibility-matrix.md). Entries are explicitly labelled `tested`, `experimental` or `unsupported`; those labels are scoped to their cited repository evidence and must not be generalized beyond the stated tuple.
+Phase 12 also exercises no-custom-code model, MCP, A2A, CLI and managed-browser flows. Linux desktop evidence includes a virtual X11/AT-SPI accessibility session; macOS and Windows evidence includes deterministic native-bridge harnesses and host doctor output. Those results do not imply universal physical-host/application compatibility. See [Product usability](product-usability.md) and the evidence-driven [Compatibility Matrix](compatibility-matrix.md).

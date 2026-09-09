@@ -138,9 +138,9 @@ test('public alpha documentation preserves release and security boundaries', asy
   assert.match(limitations, /actor identity is caller-asserted/i);
   assert.match(limitations, /not externally witnessed/i);
   assert.match(limitations, /Browser binaries are not bundled/i);
-  assert.match(limitations, /Native desktop drivers are not universally bundled/i);
+  assert.match(limitations, /First-party desktop bridges are shipped/i);
   assert.match(limitations, /single-node/i);
   assert.match(limitations, /Breaking changes remain possible/i);
   assert.match(limitations, /npm publication may be unavailable/i);
-  assert.match(limitations, /Phase 11/i);
+  assert.match(limitations, /Phase 12/i);
 });

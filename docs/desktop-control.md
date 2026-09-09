@@ -13,9 +13,9 @@ Q1X owns the language-neutral endpoint/action contracts, persistence, security p
 
 macOS Accessibility, Windows UI Automation and Linux AT-SPI are different native systems. Community core therefore does not pretend that one OS API is portable across all three platforms.
 
-The built-in backend is `stdio-bridge`. It launches an explicitly configured local bridge process with `shell: false`, sends one versioned JSON request over stdin and reads one normalized JSON result from stdout. Optional native or application-specific bridges can implement the host automation mechanism without changing Q1X contracts.
+The built-in backend is `stdio-bridge`. It launches an explicitly configured local bridge process with `shell: false`, sends one versioned JSON request over stdin and reads one normalized JSON result from stdout. Phase 12 ships first-party bridge packages for macOS Accessibility, Windows UI Automation and Linux AT-SPI behind this same protocol boundary.
 
-No native desktop bridge binary is bundled with the Community runtime and no paid desktop-automation service is mandatory.
+The baseline therefore includes first-party macOS, Windows and Linux bridge executables. No paid desktop-automation service and no private Quoralinex service is mandatory. Native execution still obeys each operating system's permission, elevation and graphical-session controls.
 
 ## Desktop endpoint
 
@@ -135,24 +135,25 @@ The capability advertises application, window, inspection, keyboard, mouse and s
 
 ## CLI
 
-Persist an endpoint:
+For the current operating system, configure the shipped first-party endpoint without writing endpoint JSON:
+
+```bash
+q1x --home .q1x desktop setup-first-party --id desktop.local
+q1x --home .q1x doctor --json
+```
+
+The equivalent connector catalogue flow is also available through `q1x connectors list`, `q1x connectors add`, `q1x connectors test`, `q1x connectors enable` and `q1x connectors apply` for the platform-specific first-party connector id.
+
+Custom portable endpoints remain available when an operator wants another explicit bridge implementation:
 
 ```bash
 q1x --home .q1x desktop-endpoints put --file examples/desktop-endpoints/portable-stdio.endpoint.json
-```
-
-Discover capability:
-
-```bash
 q1x --home .q1x desktop discover desktop.portable-stdio
-```
-
-Execute a batch:
-
-```bash
 q1x --home .q1x desktop run desktop.portable-stdio --file examples/desktop-endpoints/example.desktop-batch.json
 ```
 
+On macOS, Accessibility permission must be granted to the process launching Q1X. Windows uses UI Automation and does not auto-elevate across protected process boundaries. Linux requires Python 3, PyGObject/AT-SPI and an accessibility-enabled graphical session; Wayland policy can restrict global input and capture.
+
 ## Extending desktop control
 
-`DesktopBackend` and `DesktopBackendRegistry` are the public runtime extension points. Optional packages can supply macOS Accessibility, Windows UI Automation, Linux AT-SPI, remote desktop, virtual desktop or application-specific bridges while preserving the same Q1X contracts and security envelope.
+`DesktopBackend` and `DesktopBackendRegistry` remain public runtime extension points. The macOS Accessibility, Windows UI Automation and Linux AT-SPI baseline bridges are shipped first-party in Phase 12. Additional remote desktop, virtual desktop or application-specific bridges can extend that baseline while preserving the same Q1X contracts and security envelope.

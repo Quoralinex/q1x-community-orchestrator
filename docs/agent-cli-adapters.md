@@ -61,7 +61,7 @@ The example command path is illustrative; configure it for a real local tool bef
 
 The public `@quoralinex/q1x-community-adapter-sdk` package lets third-party authors implement a `CommunityAdapter`, validate the exact public-alpha compatibility tuple and run the deterministic conformance suite.
 
-The current line is Adapter SDK `0.1.0-alpha.1`, contract `1.0.0`, Community runtime `0.1.x`.
+The current line is Adapter SDK `0.1.0-alpha.2`, contract `1.0.0`, Community runtime `0.1.x`.
 
 Adapters are installed and registered **explicitly** by the operator. The runtime bridge `communityAdapterTransport(...)` converts a conforming adapter into the existing `AdapterTransport` interface; a host supplies that transport through `OpenControlRuntime.open({ adapterTransports: [...] })` or the existing explicit registry surface.
 

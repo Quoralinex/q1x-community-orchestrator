@@ -4,7 +4,7 @@ Phase 11 adds the public `@quoralinex/q1x-community-adapter-sdk` package for aut
 
 The current public-alpha compatibility tuple is:
 
-- Adapter SDK: `0.1.0-alpha.1`
+- Adapter SDK: `0.1.0-alpha.2`
 - Q1X contract version: `1.0.0`
 - compatible Community runtime line: `0.1.x`
 - Node.js: `>=24`
@@ -70,12 +70,12 @@ The machine-readable matrix is validated in CI and the human-readable Markdown i
 
 ## Versioning
 
-The current Adapter SDK is intentionally pre-stable. Its exact compatibility line is `0.1.0-alpha.1` / contract `1.0.0` / runtime `0.1.x`. Public Q1X alpha-package dependencies are exact-version locked rather than caret/range dependencies.
+The current Adapter SDK is intentionally pre-stable. Its exact compatibility line is `0.1.0-alpha.2` / contract `1.0.0` / runtime `0.1.x`. Public Q1X alpha-package dependencies are exact-version locked rather than caret/range dependencies.
 
 Breaking changes may occur before a stable release. Adapter authors should run the conformance suite against the exact target release and review release-specific compatibility evidence before upgrading.
 
 ## Distribution and licence
 
-The Adapter SDK is one of four governed public-alpha package artifacts: contracts, core SDK, Adapter SDK and runtime. GitHub release artifacts remain the authoritative package path even when optional npm Trusted Publishing has not been commissioned.
+The Adapter SDK is one of eight governed `0.1.0-alpha.2` public-alpha candidate package artifacts: contracts, core SDK, Adapter SDK, desktop bridge common, the first-party macOS/Windows/Linux desktop bridges and runtime. GitHub release artifacts remain the authoritative package path even when optional npm Trusted Publishing has not been commissioned.
 
 The public repository and Adapter SDK use the **PolyForm Noncommercial License 1.0.0**. Review [`LICENSE`](../LICENSE) and [`COMMERCIAL-LICENSING.md`](../COMMERCIAL-LICENSING.md) before reuse or distribution.
