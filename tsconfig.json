@@ -7,6 +7,7 @@
     { "path": "./packages/desktop-bridge-common" },
     { "path": "./packages/desktop-bridge-macos" },
     { "path": "./packages/desktop-bridge-windows" },
+    { "path": "./packages/desktop-bridge-linux" },
     { "path": "./packages/runtime" }
   ]
 }
