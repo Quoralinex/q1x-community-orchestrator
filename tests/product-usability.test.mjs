@@ -138,3 +138,39 @@ test('product user configures, discovers and invokes MCP stdio through connector
   assert.equal(executed.status, 'succeeded');
   assert.deepEqual(executed.output.structuredContent, { text: 'phase12-product-mcp' });
 });
+
+test('product user configures, discovers and invokes A2A JSON-RPC through connector CLI without endpoint JSON', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-product-a2a-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const fixture = await startFixture('tests/fixtures/product-usability/a2a-server.mjs');
+  t.after(() => fixture.close());
+
+  success(await runCli(home, 'connectors', 'add', 'a2a.jsonrpc'));
+  success(await runCli(
+    home,
+    'connectors', 'configure', 'a2a.jsonrpc',
+    '--parameter', `url=${fixture.metadata.a2aUrl}`,
+    '--parameter', 'timeoutMs=5000',
+  ));
+  success(await runCli(home, 'connectors', 'enable', 'a2a.jsonrpc'));
+  const preflight = success(await runCli(home, 'connectors', 'test', 'a2a.jsonrpc'));
+  assert.notEqual(preflight.state, 'blocked');
+  const applied = success(await runCli(home, 'connectors', 'apply', 'a2a.jsonrpc'));
+  assert.equal(applied.endpointId, 'adapter.a2a.jsonrpc');
+
+  const discovered = success(await runCli(home, 'adapter', 'discover', applied.endpointId));
+  assert.equal(discovered.some(capability => capability.operations.includes('skill:echo')), true);
+
+  const requestPath = join(home, 'a2a-request.json');
+  await writeFile(requestPath, JSON.stringify({
+    contractVersion: '1.0.0',
+    id: 'exec.a2a.phase12.product',
+    workItemId: 'work.a2a.phase12.product',
+    requirements: { operations: ['message/send'], adapterKinds: ['a2a'] },
+    input: { text: 'phase12-product-a2a' },
+    createdAt: '2026-09-09T17:32:00.000Z',
+  }));
+  const executed = success(await runCli(home, 'adapter', 'execute', applied.endpointId, '--file', requestPath));
+  assert.equal(executed.status, 'succeeded');
+  assert.equal(executed.output.text, 'phase12-product-a2a-ok');
+});
