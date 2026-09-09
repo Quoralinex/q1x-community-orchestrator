@@ -102,6 +102,28 @@ test('compatibility workflow is focused, read-only and action-pinned', async () 
   for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
 });
 
+test('Phase 12 product usability workflow captures cross-platform desktop and evidence gates', async () => {
+  const workflow = await text('.github/workflows/product-usability.yml');
+  assert.match(workflow, /name:\s*Product Usability/);
+  assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
+  for (const runner of ['ubuntu-24.04', 'macos-latest', 'windows-latest']) assert.match(workflow, new RegExp(runner.replace('.', '\\.')));
+  assert.match(workflow, /node-version:\s*24/);
+  assert.match(workflow, /npm ci --no-audit --no-fund/);
+  assert.match(workflow, /node --test tests\/product-usability\.test\.mjs/);
+  assert.match(workflow, /python3-gi/);
+  assert.match(workflow, /gir1\.2-atspi-2\.0/);
+  assert.match(workflow, /xvfb-run/);
+  assert.match(workflow, /desktop-bridge-linux/);
+  assert.match(workflow, /desktop-bridge-macos/);
+  assert.match(workflow, /desktop-bridge-windows/);
+  assert.match(workflow, /phase12-product-evidence-ubuntu\.json/);
+  assert.match(workflow, /phase12-product-evidence-macos\.json/);
+  assert.match(workflow, /phase12-product-evidence-windows\.json/);
+  assert.match(workflow, /actions\/upload-artifact@[0-9a-f]{40}/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
+
 test('public alpha documentation preserves release and security boundaries', async () => {
   const quickStart = await text('docs/public-alpha.md');
   const limitations = await text('docs/known-limitations.md');
