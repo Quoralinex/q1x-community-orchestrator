@@ -9,6 +9,7 @@ import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
 import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
 import { executeConnectorCli } from './connectors/cli.js';
+import { applyConfiguredConnector } from './connectors/apply.js';
 import { runDoctor } from './doctor.js';
 
 function takeOption(args: string[], name: string): string | undefined {
@@ -52,7 +53,15 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
   }
 
   const action = args.shift();
-  if (command === 'connectors') return executeConnectorCli(runtime.home, action, args);
+  if (command === 'connectors') {
+    if (action === 'apply') {
+      const id = args.shift();
+      if (!id) throw new Error('connectors apply requires a connector id');
+      if (args.length > 0) throw new Error(`Unexpected connector arguments: ${args.join(' ')}`);
+      return applyConfiguredConnector(runtime, id);
+    }
+    return executeConnectorCli(runtime.home, action, args);
+  }
   if (command === 'capabilities') {
     if (action === 'put') return runtime.putCapability(readJsonFile(requiredOption(args, '--file')) as CapabilityDescriptor);
     if (action === 'list') return runtime.listCapabilities();
