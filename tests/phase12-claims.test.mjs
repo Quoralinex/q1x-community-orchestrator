@@ -74,6 +74,18 @@ test('release-facing docs preserve immutable alpha.1 history and describe the go
   for (const platform of ['macOS', 'Windows', 'Linux']) assert.match(combined, new RegExp(platform));
 });
 
+test('public status marks Phase 12 complete after exact-main commissioning without claiming alpha.2 released', async () => {
+  const readme = await read('README.md');
+  const roadmap = await read('docs/roadmap.md');
+  const index = await read('docs/index.md');
+  const alpha = await read('docs/public-alpha.md');
+  const combined = `${readme}\n${roadmap}\n${index}\n${alpha}`;
+  assert.match(combined, /Phases? 1[–-]12.*implemented|Phase 12.*implemented.*protected `main`/is);
+  assert.doesNotMatch(combined, /current release-candidate delivery phase/i);
+  assert.doesNotMatch(combined, /candidate remains experimental until the Phase 12 exact-head merge and post-merge commissioning gates complete/i);
+  assert.match(combined, /alpha\.2.*candidate.*(?:not yet released|awaits explicit|manual commissioning)/is);
+});
+
 test('roadmap identifies Phase 12 as baseline usability completion before hardening', async () => {
   const roadmap = await read('docs/roadmap.md');
   assert.match(roadmap, /Phase 12/i);

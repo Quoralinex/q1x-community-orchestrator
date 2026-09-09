@@ -1,12 +1,12 @@
 # Q1X Community Orchestrator public alpha
 
-Q1X Community Orchestrator remains experimental software intended for evaluation, local development and Community testing. The commissioned `v0.1.0-alpha.1` release is immutable. This document describes the separately governed Phase 12 `v0.1.0-alpha.2` candidate and its commissioning path; it is not production-ready or generally available.
+Q1X Community Orchestrator remains experimental software intended for evaluation, local development and Community testing. Phase 12 is implemented on protected `main`. The commissioned `v0.1.0-alpha.1` release is immutable. The separately governed `v0.1.0-alpha.2` candidate has passed exact-head and post-merge commissioning validation but is not yet released; it awaits explicit manual commissioning. This document describes that candidate and its commissioning path; it is not production-ready or generally available.
 
 The Community baseline remains standalone and can operate locally without a hosted Q1X service, cloud account or paid model API. External model/MCP/A2A services and their credentials remain operator-selected. Phase 12 itself ships the first-party macOS, Windows and Linux desktop bridge packages; a compatible browser binary is still supplied by the operator.
 
 ## Release identity and verification
 
-The governed GitHub prerelease is identified by:
+When explicitly commissioned, the governed GitHub prerelease will be identified by:
 
 - version `0.1.0-alpha.2`;
 - tag `v0.1.0-alpha.2`;

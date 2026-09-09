@@ -27,7 +27,7 @@ Software delivery is only one workload. The project is designed for research, co
 
 ## Public alpha
 
-The commissioned `v0.1.0-alpha.1` public alpha remains immutable. Phase 12 prepares the separately governed `v0.1.0-alpha.2` candidate with eight public package artifacts: contracts, core SDK, Community Adapter SDK, desktop bridge common, first-party macOS/Windows/Linux desktop bridges and runtime. The commissioning path retains SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. The software remains experimental and is not production-ready.
+The commissioned `v0.1.0-alpha.1` public alpha remains immutable. Phase 12 is implemented on protected `main`; its separately governed `v0.1.0-alpha.2` candidate contains eight public package artifacts: contracts, core SDK, Community Adapter SDK, desktop bridge common, first-party macOS/Windows/Linux desktop bridges and runtime. The candidate has passed exact-head and post-merge commissioning validation but is not yet released and awaits explicit manual commissioning. The commissioning path retains SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. The software remains experimental and is not production-ready.
 
 Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK. Phase 12 adds the standalone connector catalogue/configuration/doctor UX, no-custom-code baseline model/MCP/A2A/CLI/browser flows and shipped first-party desktop bridges. Compatibility labels remain scoped to cited repository evidence; adapter conformance is not a trust or sandbox guarantee.
 
