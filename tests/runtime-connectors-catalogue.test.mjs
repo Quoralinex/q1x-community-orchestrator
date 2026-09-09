@@ -10,6 +10,7 @@ import {
 const source = JSON.parse(await readFile(new URL('../connectors/catalogue.json', import.meta.url), 'utf8'));
 const schema = JSON.parse(await readFile(new URL('../connectors/schema/connector.schema.json', import.meta.url), 'utf8'));
 const implementedIds = [
+  'a2a.jsonrpc',
   'desktop.linux.first-party',
   'desktop.macos.first-party',
   'desktop.windows.first-party',
@@ -36,7 +37,7 @@ test('built-in connector catalogue validates, is deterministic, and contains onl
   assert.deepEqual(catalogue.map(item => item.id), [...catalogue.map(item => item.id)].sort());
   assert.deepEqual(catalogue.map(item => item.id), implementedIds);
   assert.equal(catalogue.every(item => item.provenance === 'first-party'), true);
-  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['desktop', 'mcp', 'model']);
+  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['a2a', 'desktop', 'mcp', 'model']);
 });
 
 test('catalogue rejects duplicate ids and compatibility tuples', () => {
@@ -46,7 +47,7 @@ test('catalogue rejects duplicate ids and compatibility tuples', () => {
 
   const duplicateTuple = structuredClone(source);
   const copy = structuredClone(duplicateTuple.connectors[0]);
-  copy.id = 'desktop.linux.duplicate';
+  copy.id = 'a2a.duplicate';
   duplicateTuple.connectors.push(copy);
   assert.equal(validateConnectorCatalogue(duplicateTuple).ok, false);
 });
