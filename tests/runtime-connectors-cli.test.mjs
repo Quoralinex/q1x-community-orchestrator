@@ -10,21 +10,32 @@ function runCli(home, ...args) {
   return spawnSync(process.execPath, [cli.pathname, '--home', home, ...args], { encoding: 'utf8' });
 }
 
+const implementedIds = [
+  'desktop.linux.first-party',
+  'desktop.macos.first-party',
+  'desktop.windows.first-party',
+  'model.anthropic-compatible.hosted',
+  'model.anthropic-messages.local',
+  'model.openai-chat.local',
+  'model.openai-compatible.hosted',
+  'model.openai-responses.local',
+];
+
 test('connectors list/show expose the deterministic built-in catalogue', async () => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-connectors-cli-list-'));
   try {
     const list = runCli(home, 'connectors', 'list');
     assert.equal(list.status, 0, list.stderr);
     const catalogue = JSON.parse(list.stdout);
-    assert.deepEqual(catalogue.map(item => item.id), [
-      'desktop.linux.first-party',
-      'desktop.macos.first-party',
-      'desktop.windows.first-party',
-    ]);
+    assert.deepEqual(catalogue.map(item => item.id), implementedIds);
 
     const show = runCli(home, 'connectors', 'show', 'desktop.linux.first-party');
     assert.equal(show.status, 0, show.stderr);
     assert.equal(JSON.parse(show.stdout).profile.kind, 'desktop-first-party');
+
+    const model = runCli(home, 'connectors', 'show', 'model.openai-chat.local');
+    assert.equal(model.status, 0, model.stderr);
+    assert.equal(JSON.parse(model.stdout).profile.kind, 'model-openai-chat-local');
   } finally {
     await rm(home, { recursive: true, force: true });
   }
