@@ -2,7 +2,7 @@
 
 Phase 12 closes the baseline product-usability gap in Q1X Community Orchestrator. The Community Orchestrator is a standalone product: its local runtime owns mission state, connector configuration, approvals, evidence, audit, recovery and supervision. Ordinary baseline use requires no Q1X code development and no private Quoralinex service.
 
-The currently commissioned public alpha, `v0.1.0-alpha.1`, remains immutable. Phase 12 prepares the separately governed `v0.1.0-alpha.2` package set with the first-party desktop bridges and the connector/doctor usability layer described here. The project remains experimental and is not production-ready or generally available.
+The currently commissioned public alpha, `v0.1.0-alpha.1`, remains immutable. Phase 12 is implemented on protected `main` and produced the separately governed `v0.1.0-alpha.2` package candidate with the first-party desktop bridges and the connector/doctor usability layer described here. The candidate has passed exact-head and post-merge commissioning validation but is not yet released and awaits explicit manual commissioning. The project remains experimental and is not production-ready or generally available.
 
 ## Baseline setup
 

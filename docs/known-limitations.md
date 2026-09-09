@@ -1,6 +1,6 @@
 # Public alpha known limitations
 
-Q1X Community Orchestrator remains experimental software. The commissioned `v0.1.0-alpha.1` release is immutable; Phase 12 prepares the separately governed `v0.1.0-alpha.2` candidate. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
+Q1X Community Orchestrator remains experimental software. Phase 12 is implemented on protected `main`. The commissioned `v0.1.0-alpha.1` release is immutable; the separately governed `v0.1.0-alpha.2` candidate has passed Phase 12 commissioning validation but is not yet released and awaits explicit manual commissioning. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
 
 1. **Local actor identity is caller-asserted.** Approval actor identifiers are not cryptographically authenticated by the current local JSON-first CLI. `requiredApproverKinds` is a governance-contract boundary, not enterprise IAM, signed identity or an authenticated multi-user control plane.
 
@@ -26,4 +26,4 @@ Q1X Community Orchestrator remains experimental software. The commissioned `v0.1
 
 Additional current nonclaims include enterprise IAM, HSM-backed signing, remote attestation, confidential-computing isolation, externally witnessed audit transparency, guaranteed crash-atomicity across every multi-write governance operation, adapter marketplace trust, automatic package vetting and production/SLA support.
 
-See [Product usability](product-usability.md), [Compatibility Matrix](compatibility-matrix.md) and [Community Adapter SDK](community-adapter-sdk.md) for the Phase 12 baseline, evidence and extension boundaries. Do not infer compatibility or trust beyond the surfaces explicitly exercised by repository CI and documented for this alpha candidate.
+See [Product usability](product-usability.md), [Compatibility Matrix](compatibility-matrix.md) and [Community Adapter SDK](community-adapter-sdk.md) for the Phase 12 baseline, evidence and extension boundaries. Do not infer compatibility or trust beyond the surfaces explicitly exercised by repository CI and documented for the validated alpha.2 candidate.
