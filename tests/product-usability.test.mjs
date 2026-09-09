@@ -221,3 +221,36 @@ test('product user configures and invokes JSON and text CLI tools through connec
   assert.equal(textExecuted.status, 'succeeded');
   assert.equal(textExecuted.output, 'phase12-product-cli-text; no-shell|mode=text');
 });
+
+test('product user configures and controls a managed Chromium browser through connector CLI without endpoint JSON', async t => {
+  const home = await mkdtemp(join(tmpdir(), 'q1x-product-browser-'));
+  t.after(() => rm(home, { recursive: true, force: true }));
+  const fixture = await startFixture('tests/fixtures/product-usability/web-server.mjs');
+  t.after(() => fixture.close());
+
+  success(await runCli(home, 'connectors', 'add', 'browser.chromium.managed'));
+  success(await runCli(
+    home,
+    'connectors', 'configure', 'browser.chromium.managed',
+    '--parameter', 'headless=true',
+    '--parameter', 'timeoutMs=60000',
+  ));
+  success(await runCli(home, 'connectors', 'enable', 'browser.chromium.managed'));
+  const preflight = success(await runCli(home, 'connectors', 'test', 'browser.chromium.managed'));
+  assert.notEqual(preflight.state, 'blocked');
+  const applied = success(await runCli(home, 'connectors', 'apply', 'browser.chromium.managed'));
+  assert.equal(applied.category, 'browser');
+
+  const batchPath = join(home, 'browser-batch.json');
+  await writeFile(batchPath, JSON.stringify({
+    contractVersion: '1.0.0',
+    id: 'browser.batch.phase12.product',
+    actions: [
+      { id: 'nav', kind: 'navigate', url: `${fixture.metadata.baseUrl}/index.html` },
+      { id: 'extract', kind: 'extract', target: { by: 'selector', value: 'h1' }, extract: 'text' },
+    ],
+  }));
+  const result = success(await runCli(home, 'browser', 'run', applied.endpointId, '--file', batchPath));
+  assert.equal(result.status, 'succeeded');
+  assert.equal(result.actions.find(action => action.id === 'extract').output, 'Phase 12 Product Browser');
+});
