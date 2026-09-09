@@ -15,7 +15,8 @@ export type RuntimeErrorCode =
   | 'MODEL_TRANSPORT_ERROR'
   | 'ADAPTER_TRANSPORT_ERROR'
   | 'AUTHORIZATION_REQUIRED'
-  | 'AUDIT_INTEGRITY';
+  | 'AUDIT_INTEGRITY'
+  | 'UNSUPPORTED_PLATFORM';
 
 export class RuntimeError extends Error {
   readonly code: RuntimeErrorCode;
