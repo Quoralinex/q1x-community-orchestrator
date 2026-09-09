@@ -6,9 +6,11 @@ import { createWindowsDoctor } from '@quoralinex/q1x-community-desktop-bridge-wi
 import { createLinuxDoctor } from '@quoralinex/q1x-community-desktop-bridge-linux/linux';
 import { RuntimeError } from '../errors.js';
 import { desktopPlatformForHost } from '../desktop-security.js';
+import { createMcpAdapterTransports } from '../mcp-adapter.js';
 import { getBuiltInConnector } from './catalogue.js';
 import { getConfiguredConnector } from './configuration.js';
 import { materializeModelConnector } from './materialize-model.js';
+import { materializeMcpConnector } from './materialize-mcp.js';
 
 export type DiagnosticState = 'ok' | 'warning' | 'blocked' | 'unsupported' | 'not-configured';
 
@@ -121,6 +123,51 @@ async function modelReachabilityCheck(
   }
 }
 
+async function mcpDiscoveryCheck(
+  definition: NonNullable<ReturnType<typeof getBuiltInConnector>>,
+  configured: NonNullable<ReturnType<typeof getConfiguredConnector>>,
+  options: ConnectorPreflightOptions,
+): Promise<DiagnosticCheck> {
+  let endpoint;
+  try {
+    endpoint = materializeMcpConnector(definition, configured);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+    return {
+      id: 'live:mcp', state: 'blocked',
+      message: `MCP endpoint configuration is not usable: ${message}`,
+      remediation: 'Correct the MCP command/URL configuration, then run connectors test again.',
+    };
+  }
+
+  const transport = createMcpAdapterTransports().find(candidate => candidate.protocol === endpoint.protocol);
+  if (!transport) {
+    return {
+      id: 'live:mcp', state: 'blocked',
+      message: `No MCP transport is registered for ${endpoint.protocol}.`,
+      remediation: 'Use one of the built-in MCP stdio or Streamable HTTP profiles.',
+    };
+  }
+  try {
+    const capabilities = await transport.discover(endpoint, {
+      env: options.env ?? process.env,
+      ...(options.fetch ? { fetch: options.fetch } : {}),
+    });
+    return {
+      id: 'live:mcp', state: 'ok',
+      message: `MCP discovery succeeded with ${capabilities.length} discovered tool capability${capabilities.length === 1 ? '' : 'ies'}.`,
+      evidence: { protocol: endpoint.protocol, capabilityCount: capabilities.length },
+    };
+  } catch {
+    return {
+      id: 'live:mcp', state: 'blocked',
+      message: 'Configured MCP service could not complete tool discovery.',
+      remediation: 'Start or connect the configured MCP service, verify its command/URL and credentials, then run connectors test again.',
+      evidence: { protocol: endpoint.protocol },
+    };
+  }
+}
+
 export async function runConnectorPreflight(
   home: string | undefined,
   connectorId: string,
@@ -174,6 +221,9 @@ export async function runConnectorPreflight(
 
   if (definition.category === 'model' && configured.enabled) {
     checks.push(await modelReachabilityCheck(definition, configured, options));
+  }
+  if (definition.category === 'mcp' && configured.enabled) {
+    checks.push(await mcpDiscoveryCheck(definition, configured, options));
   }
 
   if (definition.category === 'desktop' && definition.profile.platform) {
