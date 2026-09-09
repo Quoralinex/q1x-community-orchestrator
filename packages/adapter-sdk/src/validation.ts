@@ -6,7 +6,7 @@ import type {
   CommunityAdapter,
 } from './types.js';
 
-export const ADAPTER_SDK_VERSION = '0.1.0-alpha.1' as const;
+export const ADAPTER_SDK_VERSION = '0.1.0-alpha.2' as const;
 export const ADAPTER_CONTRACT_VERSION = '1.0.0' as const;
 export const ADAPTER_RUNTIME_RANGE = '0.1.x' as const;
 

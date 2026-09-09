@@ -7,7 +7,7 @@ import { assertSafeAdapterEndpoint, resolveAdapterEnvironment, resolveAdapterHea
 import type { AdapterTransport, AdapterTransportContext } from './adapter-transport.js';
 import { RuntimeError } from './errors.js';
 
-const CLIENT_INFO = { name: 'q1x-community-orchestrator', version: '0.1.0-alpha.1' };
+const CLIENT_INFO = { name: 'q1x-community-orchestrator', version: '0.1.0-alpha.2' };
 const MCP_STDIO_PROTOCOL = 'mcp-stdio-v2';
 const MCP_HTTP_PROTOCOL = 'mcp-streamable-http-v2';
 

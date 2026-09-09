@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "@quoralinex/q1x-community-desktop-bridge-common": "0.1.0-alpha.2",
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.1"
+    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.2"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {

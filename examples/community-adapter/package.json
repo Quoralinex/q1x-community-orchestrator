@@ -1,6 +1,6 @@
 {
   "name": "q1x-community-adapter-reference",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "private": true,
   "type": "module",
   "engines": {
@@ -11,6 +11,6 @@
     "test": "node --test test/adapter.test.mjs"
   },
   "dependencies": {
-    "@quoralinex/q1x-community-adapter-sdk": "0.1.0-alpha.1"
+    "@quoralinex/q1x-community-adapter-sdk": "0.1.0-alpha.2"
   }
 }

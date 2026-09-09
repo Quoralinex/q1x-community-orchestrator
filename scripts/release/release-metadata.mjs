@@ -2,12 +2,16 @@ import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
-export const RELEASE_VERSION = '0.1.0-alpha.1';
+export const RELEASE_VERSION = '0.1.0-alpha.2';
 export const RELEASE_TAG = `v${RELEASE_VERSION}`;
 export const PUBLIC_PACKAGES = [
   ['@quoralinex/q1x-community-contracts', 'packages/contracts'],
   ['@quoralinex/q1x-community-sdk', 'packages/sdk-typescript'],
   ['@quoralinex/q1x-community-adapter-sdk', 'packages/adapter-sdk'],
+  ['@quoralinex/q1x-community-desktop-bridge-common', 'packages/desktop-bridge-common'],
+  ['@quoralinex/q1x-community-desktop-bridge-macos', 'packages/desktop-bridge-macos'],
+  ['@quoralinex/q1x-community-desktop-bridge-windows', 'packages/desktop-bridge-windows'],
+  ['@quoralinex/q1x-community-desktop-bridge-linux', 'packages/desktop-bridge-linux'],
   ['@quoralinex/q1x-community-runtime', 'packages/runtime']
 ];
 
@@ -41,7 +45,7 @@ export function assertReleaseIdentity(identity) {
   if (identity.version !== RELEASE_VERSION) throw new Error(`Release version must be exactly ${RELEASE_VERSION}`);
   if (identity.tag !== RELEASE_TAG) throw new Error(`Release tag must be exactly ${RELEASE_TAG}`);
   if (!Array.isArray(identity.packages) || identity.packages.length !== PUBLIC_PACKAGES.length) {
-    throw new Error('Release package set must contain exactly the four public Q1X packages');
+    throw new Error('Release package set must contain exactly the eight public Q1X packages');
   }
 
   for (let index = 0; index < PUBLIC_PACKAGES.length; index += 1) {
@@ -57,6 +61,11 @@ export function assertReleaseIdentity(identity) {
 
   const publicNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
   for (const packageInfo of identity.packages) {
+    for (const dependency of Object.keys(packageInfo.dependencies ?? {})) {
+      if (/@quoralinex\/q1x-(?:control-plane|sovereign|internal)/i.test(dependency)) {
+        throw new Error(`Private Quoralinex dependency is forbidden in public release package ${packageInfo.name}: ${dependency}`);
+      }
+    }
     for (const [dependency, version] of Object.entries(packageInfo.dependencies ?? {})) {
       if (publicNames.has(dependency) && version !== RELEASE_VERSION) {
         throw new Error(`Package ${packageInfo.name} must use exact internal dependency ${dependency}@${RELEASE_VERSION}`);
@@ -102,6 +111,14 @@ export function buildReleaseManifest({ identity, sourceSha, artifacts, generated
   const normalizedArtifacts = [...artifacts]
     .map(validateArtifact)
     .sort((left, right) => left.filename.localeCompare(right.filename));
+  if (normalizedArtifacts.length !== PUBLIC_PACKAGES.length) {
+    throw new Error(`Release manifest must contain exactly ${PUBLIC_PACKAGES.length} governed package artifacts`);
+  }
+  const expectedPackageNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
+  const artifactPackageNames = new Set(normalizedArtifacts.map(artifact => artifact.packageName));
+  if (artifactPackageNames.size !== expectedPackageNames.size || [...expectedPackageNames].some(name => !artifactPackageNames.has(name))) {
+    throw new Error('Release manifest artifact package set does not match governed public packages');
+  }
   return {
     manifestVersion: '1.0.0',
     version: identity.version,

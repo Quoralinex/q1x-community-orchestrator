@@ -92,9 +92,9 @@ function validCapability(overrides = {}) {
 }
 
 test('community adapter SDK exposes the exact alpha compatibility tuple', () => {
-  assert.equal(ADAPTER_SDK_VERSION, '0.1.0-alpha.1');
+  assert.equal(ADAPTER_SDK_VERSION, '0.1.0-alpha.2');
   assert.deepEqual(createAdapterCompatibility(), {
-    sdkVersion: '0.1.0-alpha.1',
+    sdkVersion: '0.1.0-alpha.2',
     contractVersion: '1.0.0',
     runtimeRange: '0.1.x',
   });
@@ -125,9 +125,9 @@ test('missing execute is rejected', () => {
 
 test('SDK, contract and runtime compatibility drift are rejected', () => {
   for (const compatibility of [
-    { sdkVersion: '0.1.0-alpha.2', contractVersion: '1.0.0', runtimeRange: '0.1.x' },
-    { sdkVersion: '0.1.0-alpha.1', contractVersion: '2.0.0', runtimeRange: '0.1.x' },
-    { sdkVersion: '0.1.0-alpha.1', contractVersion: '1.0.0', runtimeRange: '^0.1.0' },
+    { sdkVersion: '0.1.0-alpha.1', contractVersion: '1.0.0', runtimeRange: '0.1.x' },
+    { sdkVersion: '0.1.0-alpha.2', contractVersion: '2.0.0', runtimeRange: '0.1.x' },
+    { sdkVersion: '0.1.0-alpha.2', contractVersion: '1.0.0', runtimeRange: '^0.1.0' },
   ]) {
     const result = validateCommunityAdapter(validAdapter({ compatibility }));
     assert.equal(result.ok, false);

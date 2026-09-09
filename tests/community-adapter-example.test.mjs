@@ -36,7 +36,7 @@ test('community adapter reference template has the required public files and saf
   assert.equal(pkg.private, true);
   assert.equal(pkg.type, 'module');
   assert.equal(pkg.engines.node, '>=24');
-  assert.equal(pkg.dependencies['@quoralinex/q1x-community-adapter-sdk'], '0.1.0-alpha.1');
+  assert.equal(pkg.dependencies['@quoralinex/q1x-community-adapter-sdk'], '0.1.0-alpha.2');
   const serialized = JSON.stringify(pkg).toLowerCase();
   for (const forbidden of ['playwright', 'puppeteer', 'selenium', 'keytar', 'dotenv', 'axios', 'node-fetch']) {
     assert.doesNotMatch(serialized, new RegExp(forbidden));

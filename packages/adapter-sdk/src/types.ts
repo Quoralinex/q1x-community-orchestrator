@@ -5,7 +5,7 @@ import type {
   ExecutionResult,
 } from '@quoralinex/q1x-community-sdk';
 
-export type AdapterSdkVersion = '0.1.0-alpha.1';
+export type AdapterSdkVersion = '0.1.0-alpha.2';
 
 export interface AdapterCompatibility {
   sdkVersion: AdapterSdkVersion;
