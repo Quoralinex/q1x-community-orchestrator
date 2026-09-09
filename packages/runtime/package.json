@@ -1,6 +1,6 @@
 {
   "name": "@quoralinex/q1x-community-runtime",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Single-node Open Control Runtime for Q1X Community Orchestrator.",
   "type": "module",
   "engines": {
@@ -19,9 +19,12 @@
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.0.0",
-    "@quoralinex/q1x-community-adapter-sdk": "0.1.0-alpha.1",
-    "@quoralinex/q1x-community-contracts": "0.1.0-alpha.1",
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.1",
+    "@quoralinex/q1x-community-adapter-sdk": "0.1.0-alpha.2",
+    "@quoralinex/q1x-community-contracts": "0.1.0-alpha.2",
+    "@quoralinex/q1x-community-desktop-bridge-linux": "0.1.0-alpha.2",
+    "@quoralinex/q1x-community-desktop-bridge-macos": "0.1.0-alpha.2",
+    "@quoralinex/q1x-community-desktop-bridge-windows": "0.1.0-alpha.2",
+    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.2",
     "ajv": "^8.17.1",
     "ajv-formats": "^3.0.1",
     "playwright-core": "1.63.0"

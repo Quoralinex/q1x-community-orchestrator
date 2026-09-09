@@ -59,7 +59,7 @@ jobs:
         run: |
           set -euo pipefail
           test "$(node -p "require('./.release/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
-          test "$(node -p "require('./.release/release-manifest.json').tag")" = "v0.1.0-alpha.1"
+          test "$(node -p "require('./.release/release-manifest.json').tag")" = "v0.1.0-alpha.2"
           (cd .release && sha256sum --check SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -81,7 +81,7 @@ jobs:
       contents: write
     env:
       GH_TOKEN: ${{ github.token }}
-      TAG: v0.1.0-alpha.1
+      TAG: v0.1.0-alpha.2
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -148,10 +148,18 @@ jobs:
           test "$(node -p "require('./.release/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
           (cd .release && sha256sum --check SHA256SUMS)
       - name: Publish contracts with trusted provenance
-        run: npm publish --provenance --access public .release/quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-contracts-0.1.0-alpha.2.tgz
       - name: Publish SDK with trusted provenance
-        run: npm publish --provenance --access public .release/quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-sdk-0.1.0-alpha.2.tgz
       - name: Publish adapter SDK with trusted provenance
-        run: npm publish --provenance --access public .release/quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.2.tgz
+      - name: Publish desktop bridge common with trusted provenance
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-desktop-bridge-common-0.1.0-alpha.2.tgz
+      - name: Publish macOS desktop bridge with trusted provenance
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-desktop-bridge-macos-0.1.0-alpha.2.tgz
+      - name: Publish Windows desktop bridge with trusted provenance
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-desktop-bridge-windows-0.1.0-alpha.2.tgz
+      - name: Publish Linux desktop bridge with trusted provenance
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-desktop-bridge-linux-0.1.0-alpha.2.tgz
       - name: Publish runtime with trusted provenance
-        run: npm publish --provenance --access public .release/quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz
+        run: npm publish --provenance --access public .release/quoralinex-q1x-community-runtime-0.1.0-alpha.2.tgz

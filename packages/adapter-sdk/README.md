@@ -4,7 +4,7 @@
 
 Current public-alpha compatibility:
 
-- Adapter SDK `0.1.0-alpha.1`
+- Adapter SDK `0.1.0-alpha.2`
 - contract `1.0.0`
 - Community runtime `0.1.x`
 - Node.js `>=24`

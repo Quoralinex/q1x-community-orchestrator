@@ -1,0 +1,13 @@
+{
+  "version": "1.0.0",
+  "kind": "model-openai-compatible-hosted",
+  "protocol": "openai-responses",
+  "adapterKind": "provider-http",
+  "scope": "hosted",
+  "defaultTimeoutMs": 30000,
+  "credential": {
+    "environmentName": "apiKey",
+    "header": "Authorization",
+    "prefix": "Bearer "
+  }
+}

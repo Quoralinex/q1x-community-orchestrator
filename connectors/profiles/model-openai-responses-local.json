@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "kind": "model-openai-responses-local",
+  "protocol": "openai-responses",
+  "adapterKind": "local-inference",
+  "scope": "local",
+  "defaultTimeoutMs": 30000
+}

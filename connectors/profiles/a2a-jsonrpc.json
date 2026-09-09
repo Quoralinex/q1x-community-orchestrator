@@ -1,0 +1,12 @@
+{
+  "version": "1.0.0",
+  "kind": "a2a-jsonrpc",
+  "protocol": "a2a-jsonrpc",
+  "transport": "http",
+  "defaultTimeoutMs": 30000,
+  "credential": {
+    "environmentName": "apiKey",
+    "header": "Authorization",
+    "prefix": "Bearer "
+  }
+}

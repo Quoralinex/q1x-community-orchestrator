@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phases 1–11 are implemented on protected `main`, and the governed GitHub public alpha `v0.1.0-alpha.1` has been commissioned from exact source commit `c576c42dafcc13027dd883fe05c1316d07149af6`. The release includes the contracts, core SDK, Community Adapter SDK and runtime tarballs with SHA-256 evidence. npm publication was intentionally skipped. The project remains experimental and must not be treated as production-ready or generally available.
+> **Status:** Phases 1–11 are implemented on protected `main`; Phase 12 completes the standalone baseline usability surface in the current release-candidate source. The commissioned GitHub public alpha `v0.1.0-alpha.1` remains immutable. Phase 12 prepares the separately governed `v0.1.0-alpha.2` eight-package candidate, including the first-party macOS, Windows and Linux desktop bridges. The project remains experimental and must not be treated as production-ready or generally available.
 
 ## What it is
 
@@ -99,7 +99,7 @@ node packages/runtime/dist/cli.js --home .q1x desktop-endpoints put --file examp
 node packages/runtime/dist/cli.js --home .q1x desktop discover desktop.portable-stdio
 ```
 
-Native macOS Accessibility, Windows UI Automation, Linux AT-SPI and application-specific controllers remain optional bridge implementations behind the same Q1X backend interface. See [`docs/desktop-control.md`](docs/desktop-control.md).
+Phase 12 ships first-party macOS Accessibility, Windows UI Automation and Linux AT-SPI bridge packages behind the same Q1X backend interface. Host permissions and graphical-session constraints still apply, and application-specific controllers remain optional extensions. See [`docs/desktop-control.md`](docs/desktop-control.md).
 
 ## Phase 7: dynamic teams and adaptive programme supervision
 
@@ -142,7 +142,7 @@ Audit metadata recursively redacts secret-shaped keys and does not copy prompts,
 
 ## Phase 10: public alpha commissioning
 
-The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`. Phase 10 implements release identity checks, exact internal package version locking, generated contracts/SDK/Adapter-SDK/runtime tarballs, SHA-256 release evidence, clean external-consumer verification and a dedicated fail-closed Public Alpha Commissioning workflow.
+The first governed public-alpha release identity is version `0.1.0-alpha.1`, tag `v0.1.0-alpha.1`, and that commissioned release is immutable. The current commissioning workflow prepares `v0.1.0-alpha.2` with exact internal version locking across eight public packages, SHA-256 evidence, clean external-consumer verification and first-party desktop bridge smoke checks.
 
 The GitHub prerelease is authoritative even when npm publication is unavailable. npm publication is a separate opt-in Trusted Publishing/OIDC lane and is never required for the GitHub release path. Release creation refuses a stale `main` target or an existing authoritative tag/release and points the tag directly at the exact verified `main` commit.
 
@@ -156,9 +156,15 @@ The separate [`@quoralinex/q1x-community-adapter-sdk`](packages/adapter-sdk/) pr
 
 Conformance validates the published adapter contract; it is **not a sandbox and is not trust certification** for arbitrary third-party code. See [`docs/community-adapter-sdk.md`](docs/community-adapter-sdk.md) and [`docs/compatibility-matrix.md`](docs/compatibility-matrix.md).
 
+## Phase 12: core usability and ecosystem completion
+
+Phase 12 turns the extension-capable architecture into a practical standalone baseline. Users can list, configure, test, enable and apply built-in model, MCP, A2A, CLI, browser and first-party desktop connectors without writing missing Q1X code. `q1x doctor --json` reports local runtime, connector, browser and native desktop prerequisites without persisting secret values.
+
+The baseline requires no private Quoralinex service. Legitimate prerequisites remain operator-owned: a local model service or hosted API credential, a supported installed Chromium-family browser, public MCP/A2A service credentials where applicable, and ordinary operating-system accessibility/session permission for native desktop control. See [`docs/product-usability.md`](docs/product-usability.md).
+
 ## Capability fabric
 
-Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, browser/web control, desktop/application control, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, public-alpha release governance, the compatibility matrix and the Community Adapter SDK.
+Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, managed browser/web control, shipped first-party desktop/application bridges, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, standalone connector diagnostics, public-alpha release governance, the compatibility matrix and the Community Adapter SDK.
 
 ## Deployment profiles
 

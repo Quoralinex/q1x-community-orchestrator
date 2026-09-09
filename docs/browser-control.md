@@ -15,6 +15,20 @@ Phase 6A adds real browser control as a first-class Q1X capability. It is intend
 
 The built-in backend uses `playwright-core` 1.63.0. It does not bundle a browser binary or require a paid remote-browser service. Compatible browsers must already be installed or supplied through endpoint configuration.
 
+## Phase 12 browser starter profiles
+
+Phase 12 adds built-in connector profiles for a managed Chromium-family browser and explicit Chromium CDP attachment. A supported browser remains an operator prerequisite; Q1X does not silently install one.
+
+```bash
+q1x --home .q1x connectors add browser.chromium.managed
+q1x --home .q1x connectors configure browser.chromium.managed --parameter headless=true
+q1x --home .q1x connectors test browser.chromium.managed
+q1x --home .q1x connectors enable browser.chromium.managed
+q1x --home .q1x connectors apply browser.chromium.managed
+```
+
+The tested Phase 12 claim is scoped to the managed Chromium-family runner configuration and the cited CDP/runtime tests, not every browser/version/OS combination.
+
 ## Browser actions
 
 The initial normalized action surface supports navigation, back/forward/reload, DOM inspection and extraction, click/double-click/hover, form filling, sequential typing, key presses, select/check/uncheck, coordinate mouse move/down/up, wheel, drag-and-drop, waits, bounded file upload/download and screenshots.
@@ -55,7 +69,7 @@ The CLI intentionally does not pretend to maintain an in-memory session across s
 
 ## Browser compatibility
 
-The core remains OS-neutral. The Playwright backend supports managed Chromium, Firefox and WebKit when compatible binaries are installed. CDP attachment is for Chromium-family browsers. Playwright WebKit is not represented as native Safari; native Safari automation belongs in a future WebDriver backend behind the same Q1X browser-backend interface.
+The core remains OS-neutral. Phase 12's ready-to-use and compatibility-evidenced baseline is Chromium-family browser control: managed Chromium and explicit CDP attachment. The backend architecture can support additional browser engines where compatible binaries/backends are supplied, but Firefox, WebKit/native Safari and uncited browser/version/OS combinations are not Phase 12 compatibility claims.
 
 ## Extending the backend
 

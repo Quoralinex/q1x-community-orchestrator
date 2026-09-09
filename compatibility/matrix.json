@@ -1,7 +1,7 @@
 {
   "matrixVersion": "1.0.0",
-  "projectVersion": "0.1.0-alpha.1",
-  "generatedFrom": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+  "projectVersion": "0.1.0-alpha.2",
+  "generatedFrom": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
   "entries": [
     {
       "id": "os.ubuntu-24.04.source",
@@ -9,7 +9,13 @@
       "target": "Ubuntu 24.04 source install",
       "status": "tested",
       "implementation": "Node.js 24",
-      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
+      ]
     },
     {
       "id": "os.macos-latest.source",
@@ -17,7 +23,13 @@
       "target": "macOS latest source install",
       "status": "tested",
       "implementation": "Node.js 24",
-      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
+      ]
     },
     {
       "id": "os.windows-latest.source",
@@ -25,7 +37,13 @@
       "target": "Windows latest source install",
       "status": "tested",
       "implementation": "Node.js 24",
-      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
+      ]
     },
     {
       "id": "deployment.docker-linux",
@@ -33,7 +51,13 @@
       "target": "Linux Docker/OCI non-root deployment",
       "status": "tested",
       "implementation": "Docker multi-stage image",
-      "evidence": [{"kind": "ci", "source": ".github/workflows/cross-platform-packaging.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}]
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
+      ]
     },
     {
       "id": "package-consumer.alpha-tarballs",
@@ -42,9 +66,21 @@
       "status": "tested",
       "implementation": "npm pack tarballs",
       "evidence": [
-        {"kind": "ci", "source": ".github/workflows/public-alpha.yml", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
-        {"kind": "ci", "source": "tests/release-adapter-governance.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
-        {"kind": "ci", "source": "tests/release-commissioning.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}
+        {
+          "kind": "ci",
+          "source": ".github/workflows/public-alpha.yml",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/release-adapter-governance.test.mjs",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/release-commissioning.test.mjs",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
       ]
     },
     {
@@ -53,7 +89,9 @@
       "target": "Provider/model endpoint combinations",
       "status": "experimental",
       "implementation": "Provider-neutral compatible HTTP transports",
-      "constraints": ["Specific provider, model and endpoint combinations require separate verification before being labelled tested."]
+      "constraints": [
+        "Specific provider, model and endpoint combinations require separate verification before being labelled tested."
+      ]
     },
     {
       "id": "adapter.mcp",
@@ -61,7 +99,9 @@
       "target": "MCP stdio and Streamable HTTP adapters",
       "status": "experimental",
       "implementation": "Built-in MCP transports",
-      "constraints": ["Protocol behavior is covered by runtime tests, but environment/server combinations require explicit compatibility evidence before promotion to tested."]
+      "constraints": [
+        "Protocol behavior is covered by runtime tests, but environment/server combinations require explicit compatibility evidence before promotion to tested."
+      ]
     },
     {
       "id": "adapter.a2a",
@@ -69,7 +109,9 @@
       "target": "A2A JSON-RPC agents",
       "status": "experimental",
       "implementation": "Built-in A2A transport",
-      "constraints": ["Remote agent implementations and deployment environments vary and require explicit compatibility evidence."]
+      "constraints": [
+        "Remote agent implementations and deployment environments vary and require explicit compatibility evidence."
+      ]
     },
     {
       "id": "adapter.cli",
@@ -77,7 +119,9 @@
       "target": "Local CLI/TUI adapters",
       "status": "experimental",
       "implementation": "Direct no-shell stdio transports",
-      "constraints": ["Executable-specific behavior depends on the operator-installed tool and is not universally compatible."]
+      "constraints": [
+        "Executable-specific behavior depends on the operator-installed tool and is not universally compatible."
+      ]
     },
     {
       "id": "browser.chromium",
@@ -85,7 +129,9 @@
       "target": "Chromium-family browser control",
       "status": "experimental",
       "implementation": "Playwright/CDP backend",
-      "constraints": ["Browser binaries are not bundled and host/browser-version combinations require explicit evidence before promotion to tested."]
+      "constraints": [
+        "Browser binaries are not bundled and host/browser-version combinations require explicit evidence before promotion to tested."
+      ]
     },
     {
       "id": "desktop.stdio",
@@ -93,7 +139,9 @@
       "target": "Desktop/application control through the stdio bridge",
       "status": "experimental",
       "implementation": "OS-neutral desktop bridge",
-      "constraints": ["Native driver availability and application behavior are host-specific and require explicit evidence before promotion to tested."]
+      "constraints": [
+        "Native driver availability and application behavior are host-specific and require explicit evidence before promotion to tested."
+      ]
     },
     {
       "id": "protocol.community-adapter",
@@ -103,11 +151,264 @@
       "implementation": "@quoralinex/q1x-community-adapter-sdk",
       "version": "0.1.0-alpha.1 / contract 1.0.0 / runtime 0.1.x",
       "evidence": [
-        {"kind": "ci", "source": "tests/adapter-sdk.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
-        {"kind": "ci", "source": "tests/community-adapter-example.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"},
-        {"kind": "ci", "source": "tests/runtime-community-adapter.test.mjs", "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"}
+        {
+          "kind": "ci",
+          "source": "tests/adapter-sdk.test.mjs",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/community-adapter-example.test.mjs",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/runtime-community-adapter.test.mjs",
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+        }
       ],
       "notes": "This tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
+    },
+    {
+      "id": "desktop.macos.first-party",
+      "category": "desktop",
+      "target": "First-party macOS Accessibility bridge baseline harness",
+      "status": "tested",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-macos 0.1.0-alpha.2",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/desktop-bridge-macos.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ],
+      "notes": "Deterministic bridge contract and host doctor are tested; physical-host Accessibility action execution remains separately dependent on granted OS permission and is not implied by this entry."
+    },
+    {
+      "id": "desktop.windows.first-party",
+      "category": "desktop",
+      "target": "First-party Windows UI Automation bridge baseline harness",
+      "status": "tested",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-windows 0.1.0-alpha.2",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/desktop-bridge-windows.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ],
+      "notes": "Deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
+    },
+    {
+      "id": "desktop.linux.first-party",
+      "category": "desktop",
+      "target": "First-party Linux AT-SPI bridge on Ubuntu 24.04 virtual accessibility session",
+      "status": "tested",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-linux 0.1.0-alpha.2",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/desktop-bridge-linux.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ],
+      "notes": "Tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence."
+    },
+    {
+      "id": "model.openai-chat.local.fixture",
+      "category": "model-transport",
+      "target": "Local OpenAI-compatible Chat Completions deterministic fixture",
+      "status": "tested",
+      "implementation": "openai-chat-completions transport",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-model-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "model.openai-responses.local.fixture",
+      "category": "model-transport",
+      "target": "Local OpenAI-compatible Responses deterministic fixture",
+      "status": "tested",
+      "implementation": "openai-responses transport",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-model-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "model.anthropic-messages.local.fixture",
+      "category": "model-transport",
+      "target": "Local Anthropic-compatible Messages deterministic fixture",
+      "status": "tested",
+      "implementation": "anthropic-messages transport",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-model-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "adapter.mcp.stdio.fixture",
+      "category": "adapter",
+      "target": "MCP stdio deterministic server fixture",
+      "status": "tested",
+      "implementation": "mcp-stdio-v2",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-mcp-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "adapter.mcp.streamable-http.fixture",
+      "category": "adapter",
+      "target": "MCP Streamable HTTP loopback deterministic server fixture",
+      "status": "tested",
+      "implementation": "mcp-streamable-http-v2",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-mcp-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "adapter.a2a.jsonrpc.fixture",
+      "category": "adapter",
+      "target": "A2A JSON-RPC deterministic agent fixture",
+      "status": "tested",
+      "implementation": "a2a-jsonrpc",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-a2a-profile.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "adapter.cli.json.fixture",
+      "category": "adapter",
+      "target": "Local JSON stdio CLI deterministic fixture",
+      "status": "tested",
+      "implementation": "cli-json-stdio",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-cli-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "adapter.cli.text.fixture",
+      "category": "adapter",
+      "target": "Local text stdio CLI deterministic fixture",
+      "status": "tested",
+      "implementation": "cli-text-stdio",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-cli-profiles.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
+    },
+    {
+      "id": "browser.chromium.managed.runner",
+      "category": "browser",
+      "target": "Managed Chromium-family browser product flow on supported CI runner browser",
+      "status": "tested",
+      "implementation": "browser-playwright-managed",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": ".github/workflows/cross-platform-packaging.yml",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ],
+      "notes": "Tested only against browser binaries available in the cited CI environment; this is not a universal Chromium/browser-version claim."
+    },
+    {
+      "id": "protocol.connector-management",
+      "category": "protocol",
+      "target": "Connector catalogue, configure/apply/test/enable and doctor CLI baseline",
+      "status": "tested",
+      "implementation": "Q1X local connector management",
+      "evidence": [
+        {
+          "kind": "ci",
+          "source": "tests/runtime-connectors-cli.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/runtime-doctor.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        },
+        {
+          "kind": "ci",
+          "source": "tests/product-usability.test.mjs",
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+        }
+      ]
     }
   ]
 }

@@ -8,6 +8,8 @@ on:
       - 'package.json'
       - 'package-lock.json'
       - 'packages/**'
+      - 'connectors/**'
+      - 'scripts/phase12/**'
       - 'tests/**'
       - '.github/workflows/cross-platform-packaging.yml'
   push:
@@ -34,6 +36,42 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build workspaces
         run: npm run build
+      - name: Run Phase 12 product usability acceptance
+        run: node --test tests/product-usability.test.mjs
+      - name: Install Linux accessibility harness
+        if: matrix.os == 'ubuntu-24.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends python3-gi gir1.2-atspi-2.0 at-spi2-core xvfb dbus-x11
+      - name: Verify Linux desktop bridge in virtual accessibility session
+        if: matrix.os == 'ubuntu-24.04'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/desktop-bridge-linux.test.mjs tests/runtime-first-party-desktop.test.mjs
+          printf '%s\n' '{"protocol":"q1x-desktop-bridge/1","endpoint":{"id":"desktop.phase12.linux","platform":"linux"},"batch":{"contractVersion":"1.0.0","id":"desktop.batch.phase12.linux","actions":[{"id":"apps","kind":"list-applications"}]}}' > /tmp/q1x-phase12-linux-envelope.json
+          xvfb-run -a dbus-run-session -- bash -lc 'export XDG_SESSION_TYPE=x11 NO_AT_BRIDGE=0; node packages/desktop-bridge-linux/dist/index.js --doctor > phase12-linux-doctor.json; node packages/desktop-bridge-linux/dist/index.js < /tmp/q1x-phase12-linux-envelope.json > phase12-linux-bridge.json'
+          node scripts/phase12/collect-product-evidence.mjs --platform ubuntu --doctor phase12-linux-doctor.json --bridge-result phase12-linux-bridge.json --mode virtual-native --output phase12-product-evidence-ubuntu.json
+      - name: Verify macOS desktop bridge harness and doctor
+        if: matrix.os == 'macos-latest'
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test tests/desktop-bridge-macos.test.mjs tests/runtime-first-party-desktop.test.mjs
+          node packages/desktop-bridge-macos/dist/index.js --doctor > phase12-macos-doctor.json
+          node scripts/phase12/collect-product-evidence.mjs --platform macos --doctor phase12-macos-doctor.json --mode harness-plus-host-doctor --output phase12-product-evidence-macos.json
+      - name: Verify Windows desktop bridge harness and doctor
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        run: |
+          node --test tests/desktop-bridge-windows.test.mjs tests/runtime-first-party-desktop.test.mjs
+          node packages/desktop-bridge-windows/dist/index.js --doctor | Out-File -FilePath phase12-windows-doctor.json -Encoding utf8
+          node scripts/phase12/collect-product-evidence.mjs --platform windows --doctor phase12-windows-doctor.json --mode harness-plus-host-doctor --output phase12-product-evidence-windows.json
+      - name: Upload Phase 12 product evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase12-product-evidence-${{ matrix.os }}
+          path: phase12-product-evidence-*.json
       - name: Verify source installation
         run: node packages/runtime/dist/cli.js --home .q1x-install-check init
       - name: Verify health/readiness lifecycle

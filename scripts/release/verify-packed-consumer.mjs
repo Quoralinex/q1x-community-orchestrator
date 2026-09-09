@@ -35,7 +35,7 @@ function validateManifestShape(manifest) {
   if (manifest?.status !== 'public-alpha') throw new Error('Release manifest status must be public-alpha');
   if (manifest?.version !== RELEASE_VERSION) throw new Error(`Release manifest version must be ${RELEASE_VERSION}`);
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length !== PUBLIC_PACKAGES.length) {
-    throw new Error('Release manifest must contain exactly four package artifacts');
+    throw new Error(`Release manifest must contain exactly ${PUBLIC_PACKAGES.length} package artifacts`);
   }
   const expectedNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
   const actualNames = new Set(manifest.artifacts.map(artifact => artifact.packageName));
@@ -141,11 +141,29 @@ export async function verifyPackedConsumer(artifactsDirectory) {
     const initialized = JSON.parse(run(process.execPath, [cli, '--home', home, 'init'], consumer));
     if (initialized.contractVersion !== '1.0.0') throw new Error('Packed q1x CLI did not return contractVersion 1.0.0');
 
+    const connectors = JSON.parse(run(process.execPath, [cli, '--home', home, 'connectors', 'list'], consumer));
+    if (!Array.isArray(connectors) || connectors.length === 0) throw new Error('Packed q1x CLI did not expose the connector catalogue');
+    const doctor = JSON.parse(run(process.execPath, [cli, '--home', home, 'doctor', '--json'], consumer));
+    if (doctor.contractVersion !== '1.0.0' || typeof doctor.state !== 'string') throw new Error('Packed q1x doctor did not return a valid report');
+
+    const bridgeDoctors = {};
+    for (const platform of ['macos', 'windows', 'linux']) {
+      const bridge = join(consumer, 'node_modules', '@quoralinex', `q1x-community-desktop-bridge-${platform}`, 'dist', 'index.js');
+      const report = JSON.parse(run(process.execPath, [bridge, '--doctor'], consumer));
+      if (report.protocol !== 'q1x-desktop-bridge/1' || report.platform !== platform) {
+        throw new Error(`Packed ${platform} desktop bridge doctor returned an invalid report`);
+      }
+      bridgeDoctors[platform] = report.state;
+    }
+
     return {
       version: manifest.version,
       sourceSha: manifest.sourceSha,
       artifacts: manifest.artifacts.map(artifact => artifact.filename),
-      contractVersion: initialized.contractVersion
+      contractVersion: initialized.contractVersion,
+      connectorCount: connectors.length,
+      doctorState: doctor.state,
+      bridgeDoctors
     };
   } finally {
     await rm(consumer, { recursive: true, force: true });

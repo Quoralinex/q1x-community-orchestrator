@@ -141,15 +141,18 @@ The `Cross-platform Packaging` GitHub Actions workflow provides evidence for:
 | health/readiness lifecycle | ✓ | ✓ | ✓ |
 | contract/type/distribution verification | ✓ | ✓ | ✓ |
 | package dry run | ✓ | ✓ | ✓ |
+| Phase 12 product usability flow | ✓ | ✓ | ✓ |
+| first-party desktop bridge harness/doctor | ✓ | ✓ | ✓ |
+| structured Phase 12 evidence artifact | ✓ | ✓ | ✓ |
 | Docker image/non-root/persistent restart | ✓ | n/a | n/a |
 
-Phase 10 additionally verifies the generated Q1X contracts/SDK/runtime package tarballs in a clean external consumer and validates their SHA-256 release evidence. The full provider/model/adapter/browser/desktop compatibility matrix remains Phase 11 scope.
+The Phase 12 commissioning path verifies the complete eight-package `0.1.0-alpha.2` candidate in a clean external consumer, validates SHA-256 release evidence, exercises the connector catalogue and doctor, and smoke-runs all three first-party desktop bridge doctors. Compatibility claims remain limited to the exact evidence recorded in the generated matrix.
 
 Docker is verified on Linux because the produced OCI image is the cross-platform container artifact; host-native Docker Desktop behavior is not separately claimed by this phase.
 
 ## Team / self-hosted future profile
 
-A later team profile may replace embedded state with PostgreSQL, S3-compatible object storage and multiple workers while retaining the same orchestration contracts. The first public alpha does not require or activate that architecture.
+A later team profile may replace embedded state with PostgreSQL, S3-compatible object storage and multiple workers while retaining the same orchestration contracts. The standalone Community baseline does not require or activate that architecture.
 
 ## Distributed / cloud future profile
 

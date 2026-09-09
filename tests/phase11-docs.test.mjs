@@ -10,7 +10,7 @@ const text = path => readFile(join(root, path), 'utf8');
 test('Phase 11 adapter SDK documentation states the public compatibility and trust boundary', async () => {
   const guide = await text('docs/community-adapter-sdk.md');
   assert.match(guide, /@quoralinex\/q1x-community-adapter-sdk/);
-  assert.match(guide, /0\.1\.0-alpha\.1/);
+  assert.match(guide, /0\.1\.0-alpha\.2/);
   assert.match(guide, /contract.*1\.0\.0/i);
   assert.match(guide, /runtime.*0\.1\.x/i);
   assert.match(guide, /runAdapterConformance/);
@@ -24,11 +24,11 @@ test('Phase 11 adapter SDK documentation states the public compatibility and tru
   assert.match(guide, /PolyForm Noncommercial/i);
 });
 
-test('public alpha documentation governs four tarballs including the adapter SDK without claiming npm publication', async () => {
+test('public alpha documentation governs eight tarballs including the adapter SDK and desktop bridges without claiming npm publication', async () => {
   const alpha = await text('docs/public-alpha.md');
-  assert.match(alpha, /four package tarballs/i);
-  assert.match(alpha, /quoralinex-q1x-community-adapter-sdk-0\.1\.0-alpha\.1\.tgz/);
-  assert.match(alpha, /contracts,.*SDK,.*Adapter SDK.*runtime/i);
+  assert.match(alpha, /eight package tarballs/i);
+  assert.match(alpha, /quoralinex-q1x-community-adapter-sdk-0\.1\.0-alpha\.2\.tgz/);
+  assert.match(alpha, /contracts,.*SDK,.*Adapter SDK,.*desktop bridge.*runtime/i);
   assert.doesNotMatch(alpha, /have been published to npm|available on npm now/i);
 });
 

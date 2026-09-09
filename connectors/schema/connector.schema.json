@@ -1,0 +1,49 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:connectors:connector",
+  "title": "Q1X Community Connector Definition",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "name", "category", "protocol", "platforms", "requirements", "profile", "compatibility", "provenance"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[-.][a-z0-9]+)*$", "maxLength": 128 },
+    "name": { "type": "string", "minLength": 1, "maxLength": 160 },
+    "category": { "enum": ["model", "mcp", "a2a", "cli", "browser", "desktop"] },
+    "protocol": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[-./][a-z0-9]+)*$", "maxLength": 96 },
+    "platforms": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "enum": ["macos", "windows", "linux", "any"] }
+    },
+    "requirements": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "commands": { "type": "array", "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 256 } },
+        "environmentKeys": { "type": "array", "uniqueItems": true, "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$", "maxLength": 128 } }
+      }
+    },
+    "profile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind"],
+      "properties": {
+        "kind": { "type": "string", "pattern": "^[a-z][a-z0-9]*(?:[-.][a-z0-9]+)*$", "maxLength": 96 },
+        "platform": { "enum": ["macos", "windows", "linux"] },
+        "template": { "type": "string", "minLength": 1, "maxLength": 256 }
+      }
+    },
+    "compatibility": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status"],
+      "properties": {
+        "status": { "enum": ["tested", "experimental", "unsupported"] },
+        "matrixId": { "type": "string", "minLength": 1, "maxLength": 160 },
+        "note": { "type": "string", "minLength": 1, "maxLength": 500 }
+      }
+    },
+    "provenance": { "enum": ["first-party", "community"] }
+  }
+}

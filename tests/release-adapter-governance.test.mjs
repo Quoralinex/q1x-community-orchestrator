@@ -8,25 +8,40 @@ import { assertReleaseIdentity, readReleaseIdentity } from '../scripts/release/r
 
 const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
 
-test('public alpha governs exactly four packages in dependency order', async () => {
+test('public alpha governs exactly eight packages in dependency order', async () => {
   const identity = assertReleaseIdentity(await readReleaseIdentity(root));
   assert.deepEqual(identity.packages.map(item => item.name), [
     '@quoralinex/q1x-community-contracts',
     '@quoralinex/q1x-community-sdk',
     '@quoralinex/q1x-community-adapter-sdk',
+    '@quoralinex/q1x-community-desktop-bridge-common',
+    '@quoralinex/q1x-community-desktop-bridge-macos',
+    '@quoralinex/q1x-community-desktop-bridge-windows',
+    '@quoralinex/q1x-community-desktop-bridge-linux',
     '@quoralinex/q1x-community-runtime',
   ]);
   const adapter = identity.packages[2];
-  assert.equal(adapter.version, '0.1.0-alpha.1');
-  assert.equal(adapter.dependencies['@quoralinex/q1x-community-sdk'], '0.1.0-alpha.1');
-  assert.equal(identity.packages[3].dependencies['@quoralinex/q1x-community-adapter-sdk'], '0.1.0-alpha.1');
+  assert.equal(adapter.version, '0.1.0-alpha.2');
+  assert.equal(adapter.dependencies['@quoralinex/q1x-community-sdk'], '0.1.0-alpha.2');
+  assert.equal(identity.packages[7].dependencies['@quoralinex/q1x-community-adapter-sdk'], '0.1.0-alpha.2');
 });
 
-test('public alpha workflow publishes adapter SDK after core SDK and before runtime', async () => {
+test('public alpha workflow publishes the governed package set in dependency order', async () => {
   const workflow = await readFile(join(root, '.github/workflows/public-alpha.yml'), 'utf8');
-  const contracts = workflow.indexOf('quoralinex-q1x-community-contracts-0.1.0-alpha.1.tgz');
-  const sdk = workflow.indexOf('quoralinex-q1x-community-sdk-0.1.0-alpha.1.tgz');
-  const adapter = workflow.indexOf('quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.1.tgz');
-  const runtime = workflow.indexOf('quoralinex-q1x-community-runtime-0.1.0-alpha.1.tgz');
-  assert.ok(contracts >= 0 && sdk > contracts && adapter > sdk && runtime > adapter);
+  const files = [
+    'quoralinex-q1x-community-contracts-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-sdk-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-adapter-sdk-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-desktop-bridge-common-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-desktop-bridge-macos-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-desktop-bridge-windows-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-desktop-bridge-linux-0.1.0-alpha.2.tgz',
+    'quoralinex-q1x-community-runtime-0.1.0-alpha.2.tgz',
+  ];
+  let previous = -1;
+  for (const file of files) {
+    const index = workflow.indexOf(file);
+    assert.ok(index > previous, `${file} must appear in dependency order`);
+    previous = index;
+  }
 });

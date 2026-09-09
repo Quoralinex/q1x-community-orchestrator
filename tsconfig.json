@@ -4,6 +4,10 @@
     { "path": "./packages/contracts" },
     { "path": "./packages/sdk-typescript" },
     { "path": "./packages/adapter-sdk" },
+    { "path": "./packages/desktop-bridge-common" },
+    { "path": "./packages/desktop-bridge-macos" },
+    { "path": "./packages/desktop-bridge-windows" },
+    { "path": "./packages/desktop-bridge-linux" },
     { "path": "./packages/runtime" }
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "version": "1.0.0",
+  "kind": "cli-json-stdio",
+  "protocol": "cli-json-stdio",
+  "transport": "stdio",
+  "inputMode": "json",
+  "outputMode": "json",
+  "defaultTimeoutMs": 30000,
+  "defaultMaxOutputBytes": 1048576
+}

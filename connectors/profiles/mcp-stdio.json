@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "kind": "mcp-stdio",
+  "protocol": "mcp-stdio-v2",
+  "transport": "stdio",
+  "defaultTimeoutMs": 30000,
+  "defaultMaxOutputBytes": 4194304
+}

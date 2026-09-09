@@ -27,11 +27,12 @@ Software delivery is only one workload. The project is designed for research, co
 
 ## Public alpha
 
-The `0.1.0-alpha.1` public-alpha release pipeline governs four public package artifacts—contracts, core SDK, Community Adapter SDK and runtime—with SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. The software remains experimental and is not production-ready. The authoritative prerelease is created only from a verified protected `main` commit.
+The commissioned `v0.1.0-alpha.1` public alpha remains immutable. Phase 12 prepares the separately governed `v0.1.0-alpha.2` candidate with eight public package artifacts: contracts, core SDK, Community Adapter SDK, desktop bridge common, first-party macOS/Windows/Linux desktop bridges and runtime. The commissioning path retains SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. The software remains experimental and is not production-ready.
 
-Phase 11 adds an evidence-driven compatibility matrix plus the public Community Adapter SDK and explicit runtime bridge. Compatibility labels are scoped to repository evidence; adapter conformance is not a trust or sandbox guarantee.
+Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK. Phase 12 adds the standalone connector catalogue/configuration/doctor UX, no-custom-code baseline model/MCP/A2A/CLI/browser flows and shipped first-party desktop bridges. Compatibility labels remain scoped to cited repository evidence; adapter conformance is not a trust or sandbox guarantee.
 
 - [Public alpha quick start](public-alpha.md) — release identity, installation, integrity verification, upgrade and rollback.
+- [Phase 12 product usability](product-usability.md) — baseline setup, prerequisites, no-code connector flows and evidence boundaries.
 - [Compatibility Matrix](compatibility-matrix.md) — tested, experimental and unsupported surfaces with repository-verifiable evidence.
 - [Community Adapter SDK](community-adapter-sdk.md) — public authoring, conformance, explicit registration and trust boundaries.
 - [Known limitations](known-limitations.md) — explicit alpha nonclaims and unsupported assumptions.
@@ -46,7 +47,7 @@ Phase 11 adds an evidence-driven compatibility matrix plus the public Community 
 - [Community Adapter SDK](community-adapter-sdk.md) — third-party adapter authoring and conformance without auto-loading or private Q1X dependencies.
 - [Compatibility Matrix](compatibility-matrix.md) — deterministic compatibility evidence and status definitions.
 - [Browser and web control](browser-control.md) — real browser sessions, web-chat control, security boundaries and CLI usage.
-- [Desktop and application control](desktop-control.md) — OS-neutral desktop actions, bridge backends, application policy and CLI usage.
+- [Desktop and application control](desktop-control.md) — OS-neutral desktop actions, shipped first-party bridges, application policy and CLI usage.
 - [Dynamic teams and programme supervision](supervision.md) — capability routing, durable assignments, supervision cycles, budgets, approvals and replanning.
 - [Security, audit and recovery](security-hardening.md) — single-use approvals, immutable evidence, tamper-evident audit metadata, restart reconciliation and security limits.
 - [Open Control Runtime](runtime.md) — SQLite state, semantic validation, CLI commands and checkpoint recovery.

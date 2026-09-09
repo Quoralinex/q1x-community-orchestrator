@@ -7,6 +7,10 @@ import { OpenControlRuntime } from './runtime.js';
 import './supervision-extension.js';
 import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
+import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
+import { executeConnectorCli } from './connectors/cli.js';
+import { applyConfiguredConnector } from './connectors/apply.js';
+import { runDoctor } from './doctor.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -37,12 +41,27 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
   if (!command) throw new Error('A command is required');
   if (command === 'init') return runtime.getStatus();
   if (command === 'status') return runtime.getStatus(takeOption(args, '--programme'));
+  if (command === 'doctor') {
+    const jsonIndex = args.indexOf('--json');
+    if (jsonIndex >= 0) args.splice(jsonIndex, 1);
+    if (args.length > 0) throw new Error(`Unexpected doctor arguments: ${args.join(' ')}`);
+    return runDoctor(runtime);
+  }
   if (command === 'discover') {
     const manifests = loadDiscoveryManifests(requiredOption(args, '--manifest'));
     return runtime.discoverMany(manifests);
   }
 
   const action = args.shift();
+  if (command === 'connectors') {
+    if (action === 'apply') {
+      const id = args.shift();
+      if (!id) throw new Error('connectors apply requires a connector id');
+      if (args.length > 0) throw new Error(`Unexpected connector arguments: ${args.join(' ')}`);
+      return applyConfiguredConnector(runtime, id);
+    }
+    return executeConnectorCli(runtime.home, action, args);
+  }
   if (command === 'capabilities') {
     if (action === 'put') return runtime.putCapability(readJsonFile(requiredOption(args, '--file')) as CapabilityDescriptor);
     if (action === 'list') return runtime.listCapabilities();
@@ -170,6 +189,14 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
     }
   }
   if (command === 'desktop') {
+    if (action === 'setup-first-party') {
+      const endpoint = createFirstPartyDesktopEndpoint({
+        id: takeOption(args, '--id'),
+        name: takeOption(args, '--name'),
+        outputDir: takeOption(args, '--output-dir'),
+      });
+      return runtime.putDesktopEndpoint(endpoint);
+    }
     const endpointId = args.shift();
     if (!endpointId) throw new Error(`desktop ${action ?? ''}`.trim() + ' requires an endpoint id');
     if (action === 'run') return runtime.runDesktopBatch(endpointId, readJsonFile(requiredOption(args, '--file')) as DesktopActionBatch);

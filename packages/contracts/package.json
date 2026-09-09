@@ -1,6 +1,6 @@
 {
   "name": "@quoralinex/q1x-community-contracts",
-  "version": "0.1.0-alpha.1",
+  "version": "0.1.0-alpha.2",
   "description": "Normative public contracts for Q1X Community Orchestrator.",
   "type": "module",
   "files": ["dist", "schemas"],
