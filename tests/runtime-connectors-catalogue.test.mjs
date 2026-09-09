@@ -13,6 +13,8 @@ const implementedIds = [
   'desktop.linux.first-party',
   'desktop.macos.first-party',
   'desktop.windows.first-party',
+  'mcp.stdio',
+  'mcp.streamable-http',
   'model.anthropic-compatible.hosted',
   'model.anthropic-messages.local',
   'model.openai-chat.local',
@@ -34,7 +36,7 @@ test('built-in connector catalogue validates, is deterministic, and contains onl
   assert.deepEqual(catalogue.map(item => item.id), [...catalogue.map(item => item.id)].sort());
   assert.deepEqual(catalogue.map(item => item.id), implementedIds);
   assert.equal(catalogue.every(item => item.provenance === 'first-party'), true);
-  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['desktop', 'model']);
+  assert.deepEqual([...new Set(catalogue.map(item => item.category))].sort(), ['desktop', 'mcp', 'model']);
 });
 
 test('catalogue rejects duplicate ids and compatibility tuples', () => {
