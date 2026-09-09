@@ -35,8 +35,8 @@ test('model profiles load as closed protocol-specific documents', () => {
   assert.equal(chat.protocol, 'openai-chat-completions');
   assert.equal(responses.protocol, 'openai-responses');
   assert.equal(anthropic.protocol, 'anthropic-messages');
-  assert.equal(hostedOpenai.adapterKind, 'hosted-api');
-  assert.equal(hostedAnthropic.adapterKind, 'hosted-api');
+  assert.equal(hostedOpenai.adapterKind, 'provider-http');
+  assert.equal(hostedAnthropic.adapterKind, 'provider-http');
 });
 
 test('local model profiles materialize complete existing ModelEndpoint documents', () => {
