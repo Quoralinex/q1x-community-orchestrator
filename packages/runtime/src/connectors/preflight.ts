@@ -141,10 +141,10 @@ async function mcpDiscoveryCheck(
   }
 
   const transport = createMcpAdapterTransports().find(candidate => candidate.protocol === endpoint.protocol);
-  if (!transport) {
+  if (!transport?.discover) {
     return {
       id: 'live:mcp', state: 'blocked',
-      message: `No MCP transport is registered for ${endpoint.protocol}.`,
+      message: `No discoverable MCP transport is registered for ${endpoint.protocol}.`,
       remediation: 'Use one of the built-in MCP stdio or Streamable HTTP profiles.',
     };
   }
