@@ -19,6 +19,22 @@ test('Docker image is non-root, persistent and health checked', async () => {
   assert.doesNotMatch(dockerfile, /USER root/);
 });
 
+test('Docker dependency layer stages every workspace manifest required by package-lock', async () => {
+  const dockerfile = await text('Dockerfile');
+  for (const workspace of [
+    'contracts',
+    'sdk-typescript',
+    'adapter-sdk',
+    'desktop-bridge-common',
+    'desktop-bridge-macos',
+    'desktop-bridge-windows',
+    'runtime',
+  ]) {
+    const escaped = workspace.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(dockerfile, new RegExp(`COPY packages/${escaped}/package\\.json packages/${escaped}/package\\.json`));
+  }
+});
+
 test('Compose profile confines the health port and removes ambient privilege', async () => {
   const compose = await text('compose.yaml');
   assert.match(compose, /127\.0\.0\.1:8787:8787/);
