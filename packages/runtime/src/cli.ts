@@ -7,6 +7,7 @@ import { OpenControlRuntime } from './runtime.js';
 import './supervision-extension.js';
 import './security-extension.js';
 import { loadDiscoveryManifests } from './discovery-loader.js';
+import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -170,6 +171,14 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
     }
   }
   if (command === 'desktop') {
+    if (action === 'setup-first-party') {
+      const endpoint = createFirstPartyDesktopEndpoint({
+        id: takeOption(args, '--id'),
+        name: takeOption(args, '--name'),
+        outputDir: takeOption(args, '--output-dir'),
+      });
+      return runtime.putDesktopEndpoint(endpoint);
+    }
     const endpointId = args.shift();
     if (!endpointId) throw new Error(`desktop ${action ?? ''}`.trim() + ' requires an endpoint id');
     if (action === 'run') return runtime.runDesktopBatch(endpointId, readJsonFile(requiredOption(args, '--file')) as DesktopActionBatch);
