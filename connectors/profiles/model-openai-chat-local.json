@@ -1,0 +1,8 @@
+{
+  "version": "1.0.0",
+  "kind": "model-openai-chat-local",
+  "protocol": "openai-chat-completions",
+  "adapterKind": "local-inference",
+  "scope": "local",
+  "defaultTimeoutMs": 30000
+}
