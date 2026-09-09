@@ -78,7 +78,8 @@ test('preflight checks environment references by presence only and never returns
       commandExists: async () => true,
       desktopDoctor: healthyDoctor,
     });
-    assert.equal(report.state, 'ok');
+    assert.equal(report.state, 'warning');
+    assert.equal(report.checks.some(check => check.id === 'compatibility' && check.state === 'warning'), true);
     const serialized = JSON.stringify(report);
     assert.equal(serialized.includes('super-secret-value'), false);
     assert.equal(serialized.includes('Q1X_TEST_SECRET'), true);
