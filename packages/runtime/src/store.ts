@@ -2,6 +2,8 @@ import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { resolveRuntimeHome } from './home.js';
+import { RuntimeError } from './errors.js';
+import { CURRENT_STATE_SCHEMA_VERSION, classifyStateSchema } from './state-schema.js';
 
 export interface HeadPointer {
   kind: string;
@@ -33,6 +35,7 @@ interface DocumentRow {
 interface ScopeRow { scope_id: string | null; }
 interface HeadPointerRow { kind: string; id: string; storage_revision: number; scope_id: string | null; }
 interface CheckpointRow { checkpoint_json: string; snapshot_json: string; }
+interface MetadataRow { value: string; }
 
 export class SqliteStore {
   readonly home: string;
@@ -50,55 +53,99 @@ export class SqliteStore {
     mkdirSync(home, { recursive: true });
     const databasePath = join(home, 'state.sqlite');
     const db = new DatabaseSync(databasePath);
-    db.exec('PRAGMA foreign_keys = ON;');
-    db.exec('PRAGMA journal_mode = WAL;');
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS document_versions (
-        kind TEXT NOT NULL,
-        id TEXT NOT NULL,
-        storage_revision INTEGER NOT NULL,
-        scope_id TEXT,
-        document_json TEXT NOT NULL,
-        created_at TEXT NOT NULL,
-        PRIMARY KEY (kind, id, storage_revision)
-      );
-      CREATE TABLE IF NOT EXISTS document_heads (
-        kind TEXT NOT NULL,
-        id TEXT NOT NULL,
-        storage_revision INTEGER NOT NULL,
-        scope_id TEXT,
-        PRIMARY KEY (kind, id),
-        FOREIGN KEY (kind, id, storage_revision)
-          REFERENCES document_versions(kind, id, storage_revision)
-      );
-    `);
-    db.exec(`
-      CREATE TABLE IF NOT EXISTS checkpoints (
-        id TEXT PRIMARY KEY,
-        programme_id TEXT NOT NULL,
-        checkpoint_json TEXT NOT NULL,
-        snapshot_json TEXT NOT NULL,
-        created_at TEXT NOT NULL
-      );
-      CREATE TABLE IF NOT EXISTS runtime_events (
-        sequence INTEGER PRIMARY KEY AUTOINCREMENT,
-        event_type TEXT NOT NULL,
-        subject_type TEXT NOT NULL,
-        subject_id TEXT NOT NULL,
-        scope_id TEXT,
-        payload_json TEXT NOT NULL,
-        occurred_at TEXT NOT NULL
-      );
-      CREATE INDEX IF NOT EXISTS idx_document_heads_scope
-        ON document_heads(scope_id, kind, id);
-      CREATE INDEX IF NOT EXISTS idx_runtime_events_scope
-        ON runtime_events(scope_id, sequence);
-    `);
-    return new SqliteStore(home, databasePath, db);
+    try {
+      db.exec('PRAGMA foreign_keys = ON;');
+      db.exec('PRAGMA busy_timeout = 5000;');
+      db.exec('CREATE TABLE IF NOT EXISTS runtime_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);');
+      const metadata = db.prepare("SELECT value FROM runtime_metadata WHERE key = 'state_schema_version'").get() as MetadataRow | undefined;
+      if (!metadata) {
+        db.prepare('INSERT INTO runtime_metadata (key, value) VALUES (?, ?)').run(
+          'state_schema_version', String(CURRENT_STATE_SCHEMA_VERSION)
+        );
+      } else {
+        const version = Number(metadata.value);
+        const classification = classifyStateSchema(version);
+        if (classification === 'future') {
+          throw new RuntimeError('INCOMPATIBLE_STATE', `Unsupported runtime state schema version: ${metadata.value}`);
+        }
+        if (classification === 'upgradeable') {
+          db.prepare("UPDATE runtime_metadata SET value = ? WHERE key = 'state_schema_version'").run(
+            String(CURRENT_STATE_SCHEMA_VERSION)
+          );
+        }
+      }
+      db.exec('PRAGMA journal_mode = WAL;');
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS document_versions (
+          kind TEXT NOT NULL,
+          id TEXT NOT NULL,
+          storage_revision INTEGER NOT NULL,
+          scope_id TEXT,
+          document_json TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          PRIMARY KEY (kind, id, storage_revision)
+        );
+        CREATE TABLE IF NOT EXISTS document_heads (
+          kind TEXT NOT NULL,
+          id TEXT NOT NULL,
+          storage_revision INTEGER NOT NULL,
+          scope_id TEXT,
+          PRIMARY KEY (kind, id),
+          FOREIGN KEY (kind, id, storage_revision)
+            REFERENCES document_versions(kind, id, storage_revision)
+        );
+      `);
+      db.exec(`
+        CREATE TABLE IF NOT EXISTS checkpoints (
+          id TEXT PRIMARY KEY,
+          programme_id TEXT NOT NULL,
+          checkpoint_json TEXT NOT NULL,
+          snapshot_json TEXT NOT NULL,
+          created_at TEXT NOT NULL
+        );
+        CREATE TABLE IF NOT EXISTS runtime_events (
+          sequence INTEGER PRIMARY KEY AUTOINCREMENT,
+          event_type TEXT NOT NULL,
+          subject_type TEXT NOT NULL,
+          subject_id TEXT NOT NULL,
+          scope_id TEXT,
+          payload_json TEXT NOT NULL,
+          occurred_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_document_heads_scope
+          ON document_heads(scope_id, kind, id);
+        CREATE INDEX IF NOT EXISTS idx_runtime_events_scope
+          ON runtime_events(scope_id, sequence);
+      `);
+      const store = new SqliteStore(home, databasePath, db);
+      const integrity = store.verifyIntegrity();
+      if (!integrity.ok) {
+        store.close();
+        throw new RuntimeError('STORAGE_ERROR', `SQLite integrity check failed: ${integrity.message}`);
+      }
+      return store;
+    } catch (error) {
+      try { db.close(); } catch { /* already closed */ }
+      throw error;
+    }
   }
 
   close(): void {
     this.db.close();
+  }
+
+  getStateSchemaVersion(): number {
+    const row = this.db.prepare("SELECT value FROM runtime_metadata WHERE key = 'state_schema_version'").get() as MetadataRow | undefined;
+    if (!row) throw new RuntimeError('INCOMPATIBLE_STATE', 'Runtime state schema marker is missing');
+    const version = Number(row.value);
+    if (!Number.isInteger(version)) throw new RuntimeError('INCOMPATIBLE_STATE', 'Runtime state schema marker is invalid');
+    return version;
+  }
+
+  verifyIntegrity(): { ok: boolean; message: string } {
+    const row = this.db.prepare('PRAGMA integrity_check').get() as Record<string, unknown> | undefined;
+    const message = String(row ? Object.values(row)[0] ?? 'unknown' : 'unknown');
+    return { ok: message === 'ok', message };
   }
 
   getHeadRevision(kind: string, id: string): number | undefined {

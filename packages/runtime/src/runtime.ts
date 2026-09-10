@@ -83,6 +83,10 @@ export class OpenControlRuntime {
     this.store.close();
   }
 
+  getStateSchemaVersion(): number {
+    return this.store.getStateSchemaVersion();
+  }
+
   putMission(mission: Mission): Mission {
     validateContract(SCHEMA_IDS.mission, mission);
     const previous = this.getMission(mission.id);

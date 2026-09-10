@@ -5,6 +5,7 @@ export * from './lifecycle.js';
 export * from './runtime.js';
 export * from './schema-loader.js';
 export * from './store.js';
+export * from './state-schema.js';
 export * from './discovery.js';
 export * from './discovery-loader.js';
 export * from './model-security.js';
