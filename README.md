@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phases 1–12 are implemented on protected `main`, including the standalone baseline usability surface. The commissioned GitHub public alpha `v0.1.0-alpha.1` remains immutable. The separately governed `v0.1.0-alpha.2` eight-package candidate, including the first-party macOS, Windows and Linux desktop bridges, has passed Phase 12 exact-head and post-merge commissioning gates but is not yet released; it awaits explicit manual commissioning. The project remains experimental and must not be treated as production-ready or generally available.
+> **Status:** Phases 1–12 are implemented on protected `main`, including the standalone baseline usability surface. The historical GitHub public alpha `v0.1.0-alpha.1` remains immutable. `v0.1.0-alpha.2` is now the commissioned GitHub public alpha, with eight governed package artifacts including the first-party macOS, Windows and Linux desktop bridges. npm publication remains optional and was not performed as part of this commissioning. The project remains experimental and must not be treated as production-ready or generally available.
 
 ## What it is
 

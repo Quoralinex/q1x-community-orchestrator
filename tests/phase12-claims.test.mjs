@@ -74,21 +74,21 @@ test('release-facing docs preserve immutable alpha.1 history and describe the go
   for (const platform of ['macOS', 'Windows', 'Linux']) assert.match(combined, new RegExp(platform));
 });
 
-test('public status marks Phase 12 complete after exact-main commissioning without claiming alpha.2 released', async () => {
-  const readme = await read('README.md');
-  const roadmap = await read('docs/roadmap.md');
-  const index = await read('docs/index.md');
-  const alpha = await read('docs/public-alpha.md');
-  const combined = `${readme}\n${roadmap}\n${index}\n${alpha}`;
-  assert.match(combined, /Phases? 1[–-]12.*implemented|Phase 12.*implemented.*protected `main`/is);
-  assert.doesNotMatch(combined, /current release-candidate delivery phase/i);
-  assert.doesNotMatch(combined, /candidate remains experimental until the Phase 12 exact-head merge and post-merge commissioning gates complete/i);
-  assert.match(combined, /alpha\.2.*candidate.*(?:not yet released|awaits explicit|manual commissioning)/is);
-});
-
 test('roadmap identifies Phase 12 as baseline usability completion before hardening', async () => {
   const roadmap = await read('docs/roadmap.md');
   assert.match(roadmap, /Phase 12/i);
   assert.match(roadmap, /core usability|baseline usability/i);
   assert.match(roadmap, /hardening/i);
+});
+
+
+test('public status records alpha.2 as commissioned without claiming npm publication or production readiness', async () => {
+  const combined = (await Promise.all(activeDocs.map(read))).join('\n');
+  assert.match(combined, /v0\.1\.0-alpha\.2/);
+  assert.match(combined, /commissioned|released/i);
+  assert.doesNotMatch(combined, /not yet released|awaits explicit manual commissioning/i);
+  assert.match(combined, /v0\.1\.0-alpha\.1[\s\S]{0,180}immutable|immutable[\s\S]{0,180}v0\.1\.0-alpha\.1/i);
+  assert.match(combined, /npm publication.*optional|npm.*not.*required|not.*published.*npm/i);
+  assert.match(combined, /experimental/i);
+  assert.match(combined, /not production-ready|not.*production-ready/i);
 });
