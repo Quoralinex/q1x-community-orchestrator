@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { resolveRuntimeHome } from './home.js';
 import { RuntimeError } from './errors.js';
 import { CURRENT_STATE_SCHEMA_VERSION, classifyStateSchema } from './state-schema.js';
+import type { ExternalOperationState, OperationJournalEntry } from './operation-journal.js';
 
 export interface HeadPointer {
   kind: string;
@@ -36,6 +37,10 @@ interface ScopeRow { scope_id: string | null; }
 interface HeadPointerRow { kind: string; id: string; storage_revision: number; scope_id: string | null; }
 interface CheckpointRow { checkpoint_json: string; snapshot_json: string; }
 interface MetadataRow { value: string; }
+interface ExternalOperationRow {
+  id: string; kind: OperationJournalEntry['kind']; subject_id: string; retry_safe: number;
+  state: ExternalOperationState; metadata_json: string; created_at: string; updated_at: string;
+}
 
 export class SqliteStore {
   readonly home: string;
@@ -116,6 +121,18 @@ export class SqliteStore {
           ON document_heads(scope_id, kind, id);
         CREATE INDEX IF NOT EXISTS idx_runtime_events_scope
           ON runtime_events(scope_id, sequence);
+        CREATE TABLE IF NOT EXISTS external_operations (
+          id TEXT PRIMARY KEY,
+          kind TEXT NOT NULL,
+          subject_id TEXT NOT NULL,
+          retry_safe INTEGER NOT NULL CHECK (retry_safe IN (0, 1)),
+          state TEXT NOT NULL,
+          metadata_json TEXT NOT NULL,
+          created_at TEXT NOT NULL,
+          updated_at TEXT NOT NULL
+        );
+        CREATE INDEX IF NOT EXISTS idx_external_operations_state
+          ON external_operations(state, updated_at, id);
       `);
       const store = new SqliteStore(home, databasePath, db);
       const integrity = store.verifyIntegrity();
@@ -248,6 +265,65 @@ export class SqliteStore {
       this.db.exec('ROLLBACK;');
       throw error;
     }
+  }
+
+
+  insertExternalOperation(entry: OperationJournalEntry): void {
+    try {
+      this.db.prepare(`INSERT INTO external_operations
+        (id, kind, subject_id, retry_safe, state, metadata_json, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`
+      ).run(entry.id, entry.kind, entry.subjectId, entry.retrySafe ? 1 : 0, entry.state,
+        JSON.stringify(entry.metadata), entry.createdAt, entry.updatedAt);
+    } catch (error) {
+      if (String(error).includes('UNIQUE constraint failed')) {
+        throw new RuntimeError('EXECUTION_CONFLICT', `External operation already exists: ${entry.id}`);
+      }
+      throw error;
+    }
+  }
+
+  getExternalOperation(id: string): OperationJournalEntry | undefined {
+    const row = this.db.prepare('SELECT * FROM external_operations WHERE id = ?').get(id) as ExternalOperationRow | undefined;
+    return row ? this.externalOperationFromRow(row) : undefined;
+  }
+
+  listExternalOperations(): OperationJournalEntry[] {
+    const rows = this.db.prepare('SELECT * FROM external_operations ORDER BY created_at, id').all() as unknown as ExternalOperationRow[];
+    return rows.map(row => this.externalOperationFromRow(row));
+  }
+
+  transitionExternalOperation(
+    id: string,
+    expectedStates: readonly ExternalOperationState[],
+    state: ExternalOperationState,
+    metadata?: Record<string, unknown>
+  ): OperationJournalEntry {
+    this.db.exec('BEGIN IMMEDIATE;');
+    try {
+      const current = this.getExternalOperation(id);
+      if (!current) throw new RuntimeError('NOT_FOUND', `External operation not found: ${id}`);
+      if (!expectedStates.includes(current.state)) {
+        throw new RuntimeError('EXECUTION_CONFLICT', `External operation ${id} cannot transition from ${current.state} to ${state}`);
+      }
+      const updatedAt = new Date().toISOString();
+      const nextMetadata = metadata ? { ...current.metadata, ...metadata } : current.metadata;
+      this.db.prepare('UPDATE external_operations SET state = ?, metadata_json = ?, updated_at = ? WHERE id = ?')
+        .run(state, JSON.stringify(nextMetadata), updatedAt, id);
+      this.db.exec('COMMIT;');
+      return { ...current, state, metadata: nextMetadata, updatedAt };
+    } catch (error) {
+      this.db.exec('ROLLBACK;');
+      throw error;
+    }
+  }
+
+  private externalOperationFromRow(row: ExternalOperationRow): OperationJournalEntry {
+    return {
+      id: row.id, kind: row.kind, subjectId: row.subject_id, retrySafe: row.retry_safe === 1,
+      state: row.state, metadata: JSON.parse(row.metadata_json) as Record<string, unknown>,
+      createdAt: row.created_at, updatedAt: row.updated_at
+    };
   }
 
   appendEvent(eventType: string, subjectType: string, subjectId: string, scopeId: string | null, payload: unknown): void {
