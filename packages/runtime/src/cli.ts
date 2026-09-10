@@ -11,6 +11,8 @@ import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
 import { executeConnectorCli } from './connectors/cli.js';
 import { applyConfiguredConnector } from './connectors/apply.js';
 import { runDoctor } from './doctor.js';
+import { createRuntimeBackup, restoreRuntimeBackup, verifyRuntimeBackup } from './backup.js';
+import { resolveRuntimeHome } from './home.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -34,6 +36,30 @@ function readJsonFile(path: string): unknown {
 function required<T>(value: T | undefined, kind: string, id: string): T {
   if (value === undefined) throw new RuntimeError('NOT_FOUND', `${kind} not found: ${id}`);
   return value;
+}
+
+async function executeBackup(home: string | undefined, args: string[]): Promise<unknown> {
+  const action = args.shift();
+  if (action === 'create') {
+    const output = requiredOption(args, '--output');
+    if (args.length > 0) throw new Error(`Unexpected backup create arguments: ${args.join(' ')}`);
+    const backup = await createRuntimeBackup(resolveRuntimeHome(home), output);
+    return { schema: 'q1x.runtime-backup-cli.v1', action, backupPath: backup.directory, stateSchemaVersion: backup.stateSchemaVersion, valid: true };
+  }
+  const backupPath = args.shift();
+  if (!backupPath) throw new Error(`backup ${action ?? ''}`.trim() + ' requires a backup path');
+  if (args.length > 0) throw new Error(`Unexpected backup arguments: ${args.join(' ')}`);
+  if (action === 'verify') {
+    const verification = await verifyRuntimeBackup(backupPath);
+    return { schema: 'q1x.runtime-backup-cli.v1', action, backupPath: verification.backupPath, stateSchemaVersion: verification.stateSchemaVersion, valid: verification.valid, findings: verification.findings };
+  }
+  if (action === 'restore') {
+    if (!home) throw new Error('backup restore requires --home <empty-target>');
+    const targetHome = resolveRuntimeHome(home);
+    const manifest = await restoreRuntimeBackup(backupPath, targetHome);
+    return { schema: 'q1x.runtime-backup-cli.v1', action, backupPath: resolve(backupPath), targetHome, stateSchemaVersion: manifest.stateSchemaVersion, valid: true, nextActions: ['audit verify', 'recovery reconcile', 'status'] };
+  }
+  throw new Error(`Unknown backup action: ${action ?? '<missing>'}`);
 }
 
 async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unknown> {
@@ -275,8 +301,13 @@ const args = process.argv.slice(2);
 let runtime: OpenControlRuntime | undefined;
 try {
   const home = takeOption(args, '--home');
-  runtime = OpenControlRuntime.open({ home });
-  writeResult(await execute(runtime, args));
+  if (args[0] === 'backup') {
+    args.shift();
+    writeResult(await executeBackup(home, args));
+  } else {
+    runtime = OpenControlRuntime.open({ home });
+    writeResult(await execute(runtime, args));
+  }
 } catch (error) {
   writeError(error);
   process.exitCode = 1;
