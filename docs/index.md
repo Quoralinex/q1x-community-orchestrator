@@ -37,6 +37,13 @@ Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK
 - [Community Adapter SDK](community-adapter-sdk.md) — public authoring, conformance, explicit registration and trust boundaries.
 - [Known limitations](known-limitations.md) — explicit alpha nonclaims and unsupported assumptions.
 
+## Operating manuals
+
+- [User Guide](user-guide.md) — installation, connector setup, desktop prerequisites and safe first use.
+- [Operator Guide](operator-guide.md) — backup/restore, audit, recovery, limits and operational response.
+- [Developer Guide](developer-guide.md) — public contracts, extension boundaries, evidence tiers and release development.
+- [CLI Reference](cli-reference.md) — generated command reference tied to executable command metadata.
+
 ## Explore the project
 
 - [Architecture](architecture.md) — mission engine, programme graph, control runtime and capability fabric.

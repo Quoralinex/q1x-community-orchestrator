@@ -170,6 +170,13 @@ Implemented foundations now cover durable orchestration state, capability discov
 
 The supported alpha baseline is a zero-cost single-node profile using an embedded database and local storage, available through direct Node installation, governed package tarballs or Docker. Team and distributed profiles may later add PostgreSQL, S3-compatible object storage, multiple workers and optional cloud infrastructure without changing the orchestration contracts.
 
+## Operating manuals
+
+- [User Guide](docs/user-guide.md) — install, readiness, connectors, desktop setup and safe backup basics.
+- [Operator Guide](docs/operator-guide.md) — health checks, backup/restore, audit, recovery, limits and incident sequence.
+- [Developer Guide](docs/developer-guide.md) — contracts, adapters, evidence tiers, tests and release-development boundaries.
+- [CLI Reference](docs/cli-reference.md) — generated command catalogue sourced from executable CLI metadata.
+
 ## Documentation
 
 The detailed architecture, use cases, deployment model, public-alpha guidance, compatibility evidence, adapter authoring guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).

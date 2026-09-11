@@ -13,6 +13,7 @@ import { applyConfiguredConnector } from './connectors/apply.js';
 import { runDoctor } from './doctor.js';
 import { createRuntimeBackup, restoreRuntimeBackup, verifyRuntimeBackup } from './backup.js';
 import { resolveRuntimeHome } from './home.js';
+import { getCliCommandCatalogue } from './cli-catalogue.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -65,6 +66,7 @@ async function executeBackup(home: string | undefined, args: string[]): Promise<
 async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unknown> {
   const command = args.shift();
   if (!command) throw new Error('A command is required');
+  if (command === 'help') return { schema: 'q1x.cli-catalogue.v1', commands: getCliCommandCatalogue() };
   if (command === 'init') return runtime.getStatus();
   if (command === 'status') return runtime.getStatus(takeOption(args, '--programme'));
   if (command === 'doctor') {
