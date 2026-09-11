@@ -1,0 +1,16 @@
+{
+  "schema": "q1x.phase13-soak-acceptance.v1",
+  "execution": "local-manual",
+  "workflowRunId": null,
+  "sourceSha": "be59b770ec317e35c4174cc0fe779d5be0e07676",
+  "candidateHeadAtAcceptance": "abe44d6e1e072699e503db2df650c6e861680151",
+  "artifactPath": "compatibility/evidence/phase13-soak-evidence.json",
+  "artifactSha256": "94c01d87754e511f27ba3f4c99c1c5494527af5663367a5c9e561970d32004f4",
+  "requestedMinutes": 60,
+  "elapsedMs": 3600145,
+  "sqliteIntegrity": "ok",
+  "auditValid": true,
+  "externalProviderCalls": 0,
+  "state": "passed",
+  "note": "Accepted local-only Phase 13 soak. Source SHA predates only CI, test, documentation and evidence-contract corrections; no runtime product behavior changed after this source SHA before acceptance."
+}

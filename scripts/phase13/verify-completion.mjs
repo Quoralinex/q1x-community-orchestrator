@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -25,6 +26,9 @@ async function text(path) {
 async function json(path) {
   try { return JSON.parse(await readFile(path, 'utf8')); } catch { return undefined; }
 }
+async function sha256(path) {
+  try { return createHash('sha256').update(await readFile(path)).digest('hex'); } catch { return null; }
+}
 function add(findings, condition, code, detail) {
   if (!condition) findings.push({ code, detail });
 }
@@ -49,6 +53,33 @@ export async function verifyPhase13Root(rootInput) {
   ]);
 
   const matrix = await json(join(root, 'compatibility/matrix.json'));
+  const soakEvidencePath = join(root, 'compatibility/evidence/phase13-soak-evidence.json');
+  const soakAcceptance = await json(join(root, 'compatibility/evidence/phase13-soak-acceptance.json'));
+  const retainedSoak = await json(soakEvidencePath);
+  const retainedSoakSha256 = await sha256(soakEvidencePath);
+  const executionIdentityValid = soakAcceptance?.execution === 'local-manual'
+    ? soakAcceptance?.workflowRunId === null
+    : soakAcceptance?.execution === 'github-actions'
+      && ['string', 'number'].includes(typeof soakAcceptance?.workflowRunId)
+      && String(soakAcceptance.workflowRunId).trim().length > 0;
+  const acceptedSoakEvidence = Boolean(
+    soakAcceptance?.schema === 'q1x.phase13-soak-acceptance.v1'
+    && soakAcceptance?.artifactPath === 'compatibility/evidence/phase13-soak-evidence.json'
+    && /^[0-9a-f]{64}$/.test(soakAcceptance?.artifactSha256 ?? '')
+    && soakAcceptance.artifactSha256 === retainedSoakSha256
+    && executionIdentityValid
+    && retainedSoak?.schema === 'q1x.phase13-soak-evidence.v1'
+    && /^[0-9a-f]{40}$/.test(retainedSoak?.sourceSha ?? '')
+    && retainedSoak.sourceSha === soakAcceptance?.sourceSha
+    && Number.isFinite(retainedSoak?.requestedMinutes) && retainedSoak.requestedMinutes >= 60
+    && Number.isFinite(retainedSoak?.elapsedMs) && retainedSoak.elapsedMs >= retainedSoak.requestedMinutes * 60_000
+    && Number.isInteger(retainedSoak?.iterations) && retainedSoak.iterations > 0
+    && retainedSoak?.sqliteIntegrity === 'ok'
+    && retainedSoak?.auditValid === true
+    && retainedSoak?.externalProviderCalls === 0
+    && retainedSoak?.state === 'passed'
+    && soakAcceptance?.state === 'passed'
+  );
   const testedEvidence = (matrix?.entries ?? [])
     .filter(entry => entry.status === 'tested')
     .flatMap(entry => entry.evidence ?? []);
@@ -80,6 +111,7 @@ export async function verifyPhase13Root(rootInput) {
       && /documentOperations:\s*1_000/.test(stress) && /externalProviderCalls:\s*0/.test(stress),
     soakEvidence: /q1x\.phase13-soak-evidence\.v1/.test(soak)
       && /sqliteIntegrity/.test(soak) && /auditValid/.test(soak),
+    acceptedSoakEvidence,
     reproducibility: /q1x\.release-reproducibility\.v1/.test(reproducibility)
       && /spdxVersion|SPDX-2\.3/.test(sbom),
     compatibilityEvidenceTiers: testedEvidence.length > 0
@@ -109,6 +141,15 @@ export async function verifyPhase13Root(rootInput) {
     required,
     requiredResilienceScenarios: REQUIRED_SCENARIOS,
     compatibilityEvidenceTiers: [...new Set(testedEvidence.map(item => item.environmentTier))].sort(),
+    acceptedSoakEvidence: {
+      execution: soakAcceptance?.execution ?? null,
+      workflowRunId: soakAcceptance?.workflowRunId ?? null,
+      sourceSha: retainedSoak?.sourceSha ?? null,
+      requestedMinutes: retainedSoak?.requestedMinutes ?? null,
+      elapsedMs: retainedSoak?.elapsedMs ?? null,
+      state: retainedSoak?.state ?? null,
+      artifactSha256: soakAcceptance?.artifactSha256 ?? null,
+    },
     standalone,
     findings,
   };

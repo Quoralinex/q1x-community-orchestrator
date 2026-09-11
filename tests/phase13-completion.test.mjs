@@ -22,6 +22,15 @@ test('Phase 13 completion verifier requires every hardening evidence surface', a
   assert.equal(report.required.resilienceEvidence, true);
   assert.equal(report.required.stressEvidence, true);
   assert.equal(report.required.soakEvidence, true);
+  assert.equal(report.required.acceptedSoakEvidence, true);
+  assert.match(report.acceptedSoakEvidence.sourceSha, /^[0-9a-f]{40}$/);
+  assert.match(report.acceptedSoakEvidence.execution, /^(local-manual|github-actions)$/);
+  if (report.acceptedSoakEvidence.execution === 'local-manual') assert.equal(report.acceptedSoakEvidence.workflowRunId, null);
+  else assert.ok(String(report.acceptedSoakEvidence.workflowRunId).length > 0);
+  assert.ok(report.acceptedSoakEvidence.requestedMinutes >= 60);
+  assert.ok(report.acceptedSoakEvidence.elapsedMs >= 3_600_000);
+  assert.equal(report.acceptedSoakEvidence.state, 'passed');
+  assert.match(report.acceptedSoakEvidence.artifactSha256, /^[0-9a-f]{64}$/);
   assert.equal(report.required.reproducibility, true);
   assert.equal(report.required.compatibilityEvidenceTiers, true);
   assert.equal(report.required.manuals, true);
