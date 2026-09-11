@@ -1,6 +1,6 @@
 # Phase 14 — Stable Release Readiness Design
 
-**Status:** proposed design for approved Phase 14 direction  
+**Status:** approved design
 **Repository:** `Quoralinex/q1x-community-orchestrator`  
 **Baseline:** protected `main` at `dd8bd0b53106fe5db60743c66bd3c1709fa95425`  
 **Candidate target:** `1.0.0-rc.1`  
@@ -19,7 +19,8 @@ The phase establishes explicit compatibility, migration, rollback, reliability a
 1. **Stability before scope.** Do not add major new orchestration capabilities while closing the stable contract.
 2. **Backward compatibility is tested evidence.** Compatibility claims require executable upgrade and consumer fixtures.
 3. **No silent migration.** Durable-state changes are explicit, inspectable and recoverable.
-4. **Stable means bounded promises.** Only documented public surfaces receive compatibility guarantees.5. **Release evidence is exact-head evidence.** Artifacts, manifests, attestations and checks must identify the protected-main source SHA.
+4. **Stable means bounded promises.** Only documented public surfaces receive compatibility guarantees.
+5. **Release evidence is exact-head evidence.** Artifacts, manifests, attestations and checks must identify the protected-main source SHA.
 6. **Local-first remains first-class.** Stable readiness must not require paid model calls, private services or cloud databases.
 7. **Failure must be recoverable or explicit.** Uncertain state, migration failure and incompatible rollback fail closed.
 8. **No production/SLA implication.** A stable API contract is not an enterprise availability or security certification claim.
@@ -63,7 +64,9 @@ Internal implementation details, undocumented test helpers and private module pa
 
 ## 6. Deprecation and semantic-version policy
 
-Stable deprecations require a documented replacement, migration guidance and a machine-readable deprecation marker where the surface supports one. Deprecated stable surfaces are not removed in a minor or patch release.Version policy after `1.0.0` follows semantic-version intent: patch releases must be backward-compatible fixes, minor releases may add compatible functionality, and breaking public-surface changes require a new major line.
+Stable deprecations require a documented replacement, migration guidance and a machine-readable deprecation marker where the surface supports one. Deprecated stable surfaces are not removed in a minor or patch release.
+
+Version policy after `1.0.0` follows semantic-version intent: patch releases must be backward-compatible fixes, minor releases may add compatible functionality, and breaking public-surface changes require a new major line.
 
 Pre-stable historical behavior remains documented as historical evidence and is not retroactively promised as stable API.
 
@@ -83,7 +86,9 @@ Downgrade is not promised. Where the previous runtime cannot safely read a newer
 
 ## 8. Upgrade evidence matrix
 
-Stable readiness requires executable upgrade evidence from three supported starting points: a fresh empty home, a retained `v0.1.0-alpha.2` fixture, and the accepted Phase 13 `0.2.0-beta.1` state fixture.Each fixture is upgraded through the exact supported path, reopened, verified for SQLite integrity and audit continuity, exercised through representative reads/writes, backed up again, and restored into a clean target.
+Stable readiness requires executable upgrade evidence from three supported starting points: a fresh empty home, a retained `v0.1.0-alpha.2` fixture, and the accepted Phase 13 `0.2.0-beta.1` state fixture.
+
+Each fixture is upgraded through the exact supported path, reopened, verified for SQLite integrity and audit continuity, exercised through representative reads/writes, backed up again, and restored into a clean target.
 
 A deliberately failing migration fixture must prove atomic rollback or explicit recovery behavior without fabricating success.
 
@@ -188,7 +193,8 @@ Phase 14 implementation is complete only when every criterion below has fresh ex
 - deterministic public-surface inventory exists and incompatible drift fails closed;
 - stable semantic-version and deprecation policies are documented and tested;
 - explicit state migration inspection/dry-run/apply behavior exists;
-- fresh, Alpha 2 and Phase 13 state fixtures upgrade and verify successfully;- migration failure proves atomic rollback or explicit recoverability;
+- fresh, Alpha 2 and Phase 13 state fixtures upgrade and verify successfully;
+- migration failure proves atomic rollback or explicit recoverability;
 - backup/restore remains valid across the supported upgrade path;
 - eight governed packages are aligned at `1.0.0-rc.1` with exact internal versions;
 - external packed-consumer tests pass from only the governed tarballs;

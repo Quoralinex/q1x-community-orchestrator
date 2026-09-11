@@ -34,6 +34,9 @@
 **Files:**
 - Modify: `docs/superpowers/specs/2026-09-11-phase14-stable-release-readiness-design.md`
 - Create: `scripts/phase14/public-surface.mjs`
+- Modify: `packages/runtime/src/cli-catalogue.ts`
+- Modify: `packages/runtime/src/cli.ts`
+- Modify: `tests/runtime-cli.test.mjs`
 - Create: `compatibility/public-surface.rc1.json`
 - Create: `tests/phase14-public-surface.test.mjs`
 - Modify: `package.json`
@@ -42,6 +45,7 @@
 - Produces: `collectPublicSurface(root): Promise<PublicSurfaceInventory>`.
 - Produces: `comparePublicSurface(baseline, current): { ok: boolean, findings: Array<{code:string, detail:string}> }`.
 - Inventory schema: `q1x.phase14-public-surface.v1`.
+- Stable CLI output contract: success emits one JSON value on stdout with exit 0; failure emits `{ schema: 'q1x.cli-error.v1', error: { code, message } }` on stderr with exit 1.
 - Later tasks consume `compatibility/public-surface.rc1.json` as the intended RC compatibility baseline.
 
 - [ ] **Step 1: Correct approved-spec presentation defects**
@@ -64,8 +68,8 @@ Create tests covering deterministic package metadata, `v1` schema digests, CLI c
 const inventory = await collectPublicSurface(root);
 assert.equal(inventory.schema, 'q1x.phase14-public-surface.v1');
 assert.equal(inventory.packages.length, 8);
-assert.ok(inventory.schemas.every(item => /^[0-9a-f]{64}$/.test(item.sha256)));
-assert.ok(inventory.cli.some(item => item.usage === 'q1x help'));
+assert.ok(inventory.contracts.schemas.every(item => /^[0-9a-f]{64}$/.test(item.sha256)));
+assert.ok(inventory.cli.commands.some(item => item.usage === 'q1x help'));
 assert.equal(comparePublicSurface(inventory, inventory).ok, true);
 const broken = structuredClone(inventory);
 broken.cli = broken.cli.filter(item => item.usage !== 'q1x help');
@@ -84,27 +88,36 @@ Expected: FAIL because `scripts/phase14/public-surface.mjs` and the baseline do 
 
 - [ ] **Step 4: Implement deterministic collection and comparison**
 
-`collectPublicSurface()` must build before importing executable catalogues, sort every array, omit timestamps/machine paths, and emit only stable-facing data:
+`collectPublicSurface()` must build before importing executable catalogues, use the TypeScript compiler API to resolve each package's exported declaration symbols/signatures, sort every array, omit timestamps/machine paths, and emit only stable-facing data:
 
 ```js
 return {
   schema: 'q1x.phase14-public-surface.v1',
   contracts: { family: 'v1', schemas },
   packages,
-  cli: getCliCommandCatalogue().map(({ usage, purpose }) => ({ usage, purpose })),
-  connectors: getConnectorCatalogue().map(item => ({
+  typeExports,
+  cli: {
+    outputContract: CLI_OUTPUT_CONTRACT,
+    commands: getCliCommandCatalogue().map(({ usage, purpose }) => ({ usage, purpose })),
+  },
+  connectors: loadBuiltInConnectorCatalogue().map(item => ({
     id: item.id,
     category: item.category,
     protocol: item.protocol,
-    parameterKeys: Object.keys(item.parameters ?? {}).sort(),
-    environmentKeys: Object.keys(item.environment ?? {}).sort(),
+    requirementCommands: [...(item.requirements.commands ?? [])].sort(),
+    environmentKeys: [...(item.requirements.environmentKeys ?? [])].sort(),
+    profile: { kind: item.profile.kind, platform: item.profile.platform ?? null, template: item.profile.template ?? null },
   })),
 };
 ```
 
-`comparePublicSurface()` must fail on missing packages/exports/bins/schema URNs/CLI usages/connector IDs and changed schema digests, but may permit additive entries before the RC baseline is formally accepted.
+`comparePublicSurface()` must fail on missing packages, removed/changed exported type signatures, bins, schema URNs, CLI usages, connector IDs and changed schema digests. Additive type/CLI/connector entries are permitted during pre-RC implementation; Task 11 regenerates the accepted RC baseline after all intended additions are complete.
 
-- [ ] **Step 5: Generate and verify the checked-in baseline**
+- [ ] **Step 5: Stabilise the global CLI error/output contract**
+
+Add `CLI_OUTPUT_CONTRACT` to `cli-catalogue.ts` and include `schema: 'q1x.cli-error.v1'` in `writeError()` without changing existing `error.code` or `error.message`. Add a regression assertion to an existing CLI test that success exits 0 with one JSON value and failure exits 1 with the stable error schema.
+
+- [ ] **Step 6: Generate and verify the checked-in baseline**
 
 Run:
 
@@ -118,12 +131,12 @@ git diff --check
 
 Expected: tests PASS and `--check` reports zero findings.
 
-- [ ] **Step 6: Add the fast gate and commit**
+- [ ] **Step 7: Add the fast gate and commit**
 
 Add `test:surface` to `package.json` without adding Phase 14 completion to `npm run check` yet.
 
 ```bash
-git add docs/superpowers/specs/2026-09-11-phase14-stable-release-readiness-design.md scripts/phase14/public-surface.mjs compatibility/public-surface.rc1.json tests/phase14-public-surface.test.mjs package.json
+git add docs/superpowers/specs/2026-09-11-phase14-stable-release-readiness-design.md scripts/phase14/public-surface.mjs packages/runtime/src/cli-catalogue.ts packages/runtime/src/cli.ts compatibility/public-surface.rc1.json tests/phase14-public-surface.test.mjs tests/runtime-cli.test.mjs package.json
 git commit -m "Phase 14: freeze intended stable public surface"
 ```
 
@@ -138,12 +151,13 @@ git commit -m "Phase 14: freeze intended stable public surface"
 - Modify: `packages/runtime/src/errors.ts`
 - Modify: `packages/runtime/src/index.ts`
 - Create: `tests/runtime-state-migration.test.mjs`
-- Modify: `tests/runtime-state-schema.test.mjs`
+- Modify: `tests/runtime-state-version.test.mjs`
 
 **Interfaces:**
 - Produces: `inspectRuntimeState(home: string): StateMigrationInspection`.
 - Produces: `planStateMigration(home: string): StateMigrationPlan`.
 - Produces: `applyStateMigrations(home: string, options?: { dryRun?: boolean; backupPath?: string }): Promise<StateMigrationResult>`.
+- Internal test seam (not re-exported from `packages/runtime/src/index.ts`): `applyStateMigrationsWithRegistry(home, registry, options)` so failure atomicity is testable without environment switches or expanding the public package surface.
 - `SqliteStore.open()` may initialise a genuinely absent database at schema 1, but an existing legacy/older database requiring migration must throw `RuntimeError('MIGRATION_REQUIRED', ...)`.
 
 - [ ] **Step 1: Write failing migration-state tests**
@@ -164,7 +178,7 @@ assert.throws(() => SqliteStore.open(alpha2Home), error => error.code === 'MIGRA
 Run:
 
 ```bash
-npm run build && node --test tests/runtime-state-migration.test.mjs tests/runtime-state-schema.test.mjs
+npm run build && node --test tests/runtime-state-migration.test.mjs tests/runtime-state-version.test.mjs
 ```
 
 Expected: FAIL because existing stores silently adopt missing/older schema markers.
@@ -203,20 +217,20 @@ Before normal schema setup, detect whether `state.sqlite` existed. For a fresh d
 The test supplies a test registry step whose `apply()` writes then throws. After `applyStateMigrations`, assert the schema marker and test write both rolled back.
 
 ```js
-await assert.rejects(() => applyStateMigrations(home, { registry: failingRegistry }), /MIGRATION_FAILED/);
+await assert.rejects(() => applyStateMigrationsWithRegistry(home, failingRegistry, {}), /MIGRATION_FAILED/);
 assert.equal(readMarker(home), 0);
 assert.equal(readInjectedRow(home), undefined);
 ```
 
-Expose the injectable registry only from the migration module function parameter; do not add an environment-variable failure switch.
+Keep `applyStateMigrationsWithRegistry` internal to the module path and omit it from `packages/runtime/src/index.ts`; do not add an environment-variable failure switch.
 
 - [ ] **Step 6: Run focused and regression tests, then commit**
 
 ```bash
 npm run build
-node --test tests/runtime-state-migration.test.mjs tests/runtime-state-schema.test.mjs tests/runtime-store.test.mjs
+node --test tests/runtime-state-migration.test.mjs tests/runtime-state-version.test.mjs tests/runtime-store.test.mjs
 git diff --check
-git add packages/runtime/src/state-migrations.ts packages/runtime/src/state-schema.ts packages/runtime/src/store.ts packages/runtime/src/errors.ts packages/runtime/src/index.ts tests/runtime-state-migration.test.mjs tests/runtime-state-schema.test.mjs
+git add packages/runtime/src/state-migrations.ts packages/runtime/src/state-schema.ts packages/runtime/src/store.ts packages/runtime/src/errors.ts packages/runtime/src/index.ts tests/runtime-state-migration.test.mjs tests/runtime-state-version.test.mjs
 git commit -m "Phase 14: add explicit state migration registry"
 ```
 
@@ -281,7 +295,8 @@ if (args[0] === 'migration') {
   args.shift();
   writeResult(await executeMigration(home, args));
 } else if (args[0] === 'backup') {
-  // existing path
+  args.shift();
+  writeResult(await executeBackup(home, args));
 }
 ```
 
@@ -397,6 +412,7 @@ git commit -m "Phase 14: add executable upgrade matrix"
 - Modify: `scripts/release/release-metadata.mjs`
 - Modify: `scripts/release/prepare-prerelease.mjs`
 - Modify: `scripts/release/verify-packed-consumer.mjs`
+- Modify: `scripts/release/verify-reproducible-packages.mjs`
 - Create: `scripts/phase14/package-surface.mjs`
 - Create: `compatibility/package-surface.rc1.json`
 - Create: `tests/phase14-package-surface.test.mjs`
@@ -406,6 +422,7 @@ git commit -m "Phase 14: add executable upgrade matrix"
 - Adds constants `RC_VERSION = '1.0.0-rc.1'` and `STABLE_VERSION = '1.0.0'`.
 - Manifest statuses become `public-alpha`, `beta-candidate`, `stable-rc-candidate`, `stable`.
 - Produces package-surface schema `q1x.phase14-package-surface.v1` from packed artifacts.
+- Reproducibility CLI accepts explicit `--version <governed-version>` and `--source-sha <40-hex>` instead of hard-coding Beta.
 
 - [ ] **Step 1: Write RED tests for RC/stable release metadata**
 
@@ -432,7 +449,7 @@ Add RC/stable versions to `SUPPORTED_RELEASE_VERSIONS`, map manifest status by e
 
 - [ ] **Step 4: Generate stable package-surface evidence from staged RC tarballs**
 
-The package surface records package name, export map, bins, engine floor, licence, exact internal dependency graph and sorted packed-file inventory. It excludes tarball byte hashes so reproducible content is compared separately.
+The package surface records package name, export map, bins, engine floor, licence, governed internal dependency names with `versionPolicy: 'exact-governed-release'`, and sorted packed-file inventory. It does not embed the literal RC version in the compatibility snapshot, so the same stable surface can validate staged `1.0.0`; literal version equality remains enforced by release identity. It excludes tarball byte hashes so reproducible content is compared separately.
 
 ```bash
 node scripts/release/prepare-prerelease.mjs --version 1.0.0-rc.1 --output /tmp/q1x-rc-surface --source-sha "$(git rev-parse HEAD)"
@@ -443,6 +460,7 @@ node scripts/phase14/package-surface.mjs --artifacts /tmp/q1x-rc-surface --write
 
 ```bash
 node scripts/release/verify-packed-consumer.mjs --artifacts /tmp/q1x-rc-surface
+node scripts/release/verify-reproducible-packages.mjs --version 1.0.0-rc.1 --source-sha "$(git rev-parse HEAD)"
 node scripts/phase14/package-surface.mjs --artifacts /tmp/q1x-rc-surface --check compatibility/package-surface.rc1.json
 node --test tests/phase14-package-surface.test.mjs tests/release-beta-governance.test.mjs
 git diff --check
@@ -606,7 +624,9 @@ Tests require the five new documents, explicit SemVer/deprecation rules, migrati
 
 ```js
 assert.match(activeDocs, /1\.0\.0-rc\.1/);
-assert.doesNotMatch(activeDocs, /1\.0\.0.*(?:current|commissioned|released)/i);
+assert.match(activeDocs, /1\.0\.0.*not commissioned/i);
+assert.doesNotMatch(activeDocs, /current commissioned stable release is .*1\.0\.0/i);
+assert.doesNotMatch(activeDocs, /1\.0\.0 has been released/i);
 assert.match(versioning, /breaking.*major/i);
 assert.match(deprecation, /replacement/i);
 assert.match(upgrade, /migration inspect/);
@@ -646,6 +666,10 @@ git commit -m "Phase 14: define stable compatibility and support policy"
 - Modify: all eight `packages/*/package.json`
 - Modify: `package-lock.json`
 - Modify: `scripts/release/release-metadata.mjs`
+- Modify: `scripts/phase13/verify-completion.mjs`
+- Modify: `tests/phase13-completion.test.mjs`
+- Modify: `compatibility/matrix.json`
+- Regenerate: `docs/compatibility-matrix.md`
 - Modify: `tests/release-commissioning.test.mjs`
 - Modify: `tests/release-phase12-governance.test.mjs`
 - Modify: `tests/release-beta-governance.test.mjs`
@@ -653,12 +677,13 @@ git commit -m "Phase 14: define stable compatibility and support policy"
 
 **Interfaces:**
 - Current source identity becomes exactly `1.0.0-rc.1`.
+- Phase 12 and Phase 13 completion verifiers continue to validate their historical deliverables while accepting the aligned current RC package/matrix identity.
 - Historical Alpha 2 and Beta identities remain testable using synthetic historical identities rather than requiring current manifests to regress.
 - `preparePrerelease(..., version: '1.0.0')` remains staging-only and does not change source files.
 
 - [ ] **Step 1: Write RC identity RED tests**
 
-Require all eight package manifests and every internal public Q1X dependency to be exactly `1.0.0-rc.1`, while historical Alpha/Beta regression helpers continue to pass.
+Require all eight package manifests and every internal public Q1X dependency to be exactly `1.0.0-rc.1`, while historical Alpha/Beta regression helpers continue to pass. Add Phase 13 completion assertions that preserve `betaVersion: '0.2.0-beta.1'` as historical evidence but expose `currentPackageVersion: '1.0.0-rc.1'` and `required.currentPackageAlignment: true` instead of requiring current manifests to remain Beta.
 
 - [ ] **Step 2: Confirm RED**
 
@@ -668,7 +693,7 @@ node --test tests/release-stable-governance.test.mjs tests/release-commissioning
 
 Expected: FAIL because source manifests remain beta.
 
-- [ ] **Step 3: Align package manifests and lockfile**
+- [ ] **Step 3: Align package manifests, compatibility identity and lockfile**
 
 Set all eight versions to `1.0.0-rc.1`, rewrite only internal Q1X dependency versions to exact `1.0.0-rc.1`, then run:
 
@@ -676,6 +701,10 @@ Set all eight versions to `1.0.0-rc.1`, rewrite only internal Q1X dependency ver
 npm install --package-lock-only --ignore-scripts --no-audit --no-fund
 npm ci --no-audit --no-fund
 ```
+
+Set `compatibility/matrix.json.projectVersion` to `1.0.0-rc.1` and regenerate `docs/compatibility-matrix.md` so the Phase 12 structural verifier follows the current aligned package identity. Keep existing Beta-era evidence SHAs truthfully historical until exact RC CI evidence is available.
+
+Update Phase 13 completion verification to validate package alignment against the current governed source version while retaining the historical Phase 13 Beta identity/evidence fields.
 
 - [ ] **Step 4: Verify RC artifacts and full bounded repository gate**
 
@@ -688,14 +717,14 @@ npm run test:surface
 node --test tests/phase14-upgrade-matrix.test.mjs tests/phase14-reliability.test.mjs tests/phase14-dependency-inventory.test.mjs tests/release-stable-governance.test.mjs
 node scripts/release/prepare-prerelease.mjs --version 1.0.0-rc.1 --output /tmp/q1x-rc --source-sha "$(git rev-parse HEAD)"
 node scripts/release/verify-packed-consumer.mjs --artifacts /tmp/q1x-rc
-node scripts/release/verify-reproducible-packages.mjs "$(git rev-parse HEAD)"
+node scripts/release/verify-reproducible-packages.mjs --version 1.0.0-rc.1 --source-sha "$(git rev-parse HEAD)"
 git diff --check
 ```
 
 - [ ] **Step 5: Commit and push the runtime-frozen RC candidate**
 
 ```bash
-git add packages package-lock.json scripts/release tests/release-*.test.mjs
+git add packages package-lock.json scripts/release scripts/phase13/verify-completion.mjs tests/phase13-completion.test.mjs compatibility/matrix.json docs/compatibility-matrix.md tests/release-*.test.mjs
 git commit -m "Phase 14: align stable RC candidate identity"
 git push -u origin feat/phase14-stable-release-readiness
 ```
@@ -732,7 +761,7 @@ Do not claim acceptance until both evidence files are validated and retained in 
 
 Require Ubuntu 24.04, Node 24, full-SHA action pins, read-only default permissions, exact version guards, protected-main release guard, immutable tag/release refusal, separate npm OIDC job and no private service secrets.
 
-Also require `actions/attest-build-provenance` to be pinned to commit `977bb373ede98d70efdf65b84cb5f73e068dcc2a` if attestation is used.
+Require `actions/attest-build-provenance` to be pinned to commit `977bb373ede98d70efdf65b84cb5f73e068dcc2a` in the stable release job.
 
 - [ ] **Step 2: Confirm RED**
 
@@ -742,13 +771,13 @@ node --test tests/phase14-workflows.test.mjs
 
 - [ ] **Step 3: Implement `stable-readiness.yml`**
 
-The normal job runs `npm ci`, `npm run check`, surface check, upgrade matrix, bounded restart smoke, compatibility/resilience/stress, RC artifact preparation, external consumer verification, reproducibility, dependency inventory and Phase 14 verifier when available. Upload exact-head JSON evidence.
+The normal job runs `npm ci`, `npm run check`, surface check, upgrade matrix, bounded restart smoke, compatibility/resilience/stress, RC artifact preparation, external consumer verification, reproducibility and dependency inventory. It does not call `verify:phase14` until Task 11 adds the retained long-evidence gate. Upload exact-head JSON evidence.
 
 Add manual-only `soak` and `restart-campaign` jobs with `timeout-minutes: 390` and `cycles: 1000`; no provider secrets are supplied.
 
 - [ ] **Step 4: Implement `public-stable.yml` validation/release/npm separation**
 
-Validation stages `1.0.0` artifacts from the RC source and verifies consumer/reproducibility/SBOM/checksums/surface/dependency evidence. The release job runs only when:
+Validation stages `1.0.0` artifacts from the RC source and verifies consumer/reproducibility/SBOM/checksums/surface/dependency evidence. In commissioning/manual validation it also runs `npm audit --omit=dev --audit-level=critical --json > stable-vulnerability-audit.json`; critical findings or audit execution failure block stable commissioning and the JSON is uploaded as evidence. The release job runs only when:
 
 ```yaml
 if: >-
@@ -787,6 +816,7 @@ git push
 - Create: `tests/phase14-completion.test.mjs`
 - Modify: `package.json`
 - Modify: `.github/workflows/repository-baseline.yml`
+- Modify: `.github/workflows/stable-readiness.yml`
 - Modify: `compatibility/matrix.json`
 - Regenerate: `docs/compatibility-matrix.md`
 
@@ -814,22 +844,32 @@ Expected: `equivalent: true`. If false, restart the six-hour soak on the new run
 
 - [ ] **Step 3: Retain raw evidence and hash-based acceptance records**
 
-Copy the raw JSON without machine-specific paths, compute SHA-256, and write acceptance records:
+Copy the raw JSON without machine-specific paths, then create the acceptance records with executable Node code so no template values remain:
 
-```json
-{
-  "schema": "q1x.phase14-soak-acceptance.v1",
-  "execution": "local-manual",
-  "workflowRunId": null,
-  "sourceSha": "<RC_RUNTIME_SHA>",
-  "artifactPath": "compatibility/evidence/phase14-soak-evidence.json",
-  "artifactSha256": "<64 lowercase hex>",
-  "minimumMinutes": 360,
-  "state": "passed"
+```bash
+cp "$HOME/q1x-phase14-soak-$RC_RUNTIME_SHA.json" compatibility/evidence/phase14-soak-evidence.json
+cp "$HOME/q1x-phase14-restart-$RC_RUNTIME_SHA.json" compatibility/evidence/phase14-restart-evidence.json
+export RC_RUNTIME_SHA
+node --input-type=module <<'NODE'
+import { createHash } from 'node:crypto';
+import { readFile, writeFile } from 'node:fs/promises';
+for (const kind of ['soak', 'restart']) {
+  const artifactPath = `compatibility/evidence/phase14-${kind}-evidence.json`;
+  const bytes = await readFile(artifactPath);
+  const record = {
+    schema: `q1x.phase14-${kind}-acceptance.v1`,
+    execution: 'local-manual',
+    workflowRunId: null,
+    sourceSha: process.env.RC_RUNTIME_SHA,
+    artifactPath,
+    artifactSha256: createHash('sha256').update(bytes).digest('hex'),
+    ...(kind === 'soak' ? { minimumMinutes: 360 } : { minimumCycles: 1000 }),
+    state: 'passed',
+  };
+  await writeFile(`compatibility/evidence/phase14-${kind}-acceptance.json`, `${JSON.stringify(record, null, 2)}\n`);
 }
+NODE
 ```
-
-The restart acceptance record mirrors this shape with `minimumCycles: 1000`.
 
 - [ ] **Step 4: Generate retained upgrade evidence on the current exact head**
 
@@ -861,11 +901,11 @@ Then add:
 "verify:phase14": "node scripts/phase14/verify-completion.mjs"
 ```
 
-and append `&& npm run verify:phase14` to root `check`. Add the same verifier to Repository Baseline.
+and append `&& npm run verify:phase14` to root `check`. Add the same verifier to Repository Baseline and to the normal `stable-readiness.yml` job now that retained long evidence exists.
 
 - [ ] **Step 7: Update compatibility identity with evidence honesty**
 
-Set `projectVersion` to `1.0.0-rc.1`. Version-specific tested rows may cite exact RC hosted-runner evidence only after the corresponding CI run exists. Historical evidence remains labelled historical rather than relabelled.
+Regenerate `compatibility/public-surface.rc1.json` on the completed RC surface, set `projectVersion` to `1.0.0-rc.1`, and regenerate `docs/compatibility-matrix.md`. Version-specific tested rows may cite exact RC hosted-runner evidence only after the corresponding CI run exists. Historical evidence remains labelled historical rather than relabelled.
 
 - [ ] **Step 8: Run the complete candidate gate and commit**
 
@@ -877,7 +917,7 @@ npm run test:resilience
 npm run test:stress
 npm run test:surface
 node --test tests/phase14-*.test.mjs tests/release-stable-governance.test.mjs
-node scripts/release/verify-reproducible-packages.mjs "$(git rev-parse HEAD)"
+node scripts/release/verify-reproducible-packages.mjs --version 1.0.0-rc.1 --source-sha "$(git rev-parse HEAD)"
 git diff --check
 git add compatibility scripts/phase14 tests/phase14-* package.json .github/workflows/repository-baseline.yml docs/compatibility-matrix.md
 git commit -m "Phase 14: add stable readiness completion evidence"
@@ -922,7 +962,7 @@ npm run check
 npm run test:compatibility
 npm run verify:standalone
 npm run verify:phase14
-node scripts/release/verify-reproducible-packages.mjs "$(git rev-parse HEAD)"
+node scripts/release/verify-reproducible-packages.mjs --version 1.0.0-rc.1 --source-sha "$(git rev-parse HEAD)"
 ```
 
 Then verify all push-triggered GitHub workflows, CodeQL and Pages are GREEN for the exact merge SHA; live docs must say RC/stable-ready without claiming stable `1.0.0` is released.
