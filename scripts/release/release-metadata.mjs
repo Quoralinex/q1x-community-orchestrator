@@ -4,6 +4,8 @@ import { join } from 'node:path';
 
 export const RELEASE_VERSION = '0.1.0-alpha.2';
 export const RELEASE_TAG = `v${RELEASE_VERSION}`;
+export const BETA_VERSION = '0.2.0-beta.1';
+export const SUPPORTED_RELEASE_VERSIONS = [RELEASE_VERSION, BETA_VERSION];
 export const PUBLIC_PACKAGES = [
   ['@quoralinex/q1x-community-contracts', 'packages/contracts'],
   ['@quoralinex/q1x-community-sdk', 'packages/sdk-typescript'],
@@ -40,10 +42,11 @@ export async function readReleaseIdentity(root) {
   };
 }
 
-export function assertReleaseIdentity(identity) {
+export function assertReleaseIdentity(identity, { version = RELEASE_VERSION } = {}) {
+  if (!SUPPORTED_RELEASE_VERSIONS.includes(version)) throw new Error(`Unsupported governed release version: ${version}`);
   if (!identity.rootPrivate) throw new Error('Root workspace must remain private and non-publishable');
-  if (identity.version !== RELEASE_VERSION) throw new Error(`Release version must be exactly ${RELEASE_VERSION}`);
-  if (identity.tag !== RELEASE_TAG) throw new Error(`Release tag must be exactly ${RELEASE_TAG}`);
+  if (identity.version !== version) throw new Error(`Release version must be exactly ${version}`);
+  if (identity.tag !== `v${version}`) throw new Error(`Release tag must be exactly v${version}`);
   if (!Array.isArray(identity.packages) || identity.packages.length !== PUBLIC_PACKAGES.length) {
     throw new Error('Release package set must contain exactly the eight public Q1X packages');
   }
@@ -54,8 +57,8 @@ export function assertReleaseIdentity(identity) {
     if (packageInfo?.name !== expectedName || packageInfo?.directory !== expectedDirectory) {
       throw new Error(`Release package set mismatch at position ${index + 1}`);
     }
-    if (packageInfo.version !== RELEASE_VERSION) {
-      throw new Error(`Package ${packageInfo.name} must use release version ${RELEASE_VERSION}`);
+    if (packageInfo.version !== version) {
+      throw new Error(`Package ${packageInfo.name} must use release version ${version}`);
     }
   }
 
@@ -66,13 +69,12 @@ export function assertReleaseIdentity(identity) {
         throw new Error(`Private Quoralinex dependency is forbidden in public release package ${packageInfo.name}: ${dependency}`);
       }
     }
-    for (const [dependency, version] of Object.entries(packageInfo.dependencies ?? {})) {
-      if (publicNames.has(dependency) && version !== RELEASE_VERSION) {
-        throw new Error(`Package ${packageInfo.name} must use exact internal dependency ${dependency}@${RELEASE_VERSION}`);
+    for (const [dependency, dependencyVersion] of Object.entries(packageInfo.dependencies ?? {})) {
+      if (publicNames.has(dependency) && dependencyVersion !== version) {
+        throw new Error(`Package ${packageInfo.name} must use exact internal dependency ${dependency}@${version}`);
       }
     }
   }
-
   return identity;
 }
 
@@ -81,35 +83,40 @@ export async function sha256File(path) {
   return createHash('sha256').update(content).digest('hex');
 }
 
-function validateArtifact(artifact) {
+function validateArtifact(artifact, expectedVersion) {
   if (!artifact || typeof artifact.filename !== 'string' || !artifact.filename) {
     throw new Error('Release artifact filename is required');
   }
   if (!/^[0-9a-f]{64}$/.test(artifact.sha256 ?? '')) {
     throw new Error(`Release artifact ${artifact.filename} must carry a SHA-256 digest`);
   }
-  if (artifact.version !== RELEASE_VERSION) {
-    throw new Error(`Release artifact ${artifact.filename} must use version ${RELEASE_VERSION}`);
+  const version = expectedVersion ?? artifact.version;
+  if (!SUPPORTED_RELEASE_VERSIONS.includes(version) || artifact.version !== version) {
+    throw new Error(`Release artifact ${artifact.filename} must use governed version ${version}`);
   }
   return artifact;
 }
 
-export function formatChecksums(artifacts) {
+export function formatChecksums(artifacts, { version } = {}) {
+  const expectedVersion = version ?? artifacts[0]?.version;
   return [...artifacts]
-    .map(validateArtifact)
+    .map(artifact => validateArtifact(artifact, expectedVersion))
     .sort((left, right) => left.filename.localeCompare(right.filename))
     .map(artifact => `${artifact.sha256}  ${artifact.filename}\n`)
     .join('');
 }
 
-export function buildReleaseManifest({ identity, sourceSha, artifacts, generatedAt }) {
-  assertReleaseIdentity(identity);
+export function buildReleaseManifest({
+  identity, sourceSha, artifacts, generatedAt, version = identity?.version,
+  nodeVersion, npmVersion, lockfileSha256, compatibilityEvidenceBaseline, resilienceEvidenceBaseline,
+}) {
+  assertReleaseIdentity(identity, { version });
   if (!/^[0-9a-f]{40}$/.test(sourceSha ?? '')) {
     throw new Error('Release source SHA must be an exact 40-character lowercase hexadecimal commit SHA');
   }
   if (Number.isNaN(Date.parse(generatedAt))) throw new Error('Release generation timestamp must be ISO-8601 compatible');
   const normalizedArtifacts = [...artifacts]
-    .map(validateArtifact)
+    .map(artifact => validateArtifact(artifact, version))
     .sort((left, right) => left.filename.localeCompare(right.filename));
   if (normalizedArtifacts.length !== PUBLIC_PACKAGES.length) {
     throw new Error(`Release manifest must contain exactly ${PUBLIC_PACKAGES.length} governed package artifacts`);
@@ -119,21 +126,16 @@ export function buildReleaseManifest({ identity, sourceSha, artifacts, generated
   if (artifactPackageNames.size !== expectedPackageNames.size || [...expectedPackageNames].some(name => !artifactPackageNames.has(name))) {
     throw new Error('Release manifest artifact package set does not match governed public packages');
   }
+  const status = version === BETA_VERSION ? 'beta-candidate' : 'public-alpha';
   return {
-    manifestVersion: '1.0.0',
-    version: identity.version,
-    tag: identity.tag,
-    sourceSha,
-    node: '>=24',
-    status: 'public-alpha',
-    license: 'PolyForm Noncommercial License 1.0.0',
-    targets: ['macOS', 'Windows', 'Linux', 'Docker'],
-    packages: identity.packages.map(packageInfo => ({
-      name: packageInfo.name,
-      version: packageInfo.version,
-      directory: packageInfo.directory
-    })),
-    artifacts: normalizedArtifacts,
-    generatedAt
+    manifestVersion: '1.0.0', version, tag: `v${version}`, sourceSha, node: '>=24', status,
+    license: 'PolyForm Noncommercial License 1.0.0', targets: ['macOS', 'Windows', 'Linux', 'Docker'],
+    packages: identity.packages.map(packageInfo => ({ name: packageInfo.name, version: packageInfo.version, directory: packageInfo.directory })),
+    artifacts: normalizedArtifacts, generatedAt,
+    ...(nodeVersion ? { nodeVersion } : {}),
+    ...(npmVersion ? { npmVersion } : {}),
+    ...(lockfileSha256 ? { lockfileSha256 } : {}),
+    ...(compatibilityEvidenceBaseline ? { compatibilityEvidenceBaseline } : {}),
+    ...(resilienceEvidenceBaseline ? { resilienceEvidenceBaseline } : {}),
   };
 }
