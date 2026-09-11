@@ -1,0 +1,17 @@
+{
+  "schema": "q1x.phase13-host-evidence.v1",
+  "environmentTier": "physical-host",
+  "os": "macos",
+  "osVersion": "26.6.2",
+  "architecture": "x86_64",
+  "sourceSha": "b9a78d8c40b1b54dc4e0f7adcfeb2485e35881ab",
+  "bridgeVersion": "0.2.0-beta.1",
+  "scenarioIds": [
+    "desktop-bridge-doctor",
+    "runtime-doctor"
+  ],
+  "state": "blocked",
+  "remediationNotes": [
+    "macOS Accessibility permission is not granted to the process launching the bridge."
+  ]
+}
