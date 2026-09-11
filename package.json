@@ -20,7 +20,10 @@
     "test:dist": "node --test tests/dist-contracts.test.mjs",
     "test:runtime": "node --test --test-concurrency=4 tests/runtime-*.test.mjs",
     "verify:standalone": "node scripts/phase12/verify-standalone.mjs",
-    "verify:phase12": "node scripts/phase12/verify-completion.mjs"
+    "verify:phase12": "node scripts/phase12/verify-completion.mjs",
+    "test:resilience": "node --test tests/phase13-resilience.test.mjs",
+    "test:stress": "node --test tests/phase13-stress.test.mjs",
+    "soak:phase13": "node scripts/phase13/run-soak.mjs"
   },
   "devDependencies": {
     "@modelcontextprotocol/server": "2.0.0",
