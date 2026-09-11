@@ -1,5 +1,6 @@
 export const MATRIX_VERSION = '1.0.0';
 export const COMPATIBILITY_STATUSES = Object.freeze(['tested', 'experimental', 'unsupported']);
+export const ENVIRONMENT_TIERS = Object.freeze(['fixture', 'hosted-runner', 'physical-host']);
 export const COMPATIBILITY_CATEGORIES = Object.freeze([
   'os',
   'deployment',
@@ -45,6 +46,9 @@ function validateEvidence(evidence, entryId, index) {
     throw new TypeError(`Evidence kind for ${entryId} must be ci or manual`);
   }
   assertNonEmptyString(evidence.source, `Evidence source for ${entryId}`);
+  if (!ENVIRONMENT_TIERS.includes(evidence.environmentTier)) {
+    throw new TypeError(`Evidence environment tier for ${entryId} must be fixture, hosted-runner or physical-host`);
+  }
   if (!SHA_PATTERN.test(evidence.commitSha ?? '')) {
     throw new TypeError(`Evidence commit SHA for ${entryId} must be exactly 40 lowercase hexadecimal characters`);
   }
@@ -138,7 +142,7 @@ function escapeCell(value) {
 function evidenceText(entry) {
   if (!entry.evidence?.length) return '—';
   return entry.evidence
-    .map(item => `${item.kind}: \`${escapeCell(item.source)}\` @ \`${item.commitSha}\``)
+    .map(item => `${item.environmentTier} / ${item.kind}: \`${escapeCell(item.source)}\` @ \`${item.commitSha}\``)
     .join('<br>');
 }
 
@@ -181,4 +185,46 @@ export function renderCompatibilityMarkdown(matrix) {
   }
 
   return `${lines.join('\n')}\n`;
+}
+
+const HOST_EVIDENCE_KEYS = new Set([
+  'schema', 'environmentTier', 'os', 'osVersion', 'architecture', 'sourceSha', 'releaseSha',
+  'bridgeVersion', 'browserVersion', 'scenarioIds', 'state', 'remediationNotes',
+]);
+const PRIVATE_HOST_VALUE = /(?:\/Users\/|\/home\/|[A-Za-z]:\\Users\\|token\s*[=:]|api[-_]?key|password|secret|credential)/i;
+
+function collectHostStrings(value, output = []) {
+  if (typeof value === 'string') output.push(value);
+  else if (Array.isArray(value)) for (const item of value) collectHostStrings(item, output);
+  else if (value && typeof value === 'object') for (const item of Object.values(value)) collectHostStrings(item, output);
+  return output;
+}
+
+export function validateHostEvidence(value) {
+  const findings = [];
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    return { valid: false, findings: ['host evidence must be an object'] };
+  }
+  for (const key of Object.keys(value)) if (!HOST_EVIDENCE_KEYS.has(key)) findings.push(`unsupported field: ${key}`);
+  if (value.schema !== 'q1x.phase13-host-evidence.v1') findings.push('unsupported host evidence schema');
+  if (value.environmentTier !== 'physical-host') findings.push('environmentTier must be physical-host');
+  if (!['macos', 'windows', 'linux'].includes(value.os)) findings.push('unsupported operating system');
+  if (typeof value.osVersion !== 'string' || !value.osVersion.trim()) findings.push('osVersion is required');
+  if (typeof value.architecture !== 'string' || !value.architecture.trim()) findings.push('architecture is required');
+  if (!SHA_PATTERN.test(value.sourceSha ?? '')) findings.push('sourceSha must be an exact lowercase 40-character SHA');
+  if (value.releaseSha !== undefined && !SHA_PATTERN.test(value.releaseSha)) findings.push('releaseSha must be an exact lowercase 40-character SHA');
+  if (!Array.isArray(value.scenarioIds) || value.scenarioIds.length === 0 || value.scenarioIds.some(id => typeof id !== 'string' || !id.trim())) {
+    findings.push('scenarioIds must be a non-empty string array');
+  }
+  if (!['pass', 'fail', 'blocked'].includes(value.state)) findings.push('state must be pass, fail or blocked');
+  if (value.remediationNotes !== undefined && (!Array.isArray(value.remediationNotes) || value.remediationNotes.some(note => typeof note !== 'string'))) {
+    findings.push('remediationNotes must be a string array');
+  }
+  for (const string of collectHostStrings(value)) {
+    if (PRIVATE_HOST_VALUE.test(string)) {
+      findings.push('host evidence contains a private path or secret-bearing value');
+      break;
+    }
+  }
+  return { valid: findings.length === 0, findings };
 }

@@ -31,7 +31,7 @@ function testedEntry(overrides = {}) {
     target: 'Ubuntu 24.04 source install',
     status: 'tested',
     implementation: 'Node.js 24',
-    evidence: [{ kind: 'ci', source: '.github/workflows/cross-platform-packaging.yml', commitSha: SHA }],
+    evidence: [{ kind: 'ci', source: '.github/workflows/cross-platform-packaging.yml', commitSha: SHA, environmentTier: 'hosted-runner' }],
     ...overrides,
   };
 }
@@ -61,14 +61,14 @@ test('requires evidence for tested entries', () => {
 
 test('requires exact lowercase 40-character evidence commit shas', () => {
   assert.throws(
-    () => validateCompatibilityMatrix(matrix([testedEntry({ evidence: [{ kind: 'ci', source: 'tests/example.test.mjs', commitSha: 'ABC123' }] })])),
+    () => validateCompatibilityMatrix(matrix([testedEntry({ evidence: [{ kind: 'ci', source: 'tests/example.test.mjs', commitSha: 'ABC123', environmentTier: 'fixture' }] })])),
     /commit.*sha/i,
   );
 });
 
 test('requires repository-verifiable source paths for CI evidence', () => {
   assert.throws(
-    () => validateCompatibilityMatrix(matrix([testedEntry({ evidence: [{ kind: 'ci', source: 'CI says green', commitSha: SHA }] })])),
+    () => validateCompatibilityMatrix(matrix([testedEntry({ evidence: [{ kind: 'ci', source: 'CI says green', commitSha: SHA, environmentTier: 'fixture' }] })])),
     /ci evidence source/i,
   );
 });
@@ -145,4 +145,18 @@ test('generator check mode succeeds only when checked-in markdown matches', () =
     encoding: 'utf8',
   });
   assert.equal(result.status, 0, result.stderr || result.stdout);
+});
+
+test('every tested compatibility evidence record declares an honest environment tier', async () => {
+  const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
+  for (const entry of source.entries.filter(item => item.status === 'tested')) {
+    for (const evidence of entry.evidence) {
+      assert.match(evidence.environmentTier ?? '', /^(fixture|hosted-runner|physical-host)$/, `${entry.id}: ${evidence.source}`);
+    }
+  }
+});
+
+test('rendered compatibility evidence displays the environment tier', () => {
+  const value = matrix([testedEntry({ evidence: [{ kind: 'ci', source: 'tests/example.test.mjs', commitSha: SHA, environmentTier: 'fixture' }] })]);
+  assert.match(renderCompatibilityMarkdown(value), /fixture/);
 });
