@@ -13,7 +13,7 @@ import { applyConfiguredConnector } from './connectors/apply.js';
 import { runDoctor } from './doctor.js';
 import { createRuntimeBackup, restoreRuntimeBackup, verifyRuntimeBackup } from './backup.js';
 import { resolveRuntimeHome } from './home.js';
-import { getCliCommandCatalogue } from './cli-catalogue.js';
+import { CLI_OUTPUT_CONTRACT, getCliCommandCatalogue } from './cli-catalogue.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -300,7 +300,7 @@ function writeResult(value: unknown): void {
 function writeError(error: unknown): void {
   const code = error instanceof RuntimeError ? error.code : 'CLI_ERROR';
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${JSON.stringify({ error: { code, message } })}\n`);
+  process.stderr.write(`${JSON.stringify({ schema: CLI_OUTPUT_CONTRACT.errorSchema, error: { code, message } })}\n`);
 }
 
 const args = process.argv.slice(2);

@@ -24,7 +24,8 @@
     "test:resilience": "node --test tests/phase13-resilience.test.mjs",
     "test:stress": "node --test tests/phase13-stress.test.mjs",
     "soak:phase13": "node scripts/phase13/run-soak.mjs",
-    "verify:phase13": "node scripts/phase13/verify-completion.mjs"
+    "verify:phase13": "node scripts/phase13/verify-completion.mjs",
+    "test:surface": "node --test tests/phase14-public-surface.test.mjs && node scripts/phase14/public-surface.mjs --check compatibility/public-surface.rc1.json"
   },
   "devDependencies": {
     "@modelcontextprotocol/server": "2.0.0",

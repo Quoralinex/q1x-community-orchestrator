@@ -3,6 +3,17 @@ export interface CliCommandSpec {
   purpose: string;
 }
 
+export const CLI_OUTPUT_CONTRACT = Object.freeze({
+  schema: 'q1x.cli-output-contract.v1',
+  encoding: 'json',
+  valuesPerInvocation: 1,
+  successStream: 'stdout',
+  failureStream: 'stderr',
+  successExitCode: 0,
+  failureExitCode: 1,
+  errorSchema: 'q1x.cli-error.v1',
+});
+
 export const CLI_COMMAND_CATALOGUE: readonly CliCommandSpec[] = [
   { usage: 'q1x help', purpose: 'Return the machine-readable command catalogue.' },
   { usage: 'q1x --home <path> init', purpose: 'Initialise/open runtime state and return status.' },
