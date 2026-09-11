@@ -40,6 +40,8 @@ jobs:
   validate:
     name: validate-public-alpha
     runs-on: ubuntu-24.04
+    outputs:
+      alpha_source: ${{ steps.release-mode.outputs.alpha_source }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
@@ -50,11 +52,26 @@ jobs:
         run: npm ci --no-audit --no-fund
       - name: Build and verify repository
         run: npm run check
+      - name: Detect historical Alpha 2 source
+        id: release-mode
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./packages/runtime/package.json').version")"
+          if [[ "$version" == "0.1.0-alpha.2" ]]; then
+            echo "alpha_source=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "alpha_source=false" >> "$GITHUB_OUTPUT"
+            echo "Current source is ${version}; historical Alpha 2 repacking is disabled."
+          fi
       - name: Prepare governed public-alpha artifacts
+        if: steps.release-mode.outputs.alpha_source == 'true'
         run: node scripts/release/prepare-alpha.mjs --output .release --source-sha "$GITHUB_SHA"
       - name: Verify packed packages as an external consumer
+        if: steps.release-mode.outputs.alpha_source == 'true'
         run: node scripts/release/verify-packed-consumer.mjs --artifacts .release
       - name: Verify release manifest and checksums
+        if: steps.release-mode.outputs.alpha_source == 'true'
         shell: bash
         run: |
           set -euo pipefail
@@ -62,6 +79,7 @@ jobs:
           test "$(node -p "require('./.release/release-manifest.json').tag")" = "v0.1.0-alpha.2"
           (cd .release && sha256sum --check SHA256SUMS)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: steps.release-mode.outputs.alpha_source == 'true'
         with:
           name: q1x-public-alpha-${{ github.sha }}
           path: .release/
@@ -75,6 +93,7 @@ jobs:
     if: >-
       github.event_name == 'workflow_dispatch' &&
       inputs.release == true &&
+      needs.validate.outputs.alpha_source == 'true' &&
       github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     permissions:
@@ -126,6 +145,7 @@ jobs:
       github.event_name == 'workflow_dispatch' &&
       inputs.release == true &&
       inputs.publish_npm == true &&
+      needs.validate.outputs.alpha_source == 'true' &&
       github.ref == 'refs/heads/main'
     environment: npm-public-alpha
     runs-on: ubuntu-24.04

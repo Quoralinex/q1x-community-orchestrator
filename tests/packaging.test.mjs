@@ -65,6 +65,14 @@ test('cross-platform workflow covers Linux, Windows, macOS and pinned actions', 
   assert.match(workflow, /npm pack --dry-run --workspace packages\/runtime/);
 });
 
+test('runtime contracts packages the current beta candidate rather than historical alpha code', async () => {
+  const workflow = await text('.github/workflows/contracts-ci.yml');
+  assert.match(workflow, /scripts\/release\/prepare-prerelease\.mjs/);
+  assert.match(workflow, /0\.2\.0-beta\.1/);
+  assert.match(workflow, /verify-packed-consumer\.mjs --artifacts \.release-beta-test/);
+  assert.doesNotMatch(workflow, /scripts\/release\/prepare-alpha\.mjs/);
+});
+
 test('public alpha workflow is manual-release, fail-closed and action-pinned', async () => {
   const workflow = await text('.github/workflows/public-alpha.yml');
   assert.match(workflow, /workflow_dispatch:/);
@@ -83,6 +91,15 @@ test('public alpha workflow is manual-release, fail-closed and action-pinned', a
   const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
   assert.ok(actionRefs.length >= 4);
   for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
+
+test('public alpha workflow never repacks or releases Alpha 2 from beta source', async () => {
+  const workflow = await text('.github/workflows/public-alpha.yml');
+  assert.match(workflow, /id:\s*release-mode/);
+  assert.match(workflow, /alpha_source/);
+  assert.match(workflow, /steps\.release-mode\.outputs\.alpha_source == 'true'/);
+  assert.match(workflow, /needs\.validate\.outputs\.alpha_source == 'true'/);
+  assert.match(workflow, /0\.1\.0-alpha\.2/);
 });
 
 test('compatibility workflow is focused, read-only and action-pinned', async () => {

@@ -40,10 +40,10 @@ jobs:
         run: node --test tests/examples.test.mjs
       - name: Validate release commissioning contracts
         run: node --test tests/release-commissioning.test.mjs
-      - name: Prepare public alpha artifacts
-        run: node scripts/release/prepare-alpha.mjs --output .release-test --source-sha "$GITHUB_SHA"
+      - name: Prepare governed beta candidate artifacts
+        run: node scripts/release/prepare-prerelease.mjs --version 0.2.0-beta.1 --output .release-beta-test --source-sha "$GITHUB_SHA"
       - name: Verify packed packages as an external consumer
-        run: node scripts/release/verify-packed-consumer.mjs --artifacts .release-test
+        run: node scripts/release/verify-packed-consumer.mjs --artifacts .release-beta-test
       - name: Compile desktop action schema
         run: node --test --test-name-pattern="desktop action schema compiles" tests/desktop-examples.test.mjs
       - name: Validate desktop endpoint example
