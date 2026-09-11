@@ -5,7 +5,9 @@ import { join } from 'node:path';
 export const RELEASE_VERSION = '0.1.0-alpha.2';
 export const RELEASE_TAG = `v${RELEASE_VERSION}`;
 export const BETA_VERSION = '0.2.0-beta.1';
-export const SUPPORTED_RELEASE_VERSIONS = [RELEASE_VERSION, BETA_VERSION];
+export const RC_VERSION = '1.0.0-rc.1';
+export const STABLE_VERSION = '1.0.0';
+export const SUPPORTED_RELEASE_VERSIONS = [RELEASE_VERSION, BETA_VERSION, RC_VERSION, STABLE_VERSION];
 export const PUBLIC_PACKAGES = [
   ['@quoralinex/q1x-community-contracts', 'packages/contracts'],
   ['@quoralinex/q1x-community-sdk', 'packages/sdk-typescript'],
@@ -126,7 +128,12 @@ export function buildReleaseManifest({
   if (artifactPackageNames.size !== expectedPackageNames.size || [...expectedPackageNames].some(name => !artifactPackageNames.has(name))) {
     throw new Error('Release manifest artifact package set does not match governed public packages');
   }
-  const status = version === BETA_VERSION ? 'beta-candidate' : 'public-alpha';
+  const status = version === RELEASE_VERSION ? 'public-alpha'
+    : version === BETA_VERSION ? 'beta-candidate'
+      : version === RC_VERSION ? 'stable-rc-candidate'
+        : version === STABLE_VERSION ? 'stable'
+          : undefined;
+  if (!status) throw new Error(`Unsupported governed release version: ${version}`);
   return {
     manifestVersion: '1.0.0', version, tag: `v${version}`, sourceSha, node: '>=24', status,
     license: 'PolyForm Noncommercial License 1.0.0', targets: ['macOS', 'Windows', 'Linux', 'Docker'],

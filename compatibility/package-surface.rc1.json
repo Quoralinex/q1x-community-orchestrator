@@ -1,0 +1,434 @@
+{
+  "schema": "q1x.phase14-package-surface.v1",
+  "packages": [
+    {
+      "name": "@quoralinex/q1x-community-contracts",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./schemas/v1/*": "./schemas/v1/*"
+      },
+      "bin": null,
+      "nodeEngine": null,
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "package.json",
+        "schemas/v1/adapter-endpoint.schema.json",
+        "schemas/v1/adapter-manifest.schema.json",
+        "schemas/v1/approval.schema.json",
+        "schemas/v1/artifact.schema.json",
+        "schemas/v1/audit-receipt.schema.json",
+        "schemas/v1/browser-action-batch.schema.json",
+        "schemas/v1/browser-endpoint.schema.json",
+        "schemas/v1/capability.schema.json",
+        "schemas/v1/checkpoint.schema.json",
+        "schemas/v1/common.schema.json",
+        "schemas/v1/deployment-profile.schema.json",
+        "schemas/v1/desktop-action-batch.schema.json",
+        "schemas/v1/desktop-endpoint.schema.json",
+        "schemas/v1/discovery-manifest.schema.json",
+        "schemas/v1/evidence.schema.json",
+        "schemas/v1/execution-binding.schema.json",
+        "schemas/v1/execution-request.schema.json",
+        "schemas/v1/execution-result.schema.json",
+        "schemas/v1/mission.schema.json",
+        "schemas/v1/model-endpoint.schema.json",
+        "schemas/v1/model-request.schema.json",
+        "schemas/v1/model-response.schema.json",
+        "schemas/v1/programme-proposal.schema.json",
+        "schemas/v1/programme.schema.json",
+        "schemas/v1/replan-event.schema.json",
+        "schemas/v1/supervision-cycle.schema.json",
+        "schemas/v1/supervision-policy.schema.json",
+        "schemas/v1/team-plan.schema.json",
+        "schemas/v1/work-assignment.schema.json",
+        "schemas/v1/work-graph.schema.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-sdk",
+      "exports": null,
+      "bin": null,
+      "nodeEngine": null,
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-contracts",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/adapter-endpoint.d.ts",
+        "dist/adapter-endpoint.js",
+        "dist/adapter.d.ts",
+        "dist/adapter.js",
+        "dist/browser.d.ts",
+        "dist/browser.js",
+        "dist/capability.d.ts",
+        "dist/capability.js",
+        "dist/common.d.ts",
+        "dist/common.js",
+        "dist/deployment.d.ts",
+        "dist/deployment.js",
+        "dist/desktop.d.ts",
+        "dist/desktop.js",
+        "dist/execution.d.ts",
+        "dist/execution.js",
+        "dist/governance.d.ts",
+        "dist/governance.js",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/mission.d.ts",
+        "dist/mission.js",
+        "dist/model.d.ts",
+        "dist/model.js",
+        "dist/programme.d.ts",
+        "dist/programme.js",
+        "dist/supervision.d.ts",
+        "dist/supervision.js",
+        "dist/work-graph.d.ts",
+        "dist/work-graph.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-adapter-sdk",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": null,
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/conformance.d.ts",
+        "dist/conformance.js",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/types.d.ts",
+        "dist/types.js",
+        "dist/validation.d.ts",
+        "dist/validation.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-common",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": null,
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/io.d.ts",
+        "dist/io.js",
+        "dist/protocol.d.ts",
+        "dist/protocol.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-macos",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./macos": {
+          "import": "./dist/macos.js",
+          "types": "./dist/macos.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-macos": "dist/index.js"
+      },
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-common",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/jxa.d.ts",
+        "dist/jxa.js",
+        "dist/macos.d.ts",
+        "dist/macos.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-windows",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./windows": {
+          "import": "./dist/windows.js",
+          "types": "./dist/windows.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-windows": "dist/index.js"
+      },
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-common",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/powershell.d.ts",
+        "dist/powershell.js",
+        "dist/windows.d.ts",
+        "dist/windows.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-linux",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./linux": {
+          "import": "./dist/linux.js",
+          "types": "./dist/linux.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-linux": "dist/index.js"
+      },
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-common",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "bridge/atspi_bridge.py",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/linux.d.ts",
+        "dist/linux.js",
+        "package.json"
+      ]
+    },
+    {
+      "name": "@quoralinex/q1x-community-runtime",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": {
+        "q1x": "./dist/cli.js"
+      },
+      "nodeEngine": ">=24",
+      "license": "SEE LICENSE IN LICENSE",
+      "internalDependencies": [
+        {
+          "name": "@quoralinex/q1x-community-adapter-sdk",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-contracts",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-linux",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-macos",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-desktop-bridge-windows",
+          "versionPolicy": "exact-governed-release"
+        },
+        {
+          "name": "@quoralinex/q1x-community-sdk",
+          "versionPolicy": "exact-governed-release"
+        }
+      ],
+      "files": [
+        "LICENSE",
+        "README.md",
+        "dist/a2a-adapter.d.ts",
+        "dist/a2a-adapter.js",
+        "dist/adapter-protocols.d.ts",
+        "dist/adapter-protocols.js",
+        "dist/adapter-security.d.ts",
+        "dist/adapter-security.js",
+        "dist/adapter-transport.d.ts",
+        "dist/adapter-transport.js",
+        "dist/backup.d.ts",
+        "dist/backup.js",
+        "dist/browser-actions.d.ts",
+        "dist/browser-actions.js",
+        "dist/browser-backend.d.ts",
+        "dist/browser-backend.js",
+        "dist/browser-security.d.ts",
+        "dist/browser-security.js",
+        "dist/cli-adapter.d.ts",
+        "dist/cli-adapter.js",
+        "dist/cli-catalogue.d.ts",
+        "dist/cli-catalogue.js",
+        "dist/cli.d.ts",
+        "dist/cli.js",
+        "dist/community-adapter-bridge.d.ts",
+        "dist/community-adapter-bridge.js",
+        "dist/connectors/apply.d.ts",
+        "dist/connectors/apply.js",
+        "dist/connectors/builtin-catalogue.d.ts",
+        "dist/connectors/builtin-catalogue.js",
+        "dist/connectors/catalogue.d.ts",
+        "dist/connectors/catalogue.js",
+        "dist/connectors/cli.d.ts",
+        "dist/connectors/cli.js",
+        "dist/connectors/configuration.d.ts",
+        "dist/connectors/configuration.js",
+        "dist/connectors/materialize-a2a.d.ts",
+        "dist/connectors/materialize-a2a.js",
+        "dist/connectors/materialize-browser.d.ts",
+        "dist/connectors/materialize-browser.js",
+        "dist/connectors/materialize-cli.d.ts",
+        "dist/connectors/materialize-cli.js",
+        "dist/connectors/materialize-mcp.d.ts",
+        "dist/connectors/materialize-mcp.js",
+        "dist/connectors/materialize-model.d.ts",
+        "dist/connectors/materialize-model.js",
+        "dist/connectors/preflight.d.ts",
+        "dist/connectors/preflight.js",
+        "dist/connectors/types.d.ts",
+        "dist/connectors/types.js",
+        "dist/desktop-backend.d.ts",
+        "dist/desktop-backend.js",
+        "dist/desktop-security.d.ts",
+        "dist/desktop-security.js",
+        "dist/discovery-loader.d.ts",
+        "dist/discovery-loader.js",
+        "dist/discovery.d.ts",
+        "dist/discovery.js",
+        "dist/doctor.d.ts",
+        "dist/doctor.js",
+        "dist/errors.d.ts",
+        "dist/errors.js",
+        "dist/first-party-desktop.d.ts",
+        "dist/first-party-desktop.js",
+        "dist/graph-validation.d.ts",
+        "dist/graph-validation.js",
+        "dist/home.d.ts",
+        "dist/home.js",
+        "dist/index.d.ts",
+        "dist/index.js",
+        "dist/lifecycle.d.ts",
+        "dist/lifecycle.js",
+        "dist/mcp-adapter.d.ts",
+        "dist/mcp-adapter.js",
+        "dist/model-protocols.d.ts",
+        "dist/model-protocols.js",
+        "dist/model-security.d.ts",
+        "dist/model-security.js",
+        "dist/model-transport.d.ts",
+        "dist/model-transport.js",
+        "dist/operation-journal.d.ts",
+        "dist/operation-journal.js",
+        "dist/planning-strategy.d.ts",
+        "dist/planning-strategy.js",
+        "dist/playwright-browser.d.ts",
+        "dist/playwright-browser.js",
+        "dist/runtime-limits.d.ts",
+        "dist/runtime-limits.js",
+        "dist/runtime.d.ts",
+        "dist/runtime.js",
+        "dist/schema-loader.d.ts",
+        "dist/schema-loader.js",
+        "dist/security-audit.d.ts",
+        "dist/security-audit.js",
+        "dist/security-extension.d.ts",
+        "dist/security-extension.js",
+        "dist/service.d.ts",
+        "dist/service.js",
+        "dist/state-migrations.d.ts",
+        "dist/state-migrations.js",
+        "dist/state-schema.d.ts",
+        "dist/state-schema.js",
+        "dist/stdio-desktop.d.ts",
+        "dist/stdio-desktop.js",
+        "dist/store.d.ts",
+        "dist/store.js",
+        "dist/supervision-allocator.d.ts",
+        "dist/supervision-allocator.js",
+        "dist/supervision-extension.d.ts",
+        "dist/supervision-extension.js",
+        "dist/work-executor.d.ts",
+        "dist/work-executor.js",
+        "package.json"
+      ]
+    }
+  ]
+}

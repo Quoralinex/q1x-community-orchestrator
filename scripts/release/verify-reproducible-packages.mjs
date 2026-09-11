@@ -2,8 +2,22 @@ import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { BETA_VERSION, PUBLIC_PACKAGES } from './release-metadata.mjs';
+import { BETA_VERSION, PUBLIC_PACKAGES, SUPPORTED_RELEASE_VERSIONS } from './release-metadata.mjs';
 import { preparePrerelease } from './prepare-prerelease.mjs';
+
+
+export function parseReproducibilityArgs(args) {
+  const value = name => {
+    const index = args.indexOf(name);
+    return index >= 0 ? args[index + 1] : undefined;
+  };
+  const version = value('--version');
+  const sourceSha = value('--source-sha');
+  if (!version) throw new Error('Reproducibility verification requires --version <governed-version>');
+  if (!SUPPORTED_RELEASE_VERSIONS.includes(version)) throw new Error(`Unsupported governed release version: ${version}`);
+  if (!/^[0-9a-f]{40}$/.test(sourceSha ?? '')) throw new Error('Reproducibility verification requires --source-sha <40-hex>');
+  return { version, sourceSha };
+}
 
 function sameInventory(left, right) {
   return JSON.stringify(left) === JSON.stringify(right);
@@ -41,8 +55,8 @@ export async function verifyReproduciblePackages({ root: rootInput, version = BE
 
 if (process.argv[1] && import.meta.url === pathToFileURL(resolve(process.argv[1])).href) {
   const root = resolve(process.cwd());
-  const sourceSha = process.argv[2] ?? '0'.repeat(40);
-  const result = await verifyReproduciblePackages({ root, version: BETA_VERSION, sourceSha });
+  const { version, sourceSha } = parseReproducibilityArgs(process.argv.slice(2));
+  const result = await verifyReproduciblePackages({ root, version, sourceSha });
   process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
   if (!result.reproducible) process.exitCode = 1;
 }
