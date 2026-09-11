@@ -24,3 +24,5 @@ jobs:
         run: npm run verify:standalone
       - name: Verify Phase 12 completion contract
         run: npm run verify:phase12
+      - name: Verify Phase 13 beta-readiness contract
+        run: npm run verify:phase13

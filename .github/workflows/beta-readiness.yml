@@ -1,0 +1,73 @@
+name: Beta Readiness
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      minutes:
+        description: Soak duration in minutes
+        required: false
+        default: '60'
+  schedule:
+    - cron: '17 3 * * 0'
+
+permissions:
+  contents: read
+
+jobs:
+  beta-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - run: npm run test:compatibility      - run: npm run test:resilience
+      - run: npm run test:stress
+      - name: Generate exact-head evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p phase13-evidence
+          sha="$(git rev-parse HEAD)"
+          node scripts/phase13/run-resilience.mjs --source-sha "$sha" --output phase13-evidence/phase13-resilience-evidence.json
+          node scripts/phase13/run-stress.mjs --source-sha "$sha" --output phase13-evidence/phase13-stress-evidence.json
+          node scripts/release/verify-reproducible-packages.mjs "$sha" > phase13-evidence/phase13-reproducibility-evidence.json
+          node scripts/release/generate-sbom.mjs . --output phase13-evidence/phase13-sbom.spdx.json
+          npm run verify:phase13 > phase13-evidence/phase13-completion-evidence.json
+      - name: Upload beta-readiness evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase13-beta-readiness-${{ github.sha }}
+          path: phase13-evidence/*.json
+          if-no-files-found: error
+
+  soak:
+    if: github.event_name == 'workflow_dispatch' || github.event_name == 'schedule'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: 24      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Run bounded local soak
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p phase13-evidence
+          sha="$(git rev-parse HEAD)"
+          minutes="${{ github.event.inputs.minutes || '60' }}"
+          node scripts/phase13/run-soak.mjs --source-sha "$sha" --minutes "$minutes" --output phase13-evidence/phase13-soak-evidence.json
+      - name: Upload soak evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase13-soak-${{ github.sha }}
+          path: phase13-evidence/phase13-soak-evidence.json
+          if-no-files-found: error

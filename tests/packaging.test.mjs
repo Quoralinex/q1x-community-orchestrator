@@ -144,3 +144,23 @@ test('public alpha documentation preserves release and security boundaries', asy
   assert.match(limitations, /npm publication may be unavailable/i);
   assert.match(limitations, /Phase 12/i);
 });
+
+
+test('Phase 13 beta-readiness workflow is bounded, read-only, evidence-producing and action-pinned', async () => {
+  const workflow = await text('.github/workflows/beta-readiness.yml');
+  assert.match(workflow, /name:\s*Beta Readiness/);
+  assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
+  assert.match(workflow, /ubuntu-24\.04/);
+  assert.match(workflow, /node-version:\s*24/);
+  assert.match(workflow, /timeout-minutes:\s*30/);
+  assert.match(workflow, /npm run test:resilience/);
+  assert.match(workflow, /npm run test:stress/);
+  assert.match(workflow, /npm run verify:phase13/);
+  for (const evidence of ['phase13-resilience-evidence.json', 'phase13-stress-evidence.json', 'phase13-reproducibility-evidence.json', 'phase13-sbom.spdx.json']) {
+    assert.match(workflow, new RegExp(evidence.replaceAll('.', '\\.')));
+  }
+  assert.doesNotMatch(workflow, /OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|secrets\./i);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 4);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
