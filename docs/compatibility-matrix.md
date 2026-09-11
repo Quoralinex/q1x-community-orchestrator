@@ -1,8 +1,8 @@
 # Compatibility Matrix
 
 **Matrix version:** 1.0.0
-**Project version:** 0.1.0-alpha.2
-**Evidence baseline:** `ada00ff739e66aeb6cb836a7a9fe7b8e2817d698`
+**Project version:** 0.2.0-beta.1
+**Evidence baseline:** `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`
 
 ## Status legend
 
@@ -30,7 +30,7 @@
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Governed four-package Q1X alpha tarballs in an external consumer | tested | npm pack tarballs | — | hosted-runner / ci: `.github/workflows/public-alpha.yml` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>hosted-runner / ci: `tests/release-adapter-governance.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>hosted-runner / ci: `tests/release-commissioning.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | — |
+| Governed eight-package Q1X beta-candidate tarballs in an external consumer | tested | npm pack tarballs | 0.2.0-beta.1 | hosted-runner / ci: `.github/workflows/public-beta.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-beta-governance.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-reproducibility.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Current beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately. |
 
 ## model-transport
 
@@ -66,14 +66,14 @@
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
 | Desktop/application control through the stdio bridge | experimental | OS-neutral desktop bridge | — | — | Native driver availability and application behavior are host-specific and require explicit evidence before promotion to tested. |
-| First-party Linux AT-SPI bridge on Ubuntu 24.04 virtual accessibility session | tested | @quoralinex/q1x-community-desktop-bridge-linux 0.1.0-alpha.2 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1`<br>fixture / ci: `tests/desktop-bridge-linux.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1` | Tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence. |
-| First-party macOS Accessibility bridge baseline harness | tested | @quoralinex/q1x-community-desktop-bridge-macos 0.1.0-alpha.2 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1`<br>fixture / ci: `tests/desktop-bridge-macos.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1` | Deterministic bridge contract and host doctor are tested; physical-host Accessibility action execution remains separately dependent on granted OS permission and is not implied by this entry. |
-| First-party Windows UI Automation bridge baseline harness | tested | @quoralinex/q1x-community-desktop-bridge-windows 0.1.0-alpha.2 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1`<br>fixture / ci: `tests/desktop-bridge-windows.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1` | Deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry. |
+| First-party Linux AT-SPI bridge on Ubuntu 24.04 virtual accessibility session | tested | @quoralinex/q1x-community-desktop-bridge-linux 0.2.0-beta.1 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/desktop-bridge-linux.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Beta-candidate bridge behavior is tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence. |
+| First-party macOS Accessibility bridge baseline harness | tested | @quoralinex/q1x-community-desktop-bridge-macos 0.2.0-beta.1 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/desktop-bridge-macos.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Beta-candidate bridge contract and host doctor are tested. The physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim. |
+| First-party Windows UI Automation bridge baseline harness | tested | @quoralinex/q1x-community-desktop-bridge-windows 0.2.0-beta.1 | — | hosted-runner / ci: `.github/workflows/cross-platform-packaging.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/desktop-bridge-windows.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Beta-candidate deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry. |
 
 ## protocol
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Community Adapter SDK conformance and explicit runtime bridge | tested | @quoralinex/q1x-community-adapter-sdk | 0.1.0-alpha.1 / contract 1.0.0 / runtime 0.1.x | fixture / ci: `tests/adapter-sdk.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>fixture / ci: `tests/community-adapter-example.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50`<br>fixture / ci: `tests/runtime-community-adapter.test.mjs` @ `3f249d836dac51725691b6dfe83a9c7d85842c50` | This tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted. |
+| Community Adapter SDK conformance and explicit runtime bridge | tested | @quoralinex/q1x-community-adapter-sdk | 0.2.0-beta.1 / contract 1.0.0 / runtime 0.2.0-beta.1 | fixture / ci: `tests/adapter-sdk.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/community-adapter-example.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/runtime-community-adapter.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | This beta-candidate tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted. |
 | Connector catalogue, configure/apply/test/enable and doctor CLI baseline | tested | Q1X local connector management | — | fixture / ci: `tests/product-usability.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1`<br>fixture / ci: `tests/runtime-connectors-cli.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1`<br>fixture / ci: `tests/runtime-doctor.test.mjs` @ `105b9ab6c13ea427d3abb09a907e27b920a543c1` | — |
 
