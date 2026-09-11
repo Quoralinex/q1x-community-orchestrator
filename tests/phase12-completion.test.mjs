@@ -29,6 +29,7 @@ test('Phase 12 completion verifier accepts the current structural and evidence c
   assert.equal(report.ok, true, JSON.stringify(report.findings, null, 2));
   assert.equal(report.phase, 12);
   assert.equal(report.releaseVersion, '0.1.0-alpha.2');
+  assert.equal(report.currentPackageVersion, '0.2.0-beta.1');
   assert.equal(report.standalone.ok, true);
   assert.equal(report.ciEvidenceRequired, true);
   assert.match(report.compatibilityEvidenceBaseline, /^[0-9a-f]{40}$/);
@@ -48,7 +49,8 @@ test('completion verifier confirms the complete first-party package and executab
     '@quoralinex/q1x-community-desktop-bridge-linux',
     '@quoralinex/q1x-community-runtime',
   ]);
-  assert.equal(report.packages.every(item => item.version === '0.1.0-alpha.2'), true);
+  assert.equal(new Set(report.packages.map(item => item.version)).size, 1);
+  assert.equal(report.packages[0].version, report.currentPackageVersion);
   assert.deepEqual(report.executables.sort(), [
     'q1x', 'q1x-desktop-bridge-linux', 'q1x-desktop-bridge-macos', 'q1x-desktop-bridge-windows',
   ].sort());

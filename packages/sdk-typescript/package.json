@@ -1,6 +1,6 @@
 {
   "name": "@quoralinex/q1x-community-sdk",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-beta.1",
   "description": "TypeScript reference SDK for Q1X Community Orchestrator contracts.",
   "type": "module",
   "files": [
@@ -9,7 +9,7 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@quoralinex/q1x-community-contracts": "0.1.0-alpha.2"
+    "@quoralinex/q1x-community-contracts": "0.2.0-beta.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {

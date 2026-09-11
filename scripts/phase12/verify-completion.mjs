@@ -61,9 +61,11 @@ export async function verifyPhase12Root(root) {
     if (!packageJson) continue;
     packageRecords.push({ name: packageJson.name, version: packageJson.version, directory });
     executables.push(...binsFromPackage(packageJson));
-    add(findings, packageJson.version === RELEASE_VERSION, 'package.version',
-      `${packageJson.name ?? directory} must be ${RELEASE_VERSION}`);
   }
+
+  const currentPackageVersions = [...new Set(packageRecords.map(item => item.version))];
+  add(findings, packageRecords.length === PACKAGE_DIRS.length && currentPackageVersions.length === 1,
+    'package.alignment', 'Current public package manifests must remain version-aligned.');
 
   const catalogue = await readJson(join(absoluteRoot, 'connectors/catalogue.json'));
   const catalogueIds = new Set(Array.isArray(catalogue?.connectors)
@@ -117,6 +119,7 @@ export async function verifyPhase12Root(root) {
     phase: 12,
     ok: findings.length === 0,
     releaseVersion: RELEASE_VERSION,
+    currentPackageVersion: currentPackageVersions.length === 1 ? currentPackageVersions[0] : null,
     ciEvidenceRequired: true,
     compatibilityEvidenceBaseline: matrix?.generatedFrom ?? null,
     packages: packageRecords,

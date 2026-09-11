@@ -1,20 +1,32 @@
 {
   "name": "@quoralinex/q1x-community-desktop-bridge-macos",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-beta.1",
   "description": "First-party macOS Accessibility desktop bridge for Q1X Community Orchestrator.",
   "type": "module",
-  "engines": { "node": ">=24" },
-  "files": ["dist"],
-  "bin": { "q1x-desktop-bridge-macos": "dist/index.js" },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "q1x-desktop-bridge-macos": "dist/index.js"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./macos": { "types": "./dist/macos.d.ts", "import": "./dist/macos.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./macos": {
+      "types": "./dist/macos.d.ts",
+      "import": "./dist/macos.js"
+    }
   },
   "dependencies": {
-    "@quoralinex/q1x-community-desktop-bridge-common": "0.1.0-alpha.2",
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.2"
+    "@quoralinex/q1x-community-desktop-bridge-common": "0.2.0-beta.1",
+    "@quoralinex/q1x-community-sdk": "0.2.0-beta.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {
@@ -23,5 +35,7 @@
     "directory": "packages/desktop-bridge-macos"
   },
   "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

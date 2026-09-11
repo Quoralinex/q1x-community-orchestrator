@@ -1,6 +1,6 @@
 # Public alpha known limitations
 
-Q1X Community Orchestrator remains experimental software. Phase 12 is implemented on protected `main`. The historical `v0.1.0-alpha.1` release remains immutable, and `v0.1.0-alpha.2` is now the commissioned GitHub public alpha. npm publication remains optional and was not performed as part of this commissioning. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
+Q1X Community Orchestrator remains experimental software. The historical `v0.1.0-alpha.1` release remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha. Phase 13 prepares `0.2.0-beta.1` as a beta-ready candidate, not a commissioned beta release. npm publication remains separately optional. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
 
 1. **Local actor identity is caller-asserted.** Approval actor identifiers are not cryptographically authenticated by the current local JSON-first CLI. `requiredApproverKinds` is a governance-contract boundary, not enterprise IAM, signed identity or an authenticated multi-user control plane.
 
@@ -25,5 +25,7 @@ Q1X Community Orchestrator remains experimental software. Phase 12 is implemente
 11. **Compatibility evidence is scoped.** The compatibility matrix labels surfaces `tested`, `experimental` or `unsupported` against specific repository evidence. Phase 12 promotes only the exact model fixtures, MCP/A2A/CLI profiles, runner browser flow, connector management and desktop harness/session combinations exercised by cited tests. A tested entry does not imply support for uncited operating-system versions, provider variants, browser versions, applications or third-party adapters.
 
 Additional current nonclaims include enterprise IAM, HSM-backed signing, remote attestation, confidential-computing isolation, externally witnessed audit transparency, guaranteed crash-atomicity across every multi-write governance operation, adapter marketplace trust, automatic package vetting and production/SLA support.
+
+Phase 13 improves crash recovery, backup integrity, bounded execution and evidence quality, but those controls do not convert the candidate into a production/SLA claim or guarantee universal physical-host compatibility.
 
 See [Product usability](product-usability.md), [Compatibility Matrix](compatibility-matrix.md) and [Community Adapter SDK](community-adapter-sdk.md) for the Phase 12 baseline, evidence and extension boundaries. Do not infer compatibility or trust beyond the surfaces explicitly exercised by repository CI and documented for the commissioned alpha.2 release.

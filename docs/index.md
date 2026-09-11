@@ -27,11 +27,12 @@ Software delivery is only one workload. The project is designed for research, co
 
 ## Public alpha
 
-The historical `v0.1.0-alpha.1` public alpha remains immutable. Phase 12 is implemented on protected `main`, and `v0.1.0-alpha.2` is now the commissioned GitHub public alpha with eight public package artifacts: contracts, core SDK, Community Adapter SDK, desktop bridge common, first-party macOS/Windows/Linux desktop bridges and runtime. The release retains SHA-256 integrity evidence, clean external-consumer verification, cross-platform source installation and a fail-closed GitHub prerelease workflow. npm publication remains optional and was not performed as part of this commissioning. The software remains experimental and is not production-ready.
+The historical `v0.1.0-alpha.1` public alpha remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha with eight public package artifacts. Phase 13 hardening prepares `0.2.0-beta.1` as a beta-ready candidate with recovery, bounded execution, resilience, reproducibility, SBOM and operating-manual evidence. No beta tag or beta release is claimed until the separate commissioning workflow is explicitly authorised from protected `main`. npm publication remains separately optional. The software remains experimental and is not production-ready.
 
 Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK. Phase 12 adds the standalone connector catalogue/configuration/doctor UX, no-custom-code baseline model/MCP/A2A/CLI/browser flows and shipped first-party desktop bridges. Compatibility labels remain scoped to cited repository evidence; adapter conformance is not a trust or sandbox guarantee.
 
 - [Public alpha quick start](public-alpha.md) — release identity, installation, integrity verification, upgrade and rollback.
+- [Beta-ready candidate](prerelease.md) — Phase 13 evidence, distribution boundary and commissioning requirements.
 - [Phase 12 product usability](product-usability.md) — baseline setup, prerequisites, no-code connector flows and evidence boundaries.
 - [Compatibility Matrix](compatibility-matrix.md) — tested, experimental and unsupported surfaces with repository-verifiable evidence.
 - [Community Adapter SDK](community-adapter-sdk.md) — public authoring, conformance, explicit registration and trust boundaries.

@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 import {
   BETA_VERSION,
+  RELEASE_VERSION,
   PUBLIC_PACKAGES,
   assertReleaseIdentity,
   buildReleaseManifest,
@@ -24,12 +25,21 @@ function betaIdentity(alphaIdentity) {
   }
   return copy;
 }
-test('release metadata accepts the governed beta identity without mutating Alpha 2 source manifests', async () => {
+test('release metadata accepts current beta identity and preserves historical Alpha 2 identity support', async () => {
   assert.equal(BETA_VERSION, '0.2.0-beta.1');
   const source = await readReleaseIdentity(root);
-  assert.equal(source.version, '0.1.0-alpha.2');
-  const beta = betaIdentity(source);
-  assert.equal(assertReleaseIdentity(beta, { version: BETA_VERSION }), beta);
+  assert.equal(source.version, BETA_VERSION);
+  assert.equal(assertReleaseIdentity(source, { version: BETA_VERSION }), source);
+  const alpha = betaIdentity(source);
+  alpha.version = RELEASE_VERSION;
+  alpha.tag = `v${RELEASE_VERSION}`;
+  for (const pkg of alpha.packages) {
+    pkg.version = RELEASE_VERSION;
+    for (const name of Object.keys(pkg.dependencies ?? {})) {
+      if (PUBLIC_PACKAGES.some(([publicName]) => publicName === name)) pkg.dependencies[name] = RELEASE_VERSION;
+    }
+  }
+  assert.equal(assertReleaseIdentity(alpha, { version: RELEASE_VERSION }), alpha);
 });
 
 test('beta manifest carries reproducibility and evidence baselines', async () => {
@@ -55,4 +65,39 @@ test('beta manifest carries reproducibility and evidence baselines', async () =>
   assert.equal(manifest.resilienceEvidenceBaseline, '1'.repeat(40));
   assert.equal(manifest.packages.length, 8);
   assert.ok(manifest.artifacts.every(item => Array.isArray(item.inventory)));
+});
+
+test('beta candidate governs all eight public packages at one exact version', async () => {
+  const identity = await readReleaseIdentity(root);
+  assert.equal(identity.version, BETA_VERSION);
+  assert.equal(identity.tag, `v${BETA_VERSION}`);
+  assert.equal(assertReleaseIdentity(identity, { version: BETA_VERSION }), identity);
+  assert.equal(identity.packages.length, 8);
+  assert.equal(identity.packages.every(pkg => pkg.version === BETA_VERSION), true);
+  const publicNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
+  for (const pkg of identity.packages) {
+    for (const [name, version] of Object.entries(pkg.dependencies ?? {})) {
+      if (publicNames.has(name)) assert.equal(version, BETA_VERSION, `${pkg.name} -> ${name}`);
+    }
+  }
+});
+
+test('public beta workflow separates validation, release and npm authority', async () => {
+  const { readFile } = await import('node:fs/promises');
+  const workflow = await readFile(new URL('../.github/workflows/public-beta.yml', import.meta.url), 'utf8');
+  assert.match(workflow, /workflow_dispatch:/);
+  assert.match(workflow, /version:/);
+  assert.match(workflow, /release:/);
+  assert.match(workflow, /publish_npm:/);
+  assert.match(workflow, /refs\/heads\/main/);
+  assert.match(workflow, /0\.2\.0-beta\.1/);
+  assert.match(workflow, /verify:phase13/);
+  assert.match(workflow, /verify-reproducible-packages\.mjs/);
+  assert.doesNotMatch(workflow, /NPM_TOKEN|NODE_AUTH_TOKEN/);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 6);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+  const publishJob = workflow.split('publish-npm:')[1] ?? '';
+  assert.match(publishJob, /actions\/setup-node@[0-9a-f]{40}/);
+  assert.match(publishJob, /node-version:\s*['"]?24/);
 });

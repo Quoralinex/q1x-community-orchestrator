@@ -1,23 +1,41 @@
 {
   "name": "@quoralinex/q1x-community-desktop-bridge-windows",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-beta.1",
   "description": "First-party Windows UI Automation desktop bridge for Q1X Community Orchestrator.",
   "type": "module",
-  "engines": { "node": ">=24" },
-  "files": ["dist"],
-  "bin": { "q1x-desktop-bridge-windows": "dist/index.js" },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist"
+  ],
+  "bin": {
+    "q1x-desktop-bridge-windows": "dist/index.js"
+  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "exports": {
-    ".": { "types": "./dist/index.d.ts", "import": "./dist/index.js" },
-    "./windows": { "types": "./dist/windows.d.ts", "import": "./dist/windows.js" }
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./windows": {
+      "types": "./dist/windows.d.ts",
+      "import": "./dist/windows.js"
+    }
   },
   "dependencies": {
-    "@quoralinex/q1x-community-desktop-bridge-common": "0.1.0-alpha.2",
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.2"
+    "@quoralinex/q1x-community-desktop-bridge-common": "0.2.0-beta.1",
+    "@quoralinex/q1x-community-sdk": "0.2.0-beta.1"
   },
   "license": "SEE LICENSE IN LICENSE",
-  "repository": { "type": "git", "url": "https://github.com/Quoralinex/q1x-community-orchestrator.git", "directory": "packages/desktop-bridge-windows" },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Quoralinex/q1x-community-orchestrator.git",
+    "directory": "packages/desktop-bridge-windows"
+  },
   "homepage": "https://quoralinex.github.io/q1x-community-orchestrator/",
-  "publishConfig": { "access": "public" }
+  "publishConfig": {
+    "access": "public"
+  }
 }

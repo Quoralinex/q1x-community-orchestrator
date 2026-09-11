@@ -4,12 +4,26 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
 
-import { assertReleaseIdentity, readReleaseIdentity } from '../scripts/release/release-metadata.mjs';
+import { PUBLIC_PACKAGES, RELEASE_TAG, RELEASE_VERSION, assertReleaseIdentity, readReleaseIdentity } from '../scripts/release/release-metadata.mjs';
 
 const root = dirname(fileURLToPath(new URL('../package.json', import.meta.url)));
 
-test('public alpha governs exactly eight packages in dependency order', async () => {
-  const identity = assertReleaseIdentity(await readReleaseIdentity(root));
+async function historicalAlphaIdentity() {
+  const identity = structuredClone(await readReleaseIdentity(root));
+  identity.version = RELEASE_VERSION;
+  identity.tag = RELEASE_TAG;
+  const publicNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
+  for (const pkg of identity.packages) {
+    pkg.version = RELEASE_VERSION;
+    for (const name of Object.keys(pkg.dependencies ?? {})) {
+      if (publicNames.has(name)) pkg.dependencies[name] = RELEASE_VERSION;
+    }
+  }
+  return identity;
+}
+
+test('historical public alpha governs exactly eight packages in dependency order', async () => {
+  const identity = assertReleaseIdentity(await historicalAlphaIdentity());
   assert.deepEqual(identity.packages.map(item => item.name), [
     '@quoralinex/q1x-community-contracts',
     '@quoralinex/q1x-community-sdk',
@@ -21,9 +35,9 @@ test('public alpha governs exactly eight packages in dependency order', async ()
     '@quoralinex/q1x-community-runtime',
   ]);
   const adapter = identity.packages[2];
-  assert.equal(adapter.version, '0.1.0-alpha.2');
-  assert.equal(adapter.dependencies['@quoralinex/q1x-community-sdk'], '0.1.0-alpha.2');
-  assert.equal(identity.packages[7].dependencies['@quoralinex/q1x-community-adapter-sdk'], '0.1.0-alpha.2');
+  assert.equal(adapter.version, RELEASE_VERSION);
+  assert.equal(adapter.dependencies['@quoralinex/q1x-community-sdk'], RELEASE_VERSION);
+  assert.equal(identity.packages[7].dependencies['@quoralinex/q1x-community-adapter-sdk'], RELEASE_VERSION);
 });
 
 test('public alpha workflow publishes the governed package set in dependency order', async () => {

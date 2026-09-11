@@ -1,0 +1,189 @@
+name: Public Beta Commissioning
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/public-beta.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'packages/**'
+      - 'scripts/release/**'
+      - 'scripts/phase13/**'
+      - 'tests/**'
+      - 'docs/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Governed beta version to validate or commission
+        required: true
+        type: string
+        default: 0.2.0-beta.1
+      release:
+        description: Create the governed GitHub beta prerelease after validation
+        required: true
+        type: boolean
+        default: false
+      publish_npm:
+        description: Publish the immutable beta tarballs through configured npm trusted publishing
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-beta-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: validate-public-beta
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Enforce governed beta identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          requested="${{ github.event_name == 'workflow_dispatch' && inputs.version || '0.2.0-beta.1' }}"
+          test "$requested" = "0.2.0-beta.1" || {
+            echo "Only 0.2.0-beta.1 is governed by this workflow." >&2
+            exit 1
+          }
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build and verify repository
+        run: npm run check
+      - name: Verify compatibility, resilience and stress
+        run: |
+          npm run test:compatibility
+          npm run test:resilience
+          npm run test:stress
+          npm run verify:phase13
+      - name: Prepare governed beta artifacts
+        run: node scripts/release/prepare-prerelease.mjs --version 0.2.0-beta.1 --output .release-beta --source-sha "$GITHUB_SHA"
+      - name: Verify packed packages as an external consumer
+        run: node scripts/release/verify-packed-consumer.mjs --artifacts .release-beta
+      - name: Verify reproducible package inventories
+        run: node scripts/release/verify-reproducible-packages.mjs "$GITHUB_SHA" > beta-reproducibility.json
+      - name: Verify manifest, SBOM and checksums
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.release-beta/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          test "$(node -p "require('./.release-beta/release-manifest.json').tag")" = "v0.2.0-beta.1"
+          test -s .release-beta/q1x-community-orchestrator-0.2.0-beta.1.spdx.json
+          (cd .release-beta && sha256sum --check SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: q1x-public-beta-${{ github.sha }}
+          path: |
+            .release-beta/
+            beta-reproducibility.json
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+
+  release:
+    name: create-github-beta-prerelease
+    needs: validate
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.release == true &&
+      inputs.version == '0.2.0-beta.1' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: v0.2.0-beta.1
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: q1x-public-beta-${{ github.sha }}
+          path: .downloaded-beta
+      - name: Reverify immutable beta bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.downloaded-beta/.release-beta/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          (cd .downloaded-beta/.release-beta && sha256sum --check SHA256SUMS)
+      - name: Refuse stale main target or release replacement
+        shell: bash
+        run: |
+          set -euo pipefail
+          REMOTE_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+          test "$REMOTE_MAIN" = "$GITHUB_SHA" || {
+            echo "Protected main moved; refusing a stale beta release." >&2
+            exit 1
+          }
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists; refusing replacement." >&2
+            exit 1
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists; refusing replacement." >&2
+            exit 1
+          fi
+      - name: Create GitHub beta prerelease at verified main
+        run: >-
+          gh release create "$TAG" .downloaded-beta/.release-beta/*
+          --prerelease --target "$GITHUB_SHA"
+          --title "Q1X Community Orchestrator ${TAG}"
+          --notes-file docs/prerelease.md
+
+  publish-npm:
+    name: publish-npm-trusted-beta
+    needs: [validate, release]
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.release == true &&
+      inputs.publish_npm == true &&
+      inputs.version == '0.2.0-beta.1' &&
+      github.ref == 'refs/heads/main'
+    environment: npm-public-beta
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: q1x-public-beta-${{ github.sha }}
+          path: .downloaded-beta
+      - name: Verify immutable publication inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.downloaded-beta/.release-beta/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          (cd .downloaded-beta/.release-beta && sha256sum --check SHA256SUMS)
+      - name: Publish governed beta packages with trusted provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-contracts-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-sdk-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-adapter-sdk-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-desktop-bridge-common-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-desktop-bridge-macos-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-desktop-bridge-windows-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-desktop-bridge-linux-0.2.0-beta.1.tgz \
+            .downloaded-beta/.release-beta/quoralinex-q1x-community-runtime-0.2.0-beta.1.tgz; do
+            npm publish --provenance --access public "$file"
+          done
