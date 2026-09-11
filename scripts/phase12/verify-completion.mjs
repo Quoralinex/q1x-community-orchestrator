@@ -64,6 +64,7 @@ export async function verifyPhase12Root(root) {
   }
 
   const currentPackageVersions = [...new Set(packageRecords.map(item => item.version))];
+  const currentPackageVersion = currentPackageVersions.length === 1 ? currentPackageVersions[0] : null;
   add(findings, packageRecords.length === PACKAGE_DIRS.length && currentPackageVersions.length === 1,
     'package.alignment', 'Current public package manifests must remain version-aligned.');
 
@@ -79,8 +80,8 @@ export async function verifyPhase12Root(root) {
   }
   const matrix = await readJson(join(absoluteRoot, 'compatibility/matrix.json'));
   const compatibilityIds = Array.isArray(matrix?.entries) ? matrix.entries.map(item => item.id) : [];
-  add(findings, matrix?.projectVersion === RELEASE_VERSION, 'compatibility.version',
-    `Compatibility matrix projectVersion must be ${RELEASE_VERSION}`);
+  add(findings, Boolean(currentPackageVersion) && matrix?.projectVersion === currentPackageVersion, 'compatibility.version',
+    `Compatibility matrix projectVersion must match current package version ${currentPackageVersion ?? '<unaligned>'}`);
   add(findings, /^[0-9a-f]{40}$/.test(matrix?.generatedFrom ?? ''), 'compatibility.baseline',
     'Compatibility matrix must record a 40-character evidence baseline commit.');
   for (const id of REQUIRED_COMPATIBILITY) {
@@ -119,7 +120,8 @@ export async function verifyPhase12Root(root) {
     phase: 12,
     ok: findings.length === 0,
     releaseVersion: RELEASE_VERSION,
-    currentPackageVersion: currentPackageVersions.length === 1 ? currentPackageVersions[0] : null,
+    currentPackageVersion,
+    compatibilityProjectVersion: matrix?.projectVersion ?? null,
     ciEvidenceRequired: true,
     compatibilityEvidenceBaseline: matrix?.generatedFrom ?? null,
     packages: packageRecords,

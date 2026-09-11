@@ -30,6 +30,7 @@ test('Phase 12 completion verifier accepts the current structural and evidence c
   assert.equal(report.phase, 12);
   assert.equal(report.releaseVersion, '0.1.0-alpha.2');
   assert.equal(report.currentPackageVersion, '0.2.0-beta.1');
+  assert.equal(report.compatibilityProjectVersion, report.currentPackageVersion);
   assert.equal(report.standalone.ok, true);
   assert.equal(report.ciEvidenceRequired, true);
   assert.match(report.compatibilityEvidenceBaseline, /^[0-9a-f]{40}$/);
