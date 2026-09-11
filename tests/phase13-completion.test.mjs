@@ -38,7 +38,7 @@ test('beta-readiness workflow is bounded, local-fixture only and read-only by de
   assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
   assert.match(workflow, /test:resilience/);
   assert.match(workflow, /test:stress/);
-  assert.match(workflow, /verify:phase13/);
+  assert.match(workflow, /scripts\/phase13\/verify-completion\.mjs/);
   assert.match(workflow, /phase13-resilience-evidence\.json/);
   assert.match(workflow, /phase13-stress-evidence\.json/);
   assert.match(workflow, /phase13-reproducibility-evidence\.json/);

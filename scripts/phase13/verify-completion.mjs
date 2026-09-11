@@ -87,7 +87,7 @@ export async function verifyPhase13Root(rootInput) {
     manuals: (await Promise.all(REQUIRED_MANUALS.map(file => exists(join(root, file))))).every(Boolean),
     polyformLicence: /PolyForm Noncommercial License 1\.0\.0/i.test(licence),
     standalone: standalone.ok,
-    betaReadinessWorkflow: /verify:phase13/.test(betaWorkflow)
+    betaReadinessWorkflow: /scripts\/phase13\/verify-completion\.mjs/.test(betaWorkflow)
       && /test:resilience/.test(betaWorkflow) && /test:stress/.test(betaWorkflow),
     repositoryBaseline: /verify:phase13/.test(baseline),
     packageScript: /verify-completion\.mjs/.test(packageJson?.scripts?.['verify:phase13'] ?? ''),
