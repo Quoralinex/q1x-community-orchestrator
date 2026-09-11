@@ -77,6 +77,9 @@ export async function runSoak({ sourceSha, minutes }) {
     } while (Date.now() < deadline);
     const audit = runtime.verifyAuditChain();
     const finalSqlite = sqliteIntegrity(runtime.databasePath);
+    const unresolvedExternalOperations = runtime.listExternalOperations()
+      .filter(item => item.state === 'intent-recorded' || item.state === 'dispatched').length;
+    const limitBreaches = [];
     const openHandleCount = typeof process._getActiveHandles === 'function' ? process._getActiveHandles().length : null;
     const fileDescriptors = await fileDescriptorCount();
     runtime.close();
@@ -86,8 +89,8 @@ export async function runSoak({ sourceSha, minutes }) {
       elapsedMs: Date.now() - started, iterations, peakRss,
       openHandleCount, fileDescriptorCount: fileDescriptors,
       sqliteIntegrity: finalSqlite, auditValid: audit.valid,
-      externalProviderCalls: 0,
-      state: finalSqlite === 'ok' && audit.valid ? 'passed' : 'failed',
+      unresolvedExternalOperations, limitBreaches, externalProviderCalls: 0,
+      state: finalSqlite === 'ok' && audit.valid && unresolvedExternalOperations === 0 && limitBreaches.length === 0 ? 'passed' : 'failed',
     };
   } finally { await rm(home, { recursive: true, force: true }); }
 }
