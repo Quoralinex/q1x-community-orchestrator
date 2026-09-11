@@ -6,6 +6,8 @@ import { SecurityAuditStore } from './security-audit.js';
 import { SqliteStore } from './store.js';
 import { OpenControlRuntime } from './runtime.js';
 
+const originalReconcileExternalOperations = OpenControlRuntime.prototype.reconcileExternalOperations;
+
 declare module './runtime.js' {
   interface OpenControlRuntime {
     requestApproval(approval: Approval): Approval;
@@ -178,6 +180,18 @@ function verifyAuditChain(this: OpenControlRuntime): AuditVerification {
   return withAudit(this, store => store.verify());
 }
 
+function reconcileExternalOperationsWithAudit(this: OpenControlRuntime) {
+  const entries = originalReconcileExternalOperations.call(this);
+  for (const entry of entries) {
+    this.appendAuditReceipt('operation.uncertain', { id: entry.id, kind: 'external-operation' }, undefined, {
+      operationKind: entry.kind,
+      subjectId: entry.subjectId,
+      retrySafe: entry.retrySafe
+    });
+  }
+  return entries;
+}
+
 function reconcileInterruptedAssignments(this: OpenControlRuntime, programmeId?: string): { assignments: WorkAssignment[]; workGraphs: WorkGraph[] } {
   const running = this.listWorkAssignments(programmeId).filter(assignment => assignment.status === 'running');
   if (running.length === 0) return { assignments: [], workGraphs: [] };
@@ -231,6 +245,7 @@ Object.assign(OpenControlRuntime.prototype, {
   appendAuditReceipt,
   listAuditReceipts,
   verifyAuditChain,
+  reconcileExternalOperations: reconcileExternalOperationsWithAudit,
   reconcileInterruptedAssignments
 });
 

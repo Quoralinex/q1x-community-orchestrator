@@ -21,10 +21,13 @@ import { validateGraphStructure } from './graph-validation.js';
 import { assertNextContractRevision, assertTransition } from './lifecycle.js';
 import { validateContract } from './schema-loader.js';
 import { SqliteStore } from './store.js';
+import { beginOperation, completeOperation, markOperationDispatched, markOperationUncertain, reconcileInterruptedOperations, type BeginOperationInput, type CompleteOperationInput, type OperationJournalEntry } from './operation-journal.js';
+import { assertWithinResponseLimit, boundedTimeout, validateRuntimeLimits, type RuntimeLimits } from './runtime-limits.js';
 
 export interface RuntimeOpenOptions {
   home?: string;
   adapterTransports?: readonly AdapterTransport[];
+  limits?: Partial<RuntimeLimits>;
 }
 
 export interface RuntimeStatus {
@@ -56,13 +59,17 @@ export class OpenControlRuntime {
   private readonly adapterTransports: AdapterTransportRegistry;
   private readonly browserSessions: BrowserSessionManager;
   private readonly desktopBackends: DesktopBackendRegistry;
+  readonly limits: RuntimeLimits;
+  readonly limitWarnings: (keyof RuntimeLimits)[];
 
-  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager, desktopBackends: DesktopBackendRegistry) {
+  private constructor(store: SqliteStore, modelTransports: ModelTransportRegistry, adapterTransports: AdapterTransportRegistry, browserSessions: BrowserSessionManager, desktopBackends: DesktopBackendRegistry, limits: RuntimeLimits, limitWarnings: (keyof RuntimeLimits)[]) {
     this.store = store;
     this.modelTransports = modelTransports;
     this.adapterTransports = adapterTransports;
     this.browserSessions = browserSessions;
     this.desktopBackends = desktopBackends;
+    this.limits = limits;
+    this.limitWarnings = [...limitWarnings];
     this.home = store.home;
     this.databasePath = store.databasePath;
   }
@@ -70,17 +77,58 @@ export class OpenControlRuntime {
   static open(options: RuntimeOpenOptions = {}): OpenControlRuntime {
     const adapterTransports = createDefaultAdapterTransportRegistry();
     for (const transport of options.adapterTransports ?? []) adapterTransports.register(transport);
+    const validatedLimits = validateRuntimeLimits(options.limits);
     return new OpenControlRuntime(
-      SqliteStore.open(options.home),
+      SqliteStore.open(options.home, { busyTimeoutMs: validatedLimits.limits.sqliteBusyTimeoutMs }),
       createDefaultModelTransportRegistry(),
       adapterTransports,
       new BrowserSessionManager(createDefaultBrowserBackendRegistry()),
-      createDefaultDesktopBackendRegistry()
+      createDefaultDesktopBackendRegistry(),
+      validatedLimits.limits,
+      validatedLimits.weakened
     );
   }
 
   close(): void {
     this.store.close();
+  }
+
+  getStateSchemaVersion(): number {
+    return this.store.getStateSchemaVersion();
+  }
+
+  beginExternalOperation(input: BeginOperationInput): OperationJournalEntry {
+    return beginOperation(this.store, input);
+  }
+
+  markExternalOperationDispatched(id: string): OperationJournalEntry {
+    return markOperationDispatched(this.store, id);
+  }
+
+  completeExternalOperation(id: string, input: CompleteOperationInput): OperationJournalEntry {
+    return completeOperation(this.store, id, input);
+  }
+
+  markExternalOperationUncertain(id: string): OperationJournalEntry {
+    return markOperationUncertain(this.store, id);
+  }
+
+  getExternalOperation(id: string): OperationJournalEntry | undefined {
+    return this.store.getExternalOperation(id);
+  }
+
+  listExternalOperations(): OperationJournalEntry[] {
+    return this.store.listExternalOperations();
+  }
+
+  reconcileExternalOperations(): OperationJournalEntry[] {
+    const reconciled = reconcileInterruptedOperations(this.store);
+    for (const entry of reconciled) {
+      this.store.appendEvent('operation.uncertain', 'external-operation', entry.id, null, {
+        kind: entry.kind, subjectId: entry.subjectId, retrySafe: entry.retrySafe
+      });
+    }
+    return reconciled;
   }
 
   putMission(mission: Mission): Mission {
@@ -240,7 +288,11 @@ export class OpenControlRuntime {
   async openBrowserSession(endpointId: string): Promise<BrowserSessionHandle> {
     const endpoint = this.getBrowserEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Browser endpoint not found: ${endpointId}`);
-    const handle = await this.browserSessions.openSession(endpoint);
+    if (this.browserSessions.count() >= this.limits.maxBrowserSessions) {
+      throw new RuntimeError('RESOURCE_LIMIT', `Browser session limit reached: ${this.limits.maxBrowserSessions}`);
+    }
+    const boundedEndpoint = { ...endpoint, timeoutMs: boundedTimeout(endpoint.timeoutMs, this.limits.networkTimeoutMs) };
+    const handle = await this.browserSessions.openSession(boundedEndpoint);
     this.store.appendEvent('browser.session.open', 'browser-endpoint', endpoint.id, null, { backend: endpoint.backend, mode: endpoint.mode });
     return handle;
   }
@@ -251,6 +303,7 @@ export class OpenControlRuntime {
     if (!handle) throw new RuntimeError('NOT_FOUND', `Browser session not found: ${sessionId}`);
     const started = Date.now();
     const result = await this.browserSessions.execute(sessionId, batch, signal);
+    assertWithinResponseLimit(result, this.limits.maxResponseBytes, 'Browser response');
     this.store.appendEvent('browser.execute', 'browser-endpoint', handle.endpointId, null, {
       backend: handle.backend, actionCount: batch.actions.length, status: result.status, durationMs: Date.now() - started
     });
@@ -265,11 +318,27 @@ export class OpenControlRuntime {
   }
 
   async runBrowserBatch(endpointId: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult> {
-    const handle = await this.openBrowserSession(endpointId);
+    validateContract(SCHEMA_IDS.browserActionBatch, batch);
+    const endpoint = this.getBrowserEndpoint(endpointId);
+    if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Browser endpoint not found: ${endpointId}`);
+    const operation = this.beginExternalOperation({
+      id: `operation.browser.${batch.id}`, kind: 'browser', subjectId: batch.id, retrySafe: false,
+      metadata: { endpointId, backend: endpoint.backend, mode: endpoint.mode, actionCount: batch.actions.length }
+    });
+    this.markExternalOperationDispatched(operation.id);
+    let handle: BrowserSessionHandle | undefined;
     try {
-      return await this.executeBrowserSession(handle.id, batch, signal);
+      handle = await this.openBrowserSession(endpointId);
+      const result = await this.executeBrowserSession(handle.id, batch, signal);
+      this.completeExternalOperation(operation.id, { state: 'completed', resultRef: result.id, metadata: { status: result.status } });
+      return result;
+    } catch (error) {
+      this.completeExternalOperation(operation.id, {
+        state: 'failed', errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
+      });
+      throw error;
     } finally {
-      if (this.browserSessions.getSession(handle.id)) await this.closeBrowserSession(handle.id);
+      if (handle && this.browserSessions.getSession(handle.id)) await this.closeBrowserSession(handle.id);
     }
   }
 
@@ -320,21 +389,36 @@ export class OpenControlRuntime {
     const endpoint = this.getDesktopEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Desktop endpoint not found: ${endpointId}`);
     const started = Date.now();
+    const operation = this.beginExternalOperation({
+      id: `operation.desktop.${batch.id}`, kind: 'desktop', subjectId: batch.id, retrySafe: false,
+      metadata: { endpointId, backend: endpoint.backend, platform: endpoint.platform, actionCount: batch.actions.length }
+    });
     try {
-      const preparedBatch = assertSafeDesktopBatch(endpoint, batch);
-      if (endpoint.executionLocation === 'local' && !isDesktopEndpointPlatformCompatible(endpoint)) {
+      const boundedBatch = { ...batch, timeoutMs: boundedTimeout(batch.timeoutMs, this.limits.desktopBatchTimeoutMs) };
+      const boundedEndpoint = endpoint.transport
+        ? { ...endpoint, transport: { ...endpoint.transport, timeoutMs: boundedTimeout(endpoint.transport.timeoutMs, this.limits.childProcessTimeoutMs), maxOutputBytes: Math.min(endpoint.transport.maxOutputBytes ?? this.limits.maxResponseBytes, this.limits.maxResponseBytes) } }
+        : endpoint;
+      const preparedBatch = assertSafeDesktopBatch(boundedEndpoint, boundedBatch);
+      if (boundedEndpoint.executionLocation === 'local' && !isDesktopEndpointPlatformCompatible(boundedEndpoint)) {
         throw new RuntimeError('TRANSPORT_NOT_FOUND', `Desktop endpoint platform is not compatible with this host: ${endpoint.platform}`);
       }
-      const result = await this.desktopBackends.execute(endpoint, preparedBatch, signal);
+      this.markExternalOperationDispatched(operation.id);
+      const result = await this.desktopBackends.execute(boundedEndpoint, preparedBatch, signal);
+      assertWithinResponseLimit(result, this.limits.maxResponseBytes, 'Desktop response');
       if (result.contractVersion !== CONTRACT_VERSION || result.batchId !== batch.id) {
         throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Desktop backend returned mismatched batch references');
       }
+      this.completeExternalOperation(operation.id, { state: 'completed', resultRef: result.id, metadata: { status: result.status } });
       this.store.appendEvent('desktop.execute', 'desktop-endpoint', endpoint.id, null, {
         backend: endpoint.backend, platform: endpoint.platform, actionCount: batch.actions.length,
         status: result.status, durationMs: Date.now() - started
       });
       return result;
     } catch (error) {
+      const current = this.getExternalOperation(operation.id);
+      if (current?.state === 'dispatched') this.completeExternalOperation(operation.id, {
+        state: 'failed', errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
+      });
       this.store.appendEvent('desktop.execute', 'desktop-endpoint', endpoint.id, null, {
         backend: endpoint.backend, platform: endpoint.platform, actionCount: batch.actions.length,
         status: 'failed', durationMs: Date.now() - started,
@@ -395,17 +479,29 @@ export class OpenControlRuntime {
     const endpoint = this.getAdapterEndpoint(endpointId);
     if (!endpoint) throw new RuntimeError('INVALID_REFERENCE', `Adapter endpoint not found: ${endpointId}`);
     const startedAt = Date.now();
+    const operation = this.beginExternalOperation({
+      id: `operation.adapter.${request.id}`, kind: 'adapter', subjectId: request.id, retrySafe: false,
+      metadata: { endpointId, protocol: endpoint.protocol, adapterKind: endpoint.adapterKind }
+    });
+    this.markExternalOperationDispatched(operation.id);
     try {
-      const result = await this.adapterTransports.execute(endpoint, request, context);
+      const timeoutCeiling = endpoint.transport.kind === 'stdio' ? this.limits.childProcessTimeoutMs : this.limits.networkTimeoutMs;
+      const boundedEndpoint = { ...endpoint, transport: { ...endpoint.transport, timeoutMs: boundedTimeout(endpoint.transport.timeoutMs, timeoutCeiling) } } as AdapterEndpoint;
+      const result = await this.adapterTransports.execute(boundedEndpoint, request, context);
+      assertWithinResponseLimit(result, this.limits.maxResponseBytes, 'Adapter response');
       validateContract(SCHEMA_IDS.executionResult, result);
       if (result.requestId !== request.id || result.workItemId !== request.workItemId) {
         throw new RuntimeError('ADAPTER_TRANSPORT_ERROR', 'Adapter transport returned mismatched execution references');
       }
+      this.completeExternalOperation(operation.id, { state: 'completed', resultRef: result.id, metadata: { status: result.status } });
       this.store.appendEvent('adapter.execute', 'adapter-endpoint', endpoint.id, null, {
         protocol: endpoint.protocol, status: result.status, durationMs: Date.now() - startedAt
       });
       return result;
     } catch (error) {
+      this.completeExternalOperation(operation.id, {
+        state: 'failed', errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
+      });
       this.store.appendEvent('adapter.execute', 'adapter-endpoint', endpoint.id, null, {
         protocol: endpoint.protocol, status: 'failed', durationMs: Date.now() - startedAt,
         errorCode: error instanceof RuntimeError ? error.code : 'ADAPTER_TRANSPORT_ERROR'
@@ -436,17 +532,28 @@ export class OpenControlRuntime {
       throw new RuntimeError('INVALID_REFERENCE', `Model endpoint not found: ${request.endpointId}`);
     }
     const startedAt = Date.now();
+    const operation = this.beginExternalOperation({
+      id: `operation.model.${request.id}`, kind: 'model', subjectId: request.id, retrySafe: false,
+      metadata: { endpointId: endpoint.id, protocol: endpoint.protocol, model: endpoint.defaultModel }
+    });
+    this.markExternalOperationDispatched(operation.id);
     try {
-      const response = await this.modelTransports.invoke(endpoint, request, context);
+      const boundedEndpoint = { ...endpoint, timeoutMs: boundedTimeout(endpoint.timeoutMs, this.limits.networkTimeoutMs) };
+      const response = await this.modelTransports.invoke(boundedEndpoint, request, context);
+      assertWithinResponseLimit(response, this.limits.maxResponseBytes, 'Model response');
       validateContract(SCHEMA_IDS.modelResponse, response);
       if (response.requestId !== request.id || response.endpointId !== endpoint.id) {
         throw new RuntimeError('MODEL_TRANSPORT_ERROR', 'Model transport returned mismatched response references');
       }
+      this.completeExternalOperation(operation.id, { state: 'completed', resultRef: response.id });
       this.store.appendEvent('model.invoke', 'model-endpoint', endpoint.id, null, {
         protocol: endpoint.protocol, status: 'succeeded', durationMs: Date.now() - startedAt
       });
       return response;
     } catch (error) {
+      this.completeExternalOperation(operation.id, {
+        state: 'failed', errorCode: error instanceof RuntimeError ? error.code : 'MODEL_TRANSPORT_ERROR'
+      });
       this.store.appendEvent('model.invoke', 'model-endpoint', endpoint.id, null, {
         protocol: endpoint.protocol, status: 'failed', durationMs: Date.now() - startedAt,
         errorCode: error instanceof RuntimeError ? error.code : 'MODEL_TRANSPORT_ERROR'

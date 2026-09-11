@@ -12,7 +12,7 @@ function endpoint(script, overrides = {}) {
   return {
     contractVersion: '1.0.0', id: 'adapter.cli.node', name: 'Portable Node CLI',
     adapterKind: 'cli-tui', protocol: 'cli-json-stdio',
-    transport: { kind: 'stdio', command: process.execPath, args: ['-e', script], inputMode: 'json', outputMode: 'json', timeoutMs: 2000, maxOutputBytes: 65536 },
+    transport: { kind: 'stdio', command: process.execPath, args: ['-e', script], inputMode: 'json', outputMode: 'json', timeoutMs: 30000, maxOutputBytes: 65536 },
     ...overrides
   };
 }

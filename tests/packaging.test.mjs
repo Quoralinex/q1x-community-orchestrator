@@ -65,6 +65,14 @@ test('cross-platform workflow covers Linux, Windows, macOS and pinned actions', 
   assert.match(workflow, /npm pack --dry-run --workspace packages\/runtime/);
 });
 
+test('runtime contracts packages the current beta candidate rather than historical alpha code', async () => {
+  const workflow = await text('.github/workflows/contracts-ci.yml');
+  assert.match(workflow, /scripts\/release\/prepare-prerelease\.mjs/);
+  assert.match(workflow, /0\.2\.0-beta\.1/);
+  assert.match(workflow, /verify-packed-consumer\.mjs --artifacts \.release-beta-test/);
+  assert.doesNotMatch(workflow, /scripts\/release\/prepare-alpha\.mjs/);
+});
+
 test('public alpha workflow is manual-release, fail-closed and action-pinned', async () => {
   const workflow = await text('.github/workflows/public-alpha.yml');
   assert.match(workflow, /workflow_dispatch:/);
@@ -83,6 +91,15 @@ test('public alpha workflow is manual-release, fail-closed and action-pinned', a
   const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
   assert.ok(actionRefs.length >= 4);
   for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
+});
+
+test('public alpha workflow never repacks or releases Alpha 2 from beta source', async () => {
+  const workflow = await text('.github/workflows/public-alpha.yml');
+  assert.match(workflow, /id:\s*release-mode/);
+  assert.match(workflow, /alpha_source/);
+  assert.match(workflow, /steps\.release-mode\.outputs\.alpha_source == 'true'/);
+  assert.match(workflow, /needs\.validate\.outputs\.alpha_source == 'true'/);
+  assert.match(workflow, /0\.1\.0-alpha\.2/);
 });
 
 test('compatibility workflow is focused, read-only and action-pinned', async () => {
@@ -143,4 +160,30 @@ test('public alpha documentation preserves release and security boundaries', asy
   assert.match(limitations, /Breaking changes remain possible/i);
   assert.match(limitations, /npm publication may be unavailable/i);
   assert.match(limitations, /Phase 12/i);
+});
+
+
+test('Phase 13 beta-readiness workflow is bounded, read-only, evidence-producing and action-pinned', async () => {
+  const workflow = await text('.github/workflows/beta-readiness.yml');
+  assert.match(workflow, /name:\s*Beta Readiness/);
+  assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
+  assert.match(workflow, /ubuntu-24\.04/);
+  assert.match(workflow, /node-version:\s*24\s*\n/);
+  assert.match(workflow, /- run: npm ci --no-audit --no-fund/);
+  assert.match(workflow, /- run: npm run test:compatibility\s*\n/);
+  assert.match(workflow, /- run: npm run test:resilience\s*\n/);
+  assert.doesNotMatch(workflow, /node-version:[^\n]+- run:/);
+  assert.doesNotMatch(workflow, /test:compatibility[^\n]+- run:/);
+  assert.match(workflow, /timeout-minutes:\s*30/);
+  assert.match(workflow, /npm run test:resilience/);
+  assert.match(workflow, /npm run test:stress/);
+  assert.match(workflow, /node scripts\/phase13\/verify-completion\.mjs > phase13-evidence\/phase13-completion-evidence\.json/);
+  assert.doesNotMatch(workflow, /npm run verify:phase13 > phase13-evidence\/phase13-completion-evidence\.json/);
+  for (const evidence of ['phase13-resilience-evidence.json', 'phase13-stress-evidence.json', 'phase13-reproducibility-evidence.json', 'phase13-sbom.spdx.json']) {
+    assert.match(workflow, new RegExp(evidence.replaceAll('.', '\\.')));
+  }
+  assert.doesNotMatch(workflow, /OPENAI_API_KEY|ANTHROPIC_API_KEY|GOOGLE_API_KEY|secrets\./i);
+  const actionRefs = [...workflow.matchAll(/uses:\s*([^\s]+)/g)].map(match => match[1]);
+  assert.ok(actionRefs.length >= 4);
+  for (const ref of actionRefs) assert.match(ref, /@[0-9a-f]{40}$/);
 });

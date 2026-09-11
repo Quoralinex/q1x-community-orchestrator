@@ -1,6 +1,6 @@
 {
   "name": "@quoralinex/q1x-community-adapter-sdk",
-  "version": "0.1.0-alpha.2",
+  "version": "0.2.0-beta.1",
   "description": "Public authoring and conformance SDK for Q1X Community Orchestrator adapters.",
   "type": "module",
   "engines": {
@@ -18,7 +18,7 @@
     }
   },
   "dependencies": {
-    "@quoralinex/q1x-community-sdk": "0.1.0-alpha.2"
+    "@quoralinex/q1x-community-sdk": "0.2.0-beta.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {

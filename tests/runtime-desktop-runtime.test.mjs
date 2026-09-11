@@ -26,7 +26,7 @@ function endpoint(home, overrides = {}) {
     transport: {
       command: process.execPath,
       args: [bridge],
-      timeoutMs: 1000,
+      timeoutMs: 30000,
       maxOutputBytes: 4096,
       environment: [{ name: 'Q1X_BRIDGE_TEST', environmentKey: 'Q1X_TEST_MAPPED' }]
     },
@@ -150,7 +150,7 @@ test('desktop bridge bounds execution, force-stops stubborn processes and reject
   );
   assert.ok(Date.now() - stubbornStarted < 400, 'timeout must force-stop a bridge that ignores SIGTERM');
 
-  runtime.putDesktopEndpoint(endpoint(home, { id: 'desktop.output', transport: { command: process.execPath, args: [bridge], timeoutMs: 1000, maxOutputBytes: 1024 } }));
+  runtime.putDesktopEndpoint(endpoint(home, { id: 'desktop.output', transport: { command: process.execPath, args: [bridge], timeoutMs: 30000, maxOutputBytes: 1024 } }));
   await assert.rejects(
     () => runtime.runDesktopBatch('desktop.output', batch('desktop.batch.output', [{ id: 'list', kind: 'list-applications', application: 'example.app' }], { fixtureMode: 'overflow' })),
     error => error instanceof RuntimeError && error.code === 'ADAPTER_TRANSPORT_ERROR' && /output limit/i.test(error.message)

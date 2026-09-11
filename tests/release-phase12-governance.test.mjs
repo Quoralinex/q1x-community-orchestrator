@@ -24,24 +24,38 @@ const expectedPackages = [
   '@quoralinex/q1x-community-desktop-bridge-linux',
   '@quoralinex/q1x-community-runtime',
 ];
+
+async function historicalAlphaIdentity() {
+  const identity = structuredClone(await readReleaseIdentity(root));
+  identity.version = RELEASE_VERSION;
+  identity.tag = RELEASE_TAG;
+  const publicNames = new Set(PUBLIC_PACKAGES.map(([name]) => name));
+  for (const pkg of identity.packages) {
+    pkg.version = RELEASE_VERSION;
+    for (const name of Object.keys(pkg.dependencies ?? {})) {
+      if (publicNames.has(name)) pkg.dependencies[name] = RELEASE_VERSION;
+    }
+  }
+  return identity;
+}
 test('Phase 12 release governs the complete eight-package alpha.2 set in dependency order', async () => {
   assert.equal(RELEASE_VERSION, '0.1.0-alpha.2');
   assert.equal(RELEASE_TAG, 'v0.1.0-alpha.2');
   assert.deepEqual(PUBLIC_PACKAGES.map(([name]) => name), expectedPackages);
-  const identity = assertReleaseIdentity(await readReleaseIdentity(root));
+  const identity = assertReleaseIdentity(await historicalAlphaIdentity());
   assert.deepEqual(identity.packages.map(item => item.name), expectedPackages);
   assert.equal(identity.packages.every(item => item.version === RELEASE_VERSION), true);
 });
 
 test('Phase 12 release identity rejects missing first-party packages', async () => {
-  const identity = await readReleaseIdentity(root);
+  const identity = await historicalAlphaIdentity();
   const copy = structuredClone(identity);
   copy.packages.splice(5, 1);
   assert.throws(() => assertReleaseIdentity(copy), /eight public Q1X packages/i);
 });
 
 test('all governed internal dependencies are exact to the release version', async () => {
-  const identity = assertReleaseIdentity(await readReleaseIdentity(root));
+  const identity = assertReleaseIdentity(await historicalAlphaIdentity());
   const names = new Set(expectedPackages);
   for (const pkg of identity.packages) {
     for (const [name, version] of Object.entries(pkg.dependencies ?? {})) {
@@ -50,14 +64,14 @@ test('all governed internal dependencies are exact to the release version', asyn
   }
 });
 test('release identity rejects private Quoralinex package dependencies', async () => {
-  const identity = await readReleaseIdentity(root);
+  const identity = await historicalAlphaIdentity();
   const copy = structuredClone(identity);
   copy.packages.at(-1).dependencies['@quoralinex/q1x-control-plane'] = RELEASE_VERSION;
   assert.throws(() => assertReleaseIdentity(copy), /private.*dependency/i);
 });
 
 test('release manifest is standalone and contains no private endpoint or credential contract', async () => {
-  const identity = assertReleaseIdentity(await readReleaseIdentity(root));
+  const identity = assertReleaseIdentity(await historicalAlphaIdentity());
   const manifest = buildReleaseManifest({
     identity,
     sourceSha: 'b'.repeat(40),

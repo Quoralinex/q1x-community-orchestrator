@@ -1,0 +1,22 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:q1x:community:phase13:host-evidence",
+  "title": "Q1X Phase 13 Physical Host Evidence",
+  "type": "object",
+  "required": ["schema", "environmentTier", "os", "osVersion", "architecture", "sourceSha", "scenarioIds", "state"],
+  "properties": {
+    "schema": { "const": "q1x.phase13-host-evidence.v1" },
+    "environmentTier": { "const": "physical-host" },
+    "os": { "enum": ["macos", "windows", "linux"] },
+    "osVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "architecture": { "type": "string", "minLength": 1, "maxLength": 64 },
+    "sourceSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "releaseSha": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "bridgeVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "browserVersion": { "type": "string", "minLength": 1, "maxLength": 128 },
+    "scenarioIds": { "type": "array", "minItems": 1, "maxItems": 100, "uniqueItems": true, "items": { "type": "string", "minLength": 1, "maxLength": 128 } },
+    "state": { "enum": ["pass", "fail", "blocked"] },
+    "remediationNotes": { "type": "array", "maxItems": 20, "items": { "type": "string", "maxLength": 512 } }
+  },
+  "additionalProperties": false
+}

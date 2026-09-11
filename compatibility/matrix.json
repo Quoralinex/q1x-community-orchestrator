@@ -1,7 +1,7 @@
 {
   "matrixVersion": "1.0.0",
-  "projectVersion": "0.1.0-alpha.2",
-  "generatedFrom": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+  "projectVersion": "0.2.0-beta.1",
+  "generatedFrom": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
   "entries": [
     {
       "id": "os.ubuntu-24.04.source",
@@ -13,7 +13,8 @@
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+          "environmentTier": "hosted-runner"
         }
       ]
     },
@@ -27,7 +28,8 @@
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+          "environmentTier": "hosted-runner"
         }
       ]
     },
@@ -41,7 +43,8 @@
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+          "environmentTier": "hosted-runner"
         }
       ]
     },
@@ -55,33 +58,39 @@
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50",
+          "environmentTier": "hosted-runner"
         }
       ]
     },
     {
-      "id": "package-consumer.alpha-tarballs",
+      "id": "package-consumer.beta-tarballs",
       "category": "package-consumer",
-      "target": "Governed four-package Q1X alpha tarballs in an external consumer",
+      "target": "Governed eight-package Q1X beta-candidate tarballs in an external consumer",
       "status": "tested",
       "implementation": "npm pack tarballs",
       "evidence": [
         {
           "kind": "ci",
-          "source": ".github/workflows/public-alpha.yml",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "source": ".github/workflows/public-beta.yml",
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "hosted-runner"
         },
         {
           "kind": "ci",
-          "source": "tests/release-adapter-governance.test.mjs",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "source": "tests/release-beta-governance.test.mjs",
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
-          "source": "tests/release-commissioning.test.mjs",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "source": "tests/release-reproducibility.test.mjs",
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         }
-      ]
+      ],
+      "version": "0.2.0-beta.1",
+      "notes": "Current beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately."
     },
     {
       "id": "model-transport.provider-combinations",
@@ -149,85 +158,94 @@
       "target": "Community Adapter SDK conformance and explicit runtime bridge",
       "status": "tested",
       "implementation": "@quoralinex/q1x-community-adapter-sdk",
-      "version": "0.1.0-alpha.1 / contract 1.0.0 / runtime 0.1.x",
+      "version": "0.2.0-beta.1 / contract 1.0.0 / runtime 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
           "source": "tests/adapter-sdk.test.mjs",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/community-adapter-example.test.mjs",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/runtime-community-adapter.test.mjs",
-          "commitSha": "3f249d836dac51725691b6dfe83a9c7d85842c50"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         }
       ],
-      "notes": "This tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
+      "notes": "This beta-candidate tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
     },
     {
       "id": "desktop.macos.first-party",
       "category": "desktop",
       "target": "First-party macOS Accessibility bridge baseline harness",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-macos 0.1.0-alpha.2",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-macos 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "hosted-runner"
         },
         {
           "kind": "ci",
           "source": "tests/desktop-bridge-macos.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         }
       ],
-      "notes": "Deterministic bridge contract and host doctor are tested; physical-host Accessibility action execution remains separately dependent on granted OS permission and is not implied by this entry."
+      "notes": "Beta-candidate bridge contract and host doctor are tested. The physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim."
     },
     {
       "id": "desktop.windows.first-party",
       "category": "desktop",
       "target": "First-party Windows UI Automation bridge baseline harness",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-windows 0.1.0-alpha.2",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-windows 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "hosted-runner"
         },
         {
           "kind": "ci",
           "source": "tests/desktop-bridge-windows.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         }
       ],
-      "notes": "Deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
+      "notes": "Beta-candidate deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
     },
     {
       "id": "desktop.linux.first-party",
       "category": "desktop",
       "target": "First-party Linux AT-SPI bridge on Ubuntu 24.04 virtual accessibility session",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-linux 0.1.0-alpha.2",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-linux 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "hosted-runner"
         },
         {
           "kind": "ci",
           "source": "tests/desktop-bridge-linux.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
+          "environmentTier": "fixture"
         }
       ],
-      "notes": "Tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence."
+      "notes": "Beta-candidate bridge behavior is tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence."
     },
     {
       "id": "model.openai-chat.local.fixture",
@@ -239,12 +257,14 @@
         {
           "kind": "ci",
           "source": "tests/runtime-model-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -258,7 +278,8 @@
         {
           "kind": "ci",
           "source": "tests/runtime-model-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -272,7 +293,8 @@
         {
           "kind": "ci",
           "source": "tests/runtime-model-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -286,12 +308,14 @@
         {
           "kind": "ci",
           "source": "tests/runtime-mcp-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -305,7 +329,8 @@
         {
           "kind": "ci",
           "source": "tests/runtime-mcp-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -319,12 +344,14 @@
         {
           "kind": "ci",
           "source": "tests/runtime-a2a-profile.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -338,12 +365,14 @@
         {
           "kind": "ci",
           "source": "tests/runtime-cli-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -357,12 +386,14 @@
         {
           "kind": "ci",
           "source": "tests/runtime-cli-profiles.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     },
@@ -376,12 +407,14 @@
         {
           "kind": "ci",
           "source": ".github/workflows/cross-platform-packaging.yml",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "hosted-runner"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "hosted-runner"
         }
       ],
       "notes": "Tested only against browser binaries available in the cited CI environment; this is not a universal Chromium/browser-version claim."
@@ -396,17 +429,20 @@
         {
           "kind": "ci",
           "source": "tests/runtime-connectors-cli.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/runtime-doctor.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         },
         {
           "kind": "ci",
           "source": "tests/product-usability.test.mjs",
-          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1"
+          "commitSha": "105b9ab6c13ea427d3abb09a907e27b920a543c1",
+          "environmentTier": "fixture"
         }
       ]
     }

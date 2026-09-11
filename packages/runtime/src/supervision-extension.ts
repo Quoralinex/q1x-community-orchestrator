@@ -75,7 +75,7 @@ const planners = new WeakMap<OpenControlRuntime, Map<string, PlanningStrategy>>(
 const originalGetStatus = OpenControlRuntime.prototype.getStatus;
 
 function withStore<T>(runtime: OpenControlRuntime, fn: (store: SqliteStore) => T): T {
-  const store = SqliteStore.open(runtime.home);
+  const store = SqliteStore.open(runtime.home, { busyTimeoutMs: runtime.limits.sqliteBusyTimeoutMs });
   try {
     return fn(store);
   } finally {
@@ -303,7 +303,9 @@ function listSupervisionCycles(this: OpenControlRuntime, programmeId?: string): 
 function formTeam(this: OpenControlRuntime, programmeId: string, options: TeamFormationOptions): TeamPlan {
   validateContract(SCHEMA_IDS.supervisionPolicy, options.policy);
   const graph = requireGraph(this, programmeId);
-  const ready = graph.nodes.filter(node => node.status === 'ready' && !node.approvalRequired && dependenciesSatisfied(graph, node.id));
+  const ready = graph.nodes
+    .filter(node => node.status === 'ready' && !node.approvalRequired && dependenciesSatisfied(graph, node.id))
+    .slice(0, this.limits.maxSupervisionWorkPerCycle);
   const sequence = this.listTeamPlans(programmeId).length + 1;
   const now = new Date().toISOString();
   const members: TeamPlan['members'] = [];
@@ -469,12 +471,25 @@ async function executeBoundWork(runtime: OpenControlRuntime, assignment: WorkAss
   const binding = runtime.getExecutionBinding(assignment.bindingId);
   if (!binding || !binding.enabled) return { status: 'failed', errorCode: 'BINDING_UNAVAILABLE' };
   const started = Date.now();
+  const operation = runtime.beginExternalOperation({
+    id: `operation.supervision.${assignment.id}`, kind: 'supervision', subjectId: assignment.id, retrySafe: false,
+    metadata: { bindingId: binding.id, executorKind: binding.executorKind, workItemId: assignment.workItemId }
+  });
+  runtime.markExternalOperationDispatched(operation.id);
+  const finish = (outcome: WorkExecutionOutcome): WorkExecutionOutcome => {
+    runtime.completeExternalOperation(operation.id, {
+      state: 'completed',
+      ...(outcome.resultRef ? { resultRef: outcome.resultRef } : {}),
+      metadata: { status: outcome.status, ...(outcome.errorCode ? { errorCode: outcome.errorCode } : {}) }
+    });
+    return outcome;
+  };
   try {
     if (binding.executorKind === 'external') {
       const executor = executors.get(runtime)?.get('external') ?? executors.get(runtime)?.get(binding.id);
       if (!executor) throw new RuntimeError('TRANSPORT_NOT_FOUND', `External work executor not registered: ${binding.id}`);
       const outcome = await executor.execute({ binding, assignment, input, signal });
-      return { ...outcome, usage: { ...outcome.usage, durationMs: outcome.usage?.durationMs ?? Date.now() - started } };
+      return finish({ ...outcome, usage: { ...outcome.usage, durationMs: outcome.usage?.durationMs ?? Date.now() - started } });
     }
     if (!binding.endpointId) throw new RuntimeError('INVALID_REFERENCE', `Execution binding endpoint missing: ${binding.id}`);
     if (binding.executorKind === 'adapter-endpoint') {
@@ -488,7 +503,7 @@ async function executeBoundWork(runtime: OpenControlRuntime, assignment: WorkAss
         createdAt: new Date().toISOString()
       };
       const result = await runtime.executeAdapter(binding.endpointId, request);
-      return { status: result.status, resultRef: result.id, usage: { cost: result.usage?.cost, currency: result.usage?.currency, durationMs: result.usage?.durationMs ?? Date.now() - started }, errorCode: result.error?.code };
+      return finish({ status: result.status, resultRef: result.id, usage: { cost: result.usage?.cost, currency: result.usage?.currency, durationMs: result.usage?.durationMs ?? Date.now() - started }, errorCode: result.error?.code });
     }
     if (binding.executorKind === 'model-endpoint') {
       const inputRecord = typeof input === 'object' && input !== null ? input as Record<string, unknown> : {};
@@ -501,16 +516,20 @@ async function executeBoundWork(runtime: OpenControlRuntime, assignment: WorkAss
         createdAt: new Date().toISOString()
       };
       const response = await runtime.invokeModel(request);
-      return { status: 'succeeded', resultRef: response.id, usage: { durationMs: Date.now() - started } };
+      return finish({ status: 'succeeded', resultRef: response.id, usage: { durationMs: Date.now() - started } });
     }
     if (binding.executorKind === 'browser-endpoint') {
       const result = await runtime.runBrowserBatch(binding.endpointId, input as BrowserActionBatch, signal);
-      return { status: result.status, resultRef: result.id, usage: { durationMs: Date.now() - started } };
+      return finish({ status: result.status, resultRef: result.id, usage: { durationMs: Date.now() - started } });
     }
     const result = await runtime.runDesktopBatch(binding.endpointId, input as DesktopActionBatch, signal);
-    return { status: result.status, resultRef: result.id, usage: { durationMs: Date.now() - started } };
+    return finish({ status: result.status, resultRef: result.id, usage: { durationMs: Date.now() - started } });
   } catch (error) {
-    return { status: 'failed', errorCode: error instanceof RuntimeError ? error.code : 'EXECUTION_FAILED', usage: { durationMs: Date.now() - started } };
+    const errorCode = error instanceof RuntimeError ? error.code : 'EXECUTION_FAILED';
+    if (runtime.getExternalOperation(operation.id)?.state === 'dispatched') {
+      runtime.completeExternalOperation(operation.id, { state: 'failed', errorCode });
+    }
+    return { status: 'failed', errorCode, usage: { durationMs: Date.now() - started } };
   }
 }
 
@@ -551,7 +570,8 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   }
 
   const team = this.formTeam(programmeId, { policy });
-  const assignments = this.listWorkAssignments(programmeId).filter(assignment => assignment.teamPlanId === team.id && assignment.status === 'planned');
+  const assignments = this.listWorkAssignments(programmeId)
+    .filter(assignment => assignment.teamPlanId === team.id && assignment.status === 'planned');
   if (assignments.length === 0) {
     return putCycle(this, {
       contractVersion: CONTRACT_VERSION, id: cycleId, programmeId, workGraphId: graph.id, workGraphRevision: graph.revision,
@@ -566,7 +586,7 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   graph = updateGraph(this, graph, graph.nodes.map(node => assignedWorkItemIds.has(node.id) ? { ...node, status: 'running' as const } : node));
   const running = assignments.map(assignment => putAssignment(this, { ...assignment, status: 'running', workGraphRevision: graph.revision, updatedAt: new Date().toISOString() }));
   const outcomes = new Map<string, WorkExecutionOutcome>();
-  const concurrency = Math.max(1, policy.maxConcurrentAssignments);
+  const concurrency = Math.max(1, Math.min(policy.maxConcurrentAssignments, this.limits.maxConcurrentAssignments));
   for (let index = 0; index < running.length; index += concurrency) {
     const chunk = running.slice(index, index + concurrency);
     const chunkOutcomes = await Promise.all(chunk.map(async assignment => [assignment.id, await executeBoundWork(this, assignment, options.inputsByWorkItem?.[assignment.workItemId], options.signal)] as const));
