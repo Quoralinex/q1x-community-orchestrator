@@ -151,7 +151,12 @@ test('Phase 13 beta-readiness workflow is bounded, read-only, evidence-producing
   assert.match(workflow, /name:\s*Beta Readiness/);
   assert.match(workflow, /permissions:\s*\n\s*contents:\s*read/);
   assert.match(workflow, /ubuntu-24\.04/);
-  assert.match(workflow, /node-version:\s*24/);
+  assert.match(workflow, /node-version:\s*24\s*\n/);
+  assert.match(workflow, /- run: npm ci --no-audit --no-fund/);
+  assert.match(workflow, /- run: npm run test:compatibility\s*\n/);
+  assert.match(workflow, /- run: npm run test:resilience\s*\n/);
+  assert.doesNotMatch(workflow, /node-version:[^\n]+- run:/);
+  assert.doesNotMatch(workflow, /test:compatibility[^\n]+- run:/);
   assert.match(workflow, /timeout-minutes:\s*30/);
   assert.match(workflow, /npm run test:resilience/);
   assert.match(workflow, /npm run test:stress/);

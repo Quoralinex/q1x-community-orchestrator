@@ -27,7 +27,8 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run check
-      - run: npm run test:compatibility      - run: npm run test:resilience
+      - run: npm run test:compatibility
+      - run: npm run test:resilience
       - run: npm run test:stress
       - name: Generate exact-head evidence
         shell: bash
@@ -55,7 +56,9 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
-          node-version: 24      - run: npm ci --no-audit --no-fund
+          node-version: 24
+          cache: npm
+      - run: npm ci --no-audit --no-fund
       - run: npm run build
       - name: Run bounded local soak
         shell: bash
