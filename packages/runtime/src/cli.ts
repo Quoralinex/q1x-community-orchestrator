@@ -79,6 +79,10 @@ async function execute(runtime: OpenControlRuntime, args: string[]): Promise<unk
   }
 
   const action = args.shift();
+  if (command === 'limits') {
+    if (action !== 'show' || args.length > 0) throw new Error(`Unknown command: ${[command, action].filter(Boolean).join(' ')}`);
+    return { schema: 'q1x.runtime-limits.v1', limits: runtime.limits, weakened: runtime.limitWarnings };
+  }
   if (command === 'connectors') {
     if (action === 'apply') {
       const id = args.shift();

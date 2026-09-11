@@ -1,6 +1,7 @@
 import { mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
+import { isDeepStrictEqual } from 'node:util';
 import { resolveRuntimeHome } from './home.js';
 import { RuntimeError } from './errors.js';
 import { CURRENT_STATE_SCHEMA_VERSION, classifyStateSchema } from './state-schema.js';
@@ -23,6 +24,11 @@ export interface PutDocumentInput<T = unknown> {
   id: string;
   scopeId: string | null;
   document: T;
+  expectedHeadRevision?: number;
+}
+
+export interface SqliteStoreOpenOptions {
+  busyTimeoutMs?: number;
 }
 
 interface HeadRow {
@@ -53,14 +59,18 @@ export class SqliteStore {
     this.db = db;
   }
 
-  static open(homeInput?: string): SqliteStore {
+  static open(homeInput?: string, options: SqliteStoreOpenOptions = {}): SqliteStore {
     const home = resolveRuntimeHome(homeInput);
     mkdirSync(home, { recursive: true });
     const databasePath = join(home, 'state.sqlite');
     const db = new DatabaseSync(databasePath);
     try {
       db.exec('PRAGMA foreign_keys = ON;');
-      db.exec('PRAGMA busy_timeout = 5000;');
+      const busyTimeoutMs = options.busyTimeoutMs ?? 5_000;
+      if (!Number.isInteger(busyTimeoutMs) || busyTimeoutMs <= 0 || busyTimeoutMs > 60_000) {
+        throw new RuntimeError('RESOURCE_LIMIT', `Invalid SQLite busy timeout: ${busyTimeoutMs}`);
+      }
+      db.exec(`PRAGMA busy_timeout = ${busyTimeoutMs};`);
       db.exec('CREATE TABLE IF NOT EXISTS runtime_metadata (key TEXT PRIMARY KEY, value TEXT NOT NULL);');
       const metadata = db.prepare("SELECT value FROM runtime_metadata WHERE key = 'state_schema_version'").get() as MetadataRow | undefined;
       if (!metadata) {
@@ -179,11 +189,17 @@ export class SqliteStore {
     return row?.scope_id;
   }
 
-  putDocument<T>({ kind, id, scopeId, document }: PutDocumentInput<T>): number {
-    const nextRevision = (this.getHeadRevision(kind, id) ?? 0) + 1;
-    const now = new Date().toISOString();
-    this.db.exec('BEGIN IMMEDIATE;');
+  putDocument<T>({ kind, id, scopeId, document, expectedHeadRevision }: PutDocumentInput<T>): number {
+    let transactionStarted = false;
     try {
+      this.db.exec('BEGIN IMMEDIATE;');
+      transactionStarted = true;
+      const currentRevision = this.getHeadRevision(kind, id);
+      if (expectedHeadRevision !== undefined && currentRevision !== expectedHeadRevision) {
+        throw new RuntimeError('CONFLICT', `Stale document head for ${kind}:${id}; expected ${expectedHeadRevision}, found ${currentRevision ?? 'none'}`);
+      }
+      const nextRevision = (currentRevision ?? 0) + 1;
+      const now = new Date().toISOString();
       this.db.prepare(`
         INSERT INTO document_versions
           (kind, id, storage_revision, scope_id, document_json, created_at)
@@ -197,11 +213,30 @@ export class SqliteStore {
           scope_id = excluded.scope_id
       `).run(kind, id, nextRevision, scopeId);
       this.db.exec('COMMIT;');
+      transactionStarted = false;
       return nextRevision;
     } catch (error) {
-      this.db.exec('ROLLBACK;');
+      if (transactionStarted) {
+        try { this.db.exec('ROLLBACK;'); } catch { /* preserve the original error */ }
+      }
+      if (error instanceof RuntimeError) throw error;
+      const message = String(error);
+      if (/SQLITE_BUSY|database is locked|UNIQUE constraint failed/i.test(message)) {
+        throw new RuntimeError('CONFLICT', `Concurrent document write conflict for ${kind}:${id}`);
+      }
       throw error;
     }
+  }
+
+  putImmutableDocument<T>(input: Omit<PutDocumentInput<T>, 'expectedHeadRevision'>): number {
+    const revision = this.getHeadRevision(input.kind, input.id);
+    if (revision !== undefined) {
+      const existing = this.getDocument<T>(input.kind, input.id);
+      const existingScope = this.getDocumentScope(input.kind, input.id);
+      if (existingScope === input.scopeId && isDeepStrictEqual(existing, input.document)) return revision;
+      throw new RuntimeError('CONFLICT', `Immutable document already exists with different content: ${input.kind}:${input.id}`);
+    }
+    return this.putDocument({ ...input, expectedHeadRevision: undefined });
   }
 
   getDocument<T = unknown>(kind: string, id: string): T | undefined {

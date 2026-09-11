@@ -75,7 +75,7 @@ const planners = new WeakMap<OpenControlRuntime, Map<string, PlanningStrategy>>(
 const originalGetStatus = OpenControlRuntime.prototype.getStatus;
 
 function withStore<T>(runtime: OpenControlRuntime, fn: (store: SqliteStore) => T): T {
-  const store = SqliteStore.open(runtime.home);
+  const store = SqliteStore.open(runtime.home, { busyTimeoutMs: runtime.limits.sqliteBusyTimeoutMs });
   try {
     return fn(store);
   } finally {
@@ -303,7 +303,9 @@ function listSupervisionCycles(this: OpenControlRuntime, programmeId?: string): 
 function formTeam(this: OpenControlRuntime, programmeId: string, options: TeamFormationOptions): TeamPlan {
   validateContract(SCHEMA_IDS.supervisionPolicy, options.policy);
   const graph = requireGraph(this, programmeId);
-  const ready = graph.nodes.filter(node => node.status === 'ready' && !node.approvalRequired && dependenciesSatisfied(graph, node.id));
+  const ready = graph.nodes
+    .filter(node => node.status === 'ready' && !node.approvalRequired && dependenciesSatisfied(graph, node.id))
+    .slice(0, this.limits.maxSupervisionWorkPerCycle);
   const sequence = this.listTeamPlans(programmeId).length + 1;
   const now = new Date().toISOString();
   const members: TeamPlan['members'] = [];
@@ -568,7 +570,8 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   }
 
   const team = this.formTeam(programmeId, { policy });
-  const assignments = this.listWorkAssignments(programmeId).filter(assignment => assignment.teamPlanId === team.id && assignment.status === 'planned');
+  const assignments = this.listWorkAssignments(programmeId)
+    .filter(assignment => assignment.teamPlanId === team.id && assignment.status === 'planned');
   if (assignments.length === 0) {
     return putCycle(this, {
       contractVersion: CONTRACT_VERSION, id: cycleId, programmeId, workGraphId: graph.id, workGraphRevision: graph.revision,
@@ -583,7 +586,7 @@ async function runSupervisionCycle(this: OpenControlRuntime, programmeId: string
   graph = updateGraph(this, graph, graph.nodes.map(node => assignedWorkItemIds.has(node.id) ? { ...node, status: 'running' as const } : node));
   const running = assignments.map(assignment => putAssignment(this, { ...assignment, status: 'running', workGraphRevision: graph.revision, updatedAt: new Date().toISOString() }));
   const outcomes = new Map<string, WorkExecutionOutcome>();
-  const concurrency = Math.max(1, policy.maxConcurrentAssignments);
+  const concurrency = Math.max(1, Math.min(policy.maxConcurrentAssignments, this.limits.maxConcurrentAssignments));
   for (let index = 0; index < running.length; index += concurrency) {
     const chunk = running.slice(index, index + concurrency);
     const chunkOutcomes = await Promise.all(chunk.map(async assignment => [assignment.id, await executeBoundWork(this, assignment, options.inputsByWorkItem?.[assignment.workItemId], options.signal)] as const));

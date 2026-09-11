@@ -4,6 +4,7 @@ import { createLinuxDoctor } from '@quoralinex/q1x-community-desktop-bridge-linu
 import { desktopPlatformForHost } from './desktop-security.js';
 import { getFirstPartyDesktopBridge } from './first-party-desktop.js';
 import type { OpenControlRuntime } from './runtime.js';
+import type { RuntimeLimits } from './runtime-limits.js';
 import { listConfiguredConnectors } from './connectors/configuration.js';
 import {
   aggregateDiagnosticState,
@@ -41,6 +42,7 @@ export interface DoctorReport {
   home: string;
   checks: DiagnosticCheck[];
   connectors: ConnectorPreflightReport[];
+  limits: { effective: RuntimeLimits; weakened: (keyof RuntimeLimits)[] };
 }
 
 async function runNativeDoctor(platform: 'macos' | 'windows' | 'linux'): Promise<NativeDoctorReport> {
@@ -58,6 +60,15 @@ export async function runDoctor(runtime: OpenControlRuntime, options: DoctorOpti
     state: 'ok',
     message: 'Community Orchestrator local runtime state is readable.',
     evidence: { databasePath: status.databasePath, contractVersion: status.contractVersion },
+  });
+
+  checks.push({
+    id: 'runtime-limits',
+    state: runtime.limitWarnings.length > 0 ? 'warning' : 'ok',
+    message: runtime.limitWarnings.length > 0
+      ? `Runtime limits are weaker than conservative defaults: ${runtime.limitWarnings.join(', ')}.`
+      : 'Runtime limits use conservative defaults or stricter overrides.',
+    evidence: { effective: runtime.limits, weakened: runtime.limitWarnings },
   });
 
   const hostPlatform = options.platform ?? process.platform;
@@ -124,5 +135,6 @@ export async function runDoctor(runtime: OpenControlRuntime, options: DoctorOpti
     home: runtime.home,
     checks,
     connectors,
+    limits: { effective: runtime.limits, weakened: runtime.limitWarnings },
   };
 }
