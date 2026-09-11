@@ -99,6 +99,22 @@ function same(left, right) {
   return JSON.stringify(canonical(left)) === JSON.stringify(canonical(right));
 }
 
+function stringLiteralUnion(signature) {
+  const match = /^export type ([A-Za-z_$][A-Za-z0-9_$]*) = (.+);$/.exec(signature);
+  if (!match) return undefined;
+  const members = match[2].split(' | ').map(item => item.trim());
+  if (members.length === 0 || members.some(item => !/^'(?:[^'\\]|\\.)*'$/.test(item))) return undefined;
+  return { name: match[1], members: new Set(members) };
+}
+
+function compatibleSignature(expected, actual) {
+  if (expected === actual) return true;
+  const baselineUnion = stringLiteralUnion(expected);
+  const currentUnion = stringLiteralUnion(actual);
+  if (!baselineUnion || !currentUnion || baselineUnion.name !== currentUnion.name) return false;
+  return [...baselineUnion.members].every(member => currentUnion.members.has(member));
+}
+
 export function comparePublicSurface(baseline, current) {
   const findings = [];
   const requireEntries = (area, baselineItems, currentItems, key, fields) => {
@@ -131,7 +147,7 @@ export function comparePublicSurface(baseline, current) {
       const actualExport = actualExports.get(expectedExport.name);
       if (!actualExport) {
         findings.push({ code: 'types.export.removed', detail: `type export removed: ${expectedPackage.packageName}:${expectedExport.name}` });
-      } else if (expectedExport.signature !== actualExport.signature) {
+      } else if (!compatibleSignature(expectedExport.signature, actualExport.signature)) {
         findings.push({ code: 'types.signature.changed', detail: `type export changed: ${expectedPackage.packageName}:${expectedExport.name}` });
       }
     }

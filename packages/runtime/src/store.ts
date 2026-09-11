@@ -1,10 +1,11 @@
-import { mkdirSync } from 'node:fs';
+import { existsSync, mkdirSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { isDeepStrictEqual } from 'node:util';
 import { resolveRuntimeHome } from './home.js';
 import { RuntimeError } from './errors.js';
-import { CURRENT_STATE_SCHEMA_VERSION, classifyStateSchema } from './state-schema.js';
+import { CURRENT_STATE_SCHEMA_VERSION } from './state-schema.js';
+import { inspectRuntimeState } from './state-migrations.js';
 import type { ExternalOperationState, OperationJournalEntry } from './operation-journal.js';
 
 export interface HeadPointer {
@@ -63,6 +64,16 @@ export class SqliteStore {
     const home = resolveRuntimeHome(homeInput);
     mkdirSync(home, { recursive: true });
     const databasePath = join(home, 'state.sqlite');
+    const databaseExisted = existsSync(databasePath);
+    if (databaseExisted) {
+      const inspection = inspectRuntimeState(home);
+      if (inspection.state === 'migration-required') {
+        throw new RuntimeError('MIGRATION_REQUIRED', `Runtime state requires explicit migration to schema ${CURRENT_STATE_SCHEMA_VERSION}`);
+      }
+      if (inspection.state === 'future' || inspection.state === 'invalid') {
+        throw new RuntimeError('INCOMPATIBLE_STATE', `Unsupported runtime state schema version: ${inspection.sourceSchemaVersion ?? 'invalid'}`);
+      }
+    }
     const db = new DatabaseSync(databasePath);
     try {
       db.exec('PRAGMA foreign_keys = ON;');
@@ -77,17 +88,8 @@ export class SqliteStore {
         db.prepare('INSERT INTO runtime_metadata (key, value) VALUES (?, ?)').run(
           'state_schema_version', String(CURRENT_STATE_SCHEMA_VERSION)
         );
-      } else {
-        const version = Number(metadata.value);
-        const classification = classifyStateSchema(version);
-        if (classification === 'future') {
-          throw new RuntimeError('INCOMPATIBLE_STATE', `Unsupported runtime state schema version: ${metadata.value}`);
-        }
-        if (classification === 'upgradeable') {
-          db.prepare("UPDATE runtime_metadata SET value = ? WHERE key = 'state_schema_version'").run(
-            String(CURRENT_STATE_SCHEMA_VERSION)
-          );
-        }
+      } else if (Number(metadata.value) !== CURRENT_STATE_SCHEMA_VERSION) {
+        throw new RuntimeError('INCOMPATIBLE_STATE', `Unsupported runtime state schema version: ${metadata.value}`);
       }
       db.exec('PRAGMA journal_mode = WAL;');
       db.exec(`

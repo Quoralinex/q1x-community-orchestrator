@@ -78,17 +78,19 @@ test('future state schema fails closed before normal runtime schema is exposed',
   assert.equal(normalTable, undefined);
 });
 
-test('Alpha 2 state without metadata is adopted additively and remains readable', async t => {
+test('Alpha 2 state without metadata requires explicit migration before runtime open', async t => {
   const home = tempHome(t);
   const { mkdir } = await import('node:fs/promises');
   await mkdir(home, { recursive: true });
-  const { mission, programme } = await seedAlpha2State(home);
-  const { OpenControlRuntime } = await module();
-  const runtime = OpenControlRuntime.open({ home });
-  assert.equal(runtime.getStateSchemaVersion(), 1);
-  assert.deepEqual(runtime.getMission(mission.id), mission);
-  assert.deepEqual(runtime.getProgramme(programme.id), programme);
-  runtime.close();
+  await seedAlpha2State(home);
+  const { OpenControlRuntime, RuntimeError } = await module();
+  assert.throws(() => OpenControlRuntime.open({ home }), error =>
+    error instanceof RuntimeError && error.code === 'MIGRATION_REQUIRED');
+
+  const db = new DatabaseSync(join(home, 'state.sqlite'));
+  const metadataTable = db.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='runtime_metadata'").get();
+  db.close();
+  assert.equal(metadataTable, undefined);
 });
 
 test('sqlite integrity helper reports a healthy runtime state', async t => {

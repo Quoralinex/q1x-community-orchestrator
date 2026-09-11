@@ -68,3 +68,20 @@ test('Phase 14 public-surface comparison permits additive pre-RC entries', async
   additive.connectors.sort((a, b) => a.id.localeCompare(b.id));
   assert.equal(comparePublicSurface(baseline, additive).ok, true);
 });
+
+
+test('Phase 14 public-surface comparison permits additive string-literal union widening', async () => {
+  const { collectPublicSurface, comparePublicSurface } = await surfaceModule();
+  const baseline = await collectPublicSurface(root);
+  const wider = structuredClone(baseline);
+  const runtime = wider.typeExports.find(item => item.packageName === '@quoralinex/q1x-community-runtime');
+  const errorCode = runtime.exports.find(item => item.name === 'RuntimeErrorCode');
+  errorCode.signature = errorCode.signature.replace(/;$/, " | 'FUTURE_COMPATIBLE_ERROR';");
+  assert.equal(comparePublicSurface(baseline, wider).ok, true);
+
+  const narrower = structuredClone(baseline);
+  const narrowerRuntime = narrower.typeExports.find(item => item.packageName === '@quoralinex/q1x-community-runtime');
+  const narrowerErrorCode = narrowerRuntime.exports.find(item => item.name === 'RuntimeErrorCode');
+  narrowerErrorCode.signature = narrowerErrorCode.signature.replace(/ \| '[^']+';/, ';');
+  assert.equal(comparePublicSurface(baseline, narrower).ok, false);
+});

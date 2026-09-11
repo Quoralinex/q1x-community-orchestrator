@@ -6,6 +6,7 @@ export * from './runtime.js';
 export * from './schema-loader.js';
 export * from './store.js';
 export * from './state-schema.js';
+export * from './state-migrations.js';
 export * from './operation-journal.js';
 export * from './runtime-limits.js';
 export * from './backup.js';
