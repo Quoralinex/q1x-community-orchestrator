@@ -40,7 +40,7 @@ jobs:
           node scripts/phase13/run-stress.mjs --source-sha "$sha" --output phase13-evidence/phase13-stress-evidence.json
           node scripts/release/verify-reproducible-packages.mjs "$sha" > phase13-evidence/phase13-reproducibility-evidence.json
           node scripts/release/generate-sbom.mjs . --output phase13-evidence/phase13-sbom.spdx.json
-          npm run verify:phase13 > phase13-evidence/phase13-completion-evidence.json
+          node scripts/phase13/verify-completion.mjs > phase13-evidence/phase13-completion-evidence.json
       - name: Upload beta-readiness evidence
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:

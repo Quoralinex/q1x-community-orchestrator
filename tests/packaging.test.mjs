@@ -160,7 +160,8 @@ test('Phase 13 beta-readiness workflow is bounded, read-only, evidence-producing
   assert.match(workflow, /timeout-minutes:\s*30/);
   assert.match(workflow, /npm run test:resilience/);
   assert.match(workflow, /npm run test:stress/);
-  assert.match(workflow, /npm run verify:phase13/);
+  assert.match(workflow, /node scripts\/phase13\/verify-completion\.mjs > phase13-evidence\/phase13-completion-evidence\.json/);
+  assert.doesNotMatch(workflow, /npm run verify:phase13 > phase13-evidence\/phase13-completion-evidence\.json/);
   for (const evidence of ['phase13-resilience-evidence.json', 'phase13-stress-evidence.json', 'phase13-reproducibility-evidence.json', 'phase13-sbom.spdx.json']) {
     assert.match(workflow, new RegExp(evidence.replaceAll('.', '\\.')));
   }
