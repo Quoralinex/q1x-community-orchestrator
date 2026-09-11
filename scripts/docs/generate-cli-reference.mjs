@@ -36,7 +36,6 @@ lines.push('`backup restore` requires an empty target home and fails closed rath
 lines.push('', '## Output contract', '');
 lines.push('Successful CLI commands emit one JSON value to standard output. Errors emit a JSON error object to standard error and return a non-zero exit code.');
 lines.push('Do not place secrets in command arguments or persisted endpoint files; use environment-key mappings where supported.');
-lines.push('');
 
 const rendered = `${lines.join('\n')}\n`;
 if (check) {

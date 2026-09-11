@@ -95,4 +95,3 @@ Use a dedicated runtime home for each independent environment. Back up before up
 
 Successful CLI commands emit one JSON value to standard output. Errors emit a JSON error object to standard error and return a non-zero exit code.
 Do not place secrets in command arguments or persisted endpoint files; use environment-key mappings where supported.
-

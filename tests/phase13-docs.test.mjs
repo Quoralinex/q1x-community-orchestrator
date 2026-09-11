@@ -36,6 +36,12 @@ test('generated CLI reference is current and comes from executable command metad
   }
 });
 
+test('generated CLI reference has exactly one terminal newline', async () => {
+  const reference = await read('cli-reference.md');
+  assert.equal(reference.endsWith('\n'), true);
+  assert.equal(reference.endsWith('\n\n'), false);
+});
+
 test('README and Pages index link the four operating manuals', async () => {
   const readme = await readFile(new URL('../README.md', import.meta.url), 'utf8');
   const index = await read('index.md');
