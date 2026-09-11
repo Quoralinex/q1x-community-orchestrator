@@ -137,3 +137,23 @@ test('migration failure rolls back writes and schema marker atomically', async t
   assert.equal(readMarker(home), '0');
   assert.equal(tableExists(home, 'migration_probe'), false);
 });
+
+test('destructive migration refuses to run without a verified backup', async t => {
+  const home = tempHome(t);
+  await seedVersionedState(home, 0);
+  const { RuntimeError } = await runtimeModule();
+  const { applyStateMigrationsWithRegistry } = await migrationModule();
+  const destructiveRegistry = [{
+    id: 'test-destructive-v0-to-v1', source: 0, target: 1, destructive: true,
+    precondition() {},
+    apply(db) { db.exec('CREATE TABLE destructive_probe (value TEXT NOT NULL);'); },
+    verify() {},
+  }];
+
+  await assert.rejects(
+    () => applyStateMigrationsWithRegistry(home, destructiveRegistry, {}),
+    error => error instanceof RuntimeError && error.code === 'BACKUP_INTEGRITY_FAILED'
+  );
+  assert.equal(readMarker(home), '0');
+  assert.equal(tableExists(home, 'destructive_probe'), false);
+});

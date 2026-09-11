@@ -13,6 +13,10 @@ The `--home <path>` option selects a runtime home and may be placed anywhere in 
 | `q1x discover --manifest <path>` | Run capability discovery manifests. |
 | `q1x limits show` | Show effective runtime limits and weakened overrides. |
 | `q1x backup create --output <dir>` | Create a verified SQLite runtime backup. |
+| `q1x migration inspect` | Inspect runtime-state migration requirements without mutation. |
+| `q1x migration compatibility` | Report whether runtime state is compatible or explicitly migratable. |
+| `q1x migration dry-run [--backup <path>]` | Plan runtime-state migration without applying changes. |
+| `q1x migration apply [--backup <path>]` | Apply explicit runtime-state migration and record audit evidence. |
 | `q1x backup verify <backup-path>` | Verify backup hashes, schema and SQLite integrity. |
 | `q1x backup restore <backup-path>` | Restore a verified backup into an empty runtime home. |
 | `q1x connectors list` | List built-in connector profiles. |

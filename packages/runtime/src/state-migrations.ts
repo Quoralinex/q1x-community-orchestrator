@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { RuntimeError } from './errors.js';
 import { resolveRuntimeHome } from './home.js';
 import { CURRENT_STATE_SCHEMA_VERSION } from './state-schema.js';
+import { verifyRuntimeBackup } from './backup.js';
 
 export type RuntimeStateKind = 'fresh' | 'current' | 'migration-required' | 'future' | 'invalid';
 export type StateMigrationSource = number | 'legacy-unversioned';
@@ -201,6 +202,15 @@ export async function applyStateMigrationsWithRegistry(
   }
   if (options.dryRun) {
     return { schema: 'q1x.runtime-state-migration-result.v1', applied: false, sourceSchemaVersion: plan.sourceSchemaVersion, targetSchemaVersion: plan.targetSchemaVersion, steps: plan.steps.map(step => step.id) };
+  }
+  if (plan.steps.some(step => step.destructive)) {
+    if (!options.backupPath) {
+      throw new RuntimeError('BACKUP_INTEGRITY_FAILED', 'Destructive migration requires a verified backup');
+    }
+    const verification = await verifyRuntimeBackup(options.backupPath);
+    if (!verification.valid) {
+      throw new RuntimeError('BACKUP_INTEGRITY_FAILED', `Destructive migration backup verification failed: ${verification.findings.join('; ')}`);
+    }
   }
   const databasePath = join(home, 'state.sqlite');
   const db = new DatabaseSync(databasePath);
