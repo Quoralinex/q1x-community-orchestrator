@@ -51,6 +51,9 @@ test('Phase 14 runtime-equivalence policy accepts only explicitly neutral paths'
     'tests/phase14-docs.test.mjs',
     'compatibility/evidence/phase14-soak.json',
     'scripts/phase14/verify-completion.mjs',
+    'compatibility/matrix.json',
+    'compatibility/public-surface.rc1.json',
+    'compatibility/package-surface.rc1.json',
   ]);
   assert.equal(neutral.equivalent, true);
   assert.deepEqual(neutral.invalidatingPaths, []);
@@ -63,10 +66,12 @@ test('Phase 14 runtime-equivalence policy accepts only explicitly neutral paths'
     'docker-compose.yml',
     'scripts/release/release-metadata.mjs',
     'scripts/phase14/run-soak.mjs',
+    'compatibility/unreviewed-runtime-claim.json',
   ]);
   assert.equal(invalidating.equivalent, false);
   assert.deepEqual(invalidating.invalidatingPaths, [
     'Dockerfile',
+    'compatibility/unreviewed-runtime-claim.json',
     'docker-compose.yml',
     'package-lock.json',
     'package.json',

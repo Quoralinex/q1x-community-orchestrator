@@ -7,6 +7,9 @@ export const RUNTIME_NEUTRAL_PREFIXES = Object.freeze([
 ]);
 export const RUNTIME_NEUTRAL_EXACT = Object.freeze([
   'scripts/phase14/verify-completion.mjs',
+  'compatibility/matrix.json',
+  'compatibility/public-surface.rc1.json',
+  'compatibility/package-surface.rc1.json',
 ]);
 function normalized(path) { return String(path).replaceAll('\\', '/').replace(/^\.\//, ''); }
 function neutral(path) {
