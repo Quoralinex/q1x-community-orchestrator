@@ -608,6 +608,18 @@
           "signature": "export interface ApplyConfiguredConnectorOptions { preflight?: ConnectorPreflightOptions; browser?: BrowserMaterializationOptions; }"
         },
         {
+          "name": "ApplyStateMigrationOptions",
+          "signature": "export interface ApplyStateMigrationOptions { dryRun?: boolean; backupPath?: string; }"
+        },
+        {
+          "name": "applyStateMigrations",
+          "signature": "export declare function applyStateMigrations(home: string, options?: ApplyStateMigrationOptions): Promise<StateMigrationResult>;"
+        },
+        {
+          "name": "applyStateMigrationsWithRegistry",
+          "signature": "export declare function applyStateMigrationsWithRegistry(homeInput: string, registry: readonly StateMigrationStep[], options?: ApplyStateMigrationOptions): Promise<StateMigrationResult>;"
+        },
+        {
           "name": "assertNextContractRevision",
           "signature": "export declare function assertNextContractRevision(previous: number | undefined, next: number): void;"
         },
@@ -864,6 +876,10 @@
           "signature": "export type DiagnosticState = 'ok' | 'warning' | 'blocked' | 'unsupported' | 'not-configured';"
         },
         {
+          "name": "digestRuntimeBackup",
+          "signature": "export declare function digestRuntimeBackup(pathInput: string): Promise<string>;"
+        },
+        {
           "name": "discoverManifest",
           "signature": "export declare function discoverManifest(manifest: DiscoveryManifest, context?: DiscoveryContext): Promise<DiscoveryResult>;"
         },
@@ -922,6 +938,10 @@
         {
           "name": "HeadPointer",
           "signature": "export interface HeadPointer { kind: string; id: string; storageRevision: number; scopeId: string | null; }"
+        },
+        {
+          "name": "inspectRuntimeState",
+          "signature": "export declare function inspectRuntimeState(home: string): StateMigrationInspection;"
         },
         {
           "name": "isDesktopEndpointPlatformCompatible",
@@ -1044,6 +1064,10 @@
           "signature": "export interface PlanningStrategy { id: string; propose(context: PlanningContext): Promise<ProgrammeProposal> | ProgrammeProposal; }"
         },
         {
+          "name": "planStateMigration",
+          "signature": "export declare function planStateMigration(home: string): StateMigrationPlan;"
+        },
+        {
           "name": "PlaywrightBrowserSession",
           "signature": "export declare class PlaywrightBrowserSession implements BrowserBackendSession { readonly endpoint: BrowserEndpoint; readonly browser: Browser | null; readonly context: BrowserContext; readonly page: Page; readonly persistent: boolean; private readonly connected; private readonly navigationRoute?; constructor(endpoint: BrowserEndpoint, browser: Browser | null, context: BrowserContext, page: Page, persistent: boolean, connected: boolean, navigationRoute?: ((route: Route) => Promise<void>) | undefined); close(): Promise<void>; }"
         },
@@ -1113,7 +1137,7 @@
         },
         {
           "name": "RuntimeErrorCode",
-          "signature": "export type RuntimeErrorCode = 'SCHEMA_INVALID' | 'NOT_FOUND' | 'CONFLICT' | 'INVALID_REFERENCE' | 'INVALID_REVISION' | 'INVALID_TRANSITION' | 'GRAPH_CYCLE' | 'EXECUTION_CONFLICT' | 'CHECKPOINT_NOT_FOUND' | 'STORAGE_ERROR' | 'INCOMPATIBLE_STATE' | 'RESOURCE_LIMIT' | 'BACKUP_INTEGRITY_FAILED' | 'BACKUP_TARGET_NOT_EMPTY' | 'INSECURE_ENDPOINT' | 'MISSING_CREDENTIAL' | 'TRANSPORT_NOT_FOUND' | 'MODEL_TRANSPORT_ERROR' | 'ADAPTER_TRANSPORT_ERROR' | 'AUTHORIZATION_REQUIRED' | 'AUDIT_INTEGRITY' | 'UNSUPPORTED_PLATFORM';"
+          "signature": "export type RuntimeErrorCode = 'SCHEMA_INVALID' | 'NOT_FOUND' | 'CONFLICT' | 'INVALID_REFERENCE' | 'INVALID_REVISION' | 'INVALID_TRANSITION' | 'GRAPH_CYCLE' | 'EXECUTION_CONFLICT' | 'CHECKPOINT_NOT_FOUND' | 'STORAGE_ERROR' | 'INCOMPATIBLE_STATE' | 'MIGRATION_REQUIRED' | 'MIGRATION_FAILED' | 'RESOURCE_LIMIT' | 'BACKUP_INTEGRITY_FAILED' | 'BACKUP_TARGET_NOT_EMPTY' | 'INSECURE_ENDPOINT' | 'MISSING_CREDENTIAL' | 'TRANSPORT_NOT_FOUND' | 'MODEL_TRANSPORT_ERROR' | 'ADAPTER_TRANSPORT_ERROR' | 'AUTHORIZATION_REQUIRED' | 'AUDIT_INTEGRITY' | 'UNSUPPORTED_PLATFORM';"
         },
         {
           "name": "RuntimeLimits",
@@ -1126,6 +1150,10 @@
         {
           "name": "RuntimeOpenOptions",
           "signature": "export interface RuntimeOpenOptions { home?: string; adapterTransports?: readonly AdapterTransport[]; limits?: Partial<RuntimeLimits>; }"
+        },
+        {
+          "name": "RuntimeStateKind",
+          "signature": "export type RuntimeStateKind = 'fresh' | 'current' | 'migration-required' | 'future' | 'invalid';"
         },
         {
           "name": "RuntimeStatus",
@@ -1150,6 +1178,26 @@
         {
           "name": "SqliteStoreOpenOptions",
           "signature": "export interface SqliteStoreOpenOptions { busyTimeoutMs?: number; }"
+        },
+        {
+          "name": "StateMigrationInspection",
+          "signature": "export interface StateMigrationInspection { schema: 'q1x.runtime-state-inspection.v1'; state: RuntimeStateKind; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: string[]; }"
+        },
+        {
+          "name": "StateMigrationPlan",
+          "signature": "export interface StateMigrationPlan { schema: 'q1x.runtime-state-migration-plan.v1'; state: RuntimeStateKind; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: Array<{ id: string; source: StateMigrationSource; target: number; destructive: boolean; }>; }"
+        },
+        {
+          "name": "StateMigrationResult",
+          "signature": "export interface StateMigrationResult { schema: 'q1x.runtime-state-migration-result.v1'; applied: boolean; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: string[]; }"
+        },
+        {
+          "name": "StateMigrationSource",
+          "signature": "export type StateMigrationSource = number | 'legacy-unversioned';"
+        },
+        {
+          "name": "StateMigrationStep",
+          "signature": "export interface StateMigrationStep { id: string; source: StateMigrationSource; target: number; destructive: boolean; precondition(db: DatabaseSync): void; apply(db: DatabaseSync): void; verify(db: DatabaseSync): void; }"
         },
         {
           "name": "StateSchemaClassification",
@@ -1806,6 +1854,22 @@
       {
         "usage": "q1x --home <path> limits show",
         "purpose": "Show effective runtime limits and weakened overrides."
+      },
+      {
+        "usage": "q1x --home <path> migration apply [--backup <path>]",
+        "purpose": "Apply explicit runtime-state migration and record audit evidence."
+      },
+      {
+        "usage": "q1x --home <path> migration compatibility",
+        "purpose": "Report whether runtime state is compatible or explicitly migratable."
+      },
+      {
+        "usage": "q1x --home <path> migration dry-run [--backup <path>]",
+        "purpose": "Plan runtime-state migration without applying changes."
+      },
+      {
+        "usage": "q1x --home <path> migration inspect",
+        "purpose": "Inspect runtime-state migration requirements without mutation."
       },
       {
         "usage": "q1x --home <path> mission list",
