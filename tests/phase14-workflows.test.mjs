@@ -63,6 +63,19 @@ test('workflows executing Phase 14 completion fetch the historical acceptance co
   }
 });
 
+test('beta workflows use the governed reproducibility CLI contract', async () => {
+  const betaReadiness = await text('.github/workflows/beta-readiness.yml');
+  const publicBeta = await text('.github/workflows/public-beta.yml');
+  assert.match(
+    betaReadiness,
+    /verify-reproducible-packages\.mjs\s+--version\s+0\.2\.0-beta\.1\s+--source-sha\s+"\$sha"/,
+  );
+  assert.match(
+    publicBeta,
+    /verify-reproducible-packages\.mjs\s+--version\s+0\.2\.0-beta\.1\s+--source-sha\s+"\$GITHUB_SHA"/,
+  );
+});
+
 test('public stable workflow separates validation release and npm mutation authority', async () => {
   const workflow = await text('.github/workflows/public-stable.yml');
   assert.match(workflow, /workflow_dispatch:/);
