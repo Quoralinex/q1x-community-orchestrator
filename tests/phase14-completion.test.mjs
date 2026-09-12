@@ -27,10 +27,12 @@ test('Phase 14 completion verifier is fail-closed until retained soak acceptance
   assert.equal(report.required.acceptedRestartEvidence, true);
   assert.equal(report.required.upgradeEvidence, true);
   assert.equal(report.required.upgradeEvidenceRuntimeEquivalence, true);
+  assert.equal(report.required.completionGateWiring, false);
   assert.equal(report.required.runtimeEquivalence, true);
   assert.equal(report.required.acceptanceSourceConsistency, true);
   assert.equal(report.ok, false);
   assert.ok(report.findings.some(item => item.code === 'phase14.acceptedSoakEvidence'));
+  assert.ok(report.findings.some(item => item.code === 'phase14.completionGateWiring'));
 });
 
 test('Phase 14 completion verifier fails closed for an empty root', async t => {

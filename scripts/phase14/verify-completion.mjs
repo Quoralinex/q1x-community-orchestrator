@@ -106,17 +106,19 @@ async function acceptedRestart(root) {
 export async function verifyPhase14Root(rootInput) {
   const root = resolve(rootInput instanceof URL ? fileURLToPath(rootInput) : rootInput);
   const findings = [];
-  const [publicSurface, packageSurface, migrationSource, cliCatalogue, upgradeEvidence, runtimeEquivalence] = await Promise.all([
+  const [publicSurface, packageSurface, migrationSource, cliCatalogue, upgradeEvidence, runtimeEquivalence, packageManifest] = await Promise.all([
     json(join(root, 'compatibility/public-surface.rc1.json')),
     json(join(root, 'compatibility/package-surface.rc1.json')),
     text(join(root, 'packages/runtime/src/state-migrations.ts')),
     text(join(root, 'packages/runtime/src/cli-catalogue.ts')),
     json(join(root, `${EVIDENCE}/phase14-upgrade-evidence.json`)),
     json(join(root, `${EVIDENCE}/phase14-runtime-equivalence.json`)),
+    json(join(root, 'package.json')),
   ]);
-  const [stableWorkflow, publicStableWorkflow, licence] = await Promise.all([
+  const [stableWorkflow, publicStableWorkflow, repositoryBaselineWorkflow, licence] = await Promise.all([
     text(join(root, '.github/workflows/stable-readiness.yml')),
     text(join(root, '.github/workflows/public-stable.yml')),
+    text(join(root, '.github/workflows/repository-baseline.yml')),
     text(join(root, 'LICENSE')),
   ]);
   const docs = await Promise.all(REQUIRED_DOCS.map(file => text(join(root, file))));
@@ -197,6 +199,12 @@ export async function verifyPhase14Root(rootInput) {
     acceptedRestartEvidence: restart.ok,
     upgradeEvidence: upgradeEvidenceValid,
     upgradeEvidenceRuntimeEquivalence: upgradeEvidenceRuntimeEquivalence?.equivalent === true,
+    completionGateWiring: packageManifest?.scripts?.['verify:phase14'] === 'node scripts/phase14/verify-completion.mjs'
+      && typeof packageManifest?.scripts?.check === 'string'
+      && packageManifest.scripts.check.includes('npm run verify:phase14')
+      && /npm ci --no-audit --no-fund/.test(repositoryBaselineWorkflow)
+      && /npm run verify:phase14/.test(repositoryBaselineWorkflow)
+      && /npm run verify:phase14/.test(stableWorkflow),
     runtimeEquivalence: runtimeEquivalenceValid,
     acceptanceSourceConsistency,
     standalone: standalone.ok,
