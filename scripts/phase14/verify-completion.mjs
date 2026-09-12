@@ -132,6 +132,11 @@ export async function verifyPhase14Root(rootInput) {
       && inventory?.externalProviderCalls === 0;
   } catch {}
 
+  const acceptanceSourceShas = [soak.artifact?.sourceSha, restart.artifact?.sourceSha].filter(Boolean);
+  const acceptanceSourceSha = acceptanceSourceShas[0] ?? null;
+  const acceptanceSourceConsistency = acceptanceSourceShas.length <= 1
+    || acceptanceSourceShas.every(value => value === acceptanceSourceSha);
+
   const upgradeEvidenceValid = Boolean(
     upgradeEvidence?.schema === 'q1x.phase14-upgrade-evidence.v1'
     && /^[0-9a-f]{40}$/.test(upgradeEvidence?.sourceSha ?? '')
@@ -146,6 +151,7 @@ export async function verifyPhase14Root(rootInput) {
     && /^[0-9a-f]{40}$/.test(runtimeEquivalence?.fromSha ?? '')
     && /^[0-9a-f]{40}$/.test(runtimeEquivalence?.toSha ?? '')
     && runtimeEquivalence?.equivalent === true
+    && (!acceptanceSourceSha || runtimeEquivalence?.fromSha === acceptanceSourceSha)
     && Array.isArray(runtimeEquivalence?.invalidatingPaths)
     && runtimeEquivalence.invalidatingPaths.length === 0
   );
@@ -171,6 +177,7 @@ export async function verifyPhase14Root(rootInput) {
     acceptedRestartEvidence: restart.ok,
     upgradeEvidence: upgradeEvidenceValid,
     runtimeEquivalence: runtimeEquivalenceValid,
+    acceptanceSourceConsistency,
     standalone: standalone.ok,
     stableReadinessWorkflow: /ubuntu-24\.04/.test(stableWorkflow)
       && /run-soak\.mjs/.test(stableWorkflow) && /--minutes\s+360/.test(stableWorkflow)
