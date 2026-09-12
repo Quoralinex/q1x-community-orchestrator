@@ -26,3 +26,5 @@ jobs:
         run: npm run verify:phase12
       - name: Verify Phase 13 beta-readiness contract
         run: npm run verify:phase13
+      - name: Verify Phase 14 stable-readiness workflow structure
+        run: node --test tests/phase14-workflows.test.mjs tests/release-stable-governance.test.mjs

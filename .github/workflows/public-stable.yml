@@ -1,0 +1,204 @@
+name: Public Stable Commissioning
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/public-stable.yml'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'packages/**'
+      - 'scripts/release/**'
+      - 'scripts/phase14/**'
+      - 'tests/**'
+      - 'docs/**'
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Governed stable version to validate or commission
+        required: true
+        type: string
+        default: 1.0.0
+      release:
+        description: Create the governed GitHub stable release after validation
+        required: true
+        type: boolean
+        default: false
+      publish_npm:
+        description: Publish the immutable stable tarballs through npm trusted publishing
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: public-stable-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    name: validate-public-stable
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Enforce governed stable identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          requested="${{ github.event_name == 'workflow_dispatch' && inputs.version || '1.0.0' }}"
+          test "$requested" = "1.0.0" || {
+            echo "Only 1.0.0 is governed by this workflow." >&2
+            exit 1
+          }
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Verify stable source surfaces
+        run: |
+          npm run test:compatibility
+          npm run test:resilience
+          npm run test:stress
+          npm run test:surface
+          node scripts/phase14/dependency-inventory.mjs > stable-dependency-inventory.json
+      - name: Prepare governed stable artifacts
+        run: node scripts/release/prepare-prerelease.mjs --version 1.0.0 --output .release-stable --source-sha "$GITHUB_SHA"
+      - name: Verify packed stable packages
+        run: node scripts/release/verify-packed-consumer.mjs --artifacts .release-stable > stable-packed-consumer.json
+      - name: Verify reproducible stable packages
+        run: node scripts/release/verify-reproducible-packages.mjs --version 1.0.0 --source-sha "$GITHUB_SHA" > stable-reproducibility.json
+      - name: Verify stable manifest SBOM checksums and package surface
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.release-stable/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          test "$(node -p "require('./.release-stable/release-manifest.json').tag")" = "v1.0.0"
+          test -s .release-stable/q1x-community-orchestrator-1.0.0.spdx.json
+          (cd .release-stable && sha256sum --check SHA256SUMS)
+          node scripts/phase14/package-surface.mjs --artifacts .release-stable --check compatibility/package-surface.rc1.json
+      - name: Commissioning-only critical vulnerability gate
+        if: github.event_name == 'workflow_dispatch'
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm audit --omit=dev --audit-level=critical --json > stable-vulnerability-audit.json
+      - name: Upload governed stable validation bundle
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: q1x-public-stable-${{ github.sha }}
+          path: |
+            .release-stable/
+            stable-dependency-inventory.json
+            stable-packed-consumer.json
+            stable-reproducibility.json
+            stable-vulnerability-audit.json
+          if-no-files-found: warn
+          include-hidden-files: true
+          retention-days: 30
+
+  release:
+    name: create-github-stable-release
+    needs: validate
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.release == true &&
+      inputs.version == '1.0.0' &&
+      github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      id-token: write
+      attestations: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      TAG: v1.0.0
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: q1x-public-stable-${{ github.sha }}
+          path: .downloaded-stable
+      - name: Reverify immutable stable bundle
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.downloaded-stable/.release-stable/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          test "$(node -p "require('./.downloaded-stable/.release-stable/release-manifest.json').tag")" = "$TAG"
+          (cd .downloaded-stable/.release-stable && sha256sum --check SHA256SUMS)
+      - name: Refuse stale main target or release replacement
+        shell: bash
+        run: |
+          set -euo pipefail
+          REMOTE_MAIN="$(gh api "repos/${GITHUB_REPOSITORY}/commits/main" --jq .sha)"
+          test "$REMOTE_MAIN" = "$GITHUB_SHA" || {
+            echo "Protected main moved; refusing a stale stable release." >&2
+            exit 1
+          }
+          if gh api "repos/${GITHUB_REPOSITORY}/git/ref/tags/${TAG}" >/dev/null 2>&1; then
+            echo "Tag ${TAG} already exists; refusing replacement." >&2
+            exit 1
+          fi
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release ${TAG} already exists; refusing replacement." >&2
+            exit 1
+          fi
+      - name: Attest stable package provenance
+        uses: actions/attest-build-provenance@977bb373ede98d70efdf65b84cb5f73e068dcc2a
+        with:
+          subject-path: '.downloaded-stable/.release-stable/*.tgz'
+      - name: Create GitHub stable release at verified main
+        run: >-
+          gh release create "$TAG" .downloaded-stable/.release-stable/*
+          --target "$GITHUB_SHA"
+          --title "Q1X Community Orchestrator ${TAG}"
+          --notes-file docs/stable-release.md
+
+  publish-npm:
+    name: publish-npm-trusted-stable
+    needs: [validate, release]
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      inputs.release == true &&
+      inputs.publish_npm == true &&
+      inputs.version == '1.0.0' &&
+      github.ref == 'refs/heads/main'
+    environment: npm-public-stable
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: q1x-public-stable-${{ github.sha }}
+          path: .downloaded-stable
+      - name: Verify immutable publication inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(node -p "require('./.downloaded-stable/.release-stable/release-manifest.json').sourceSha")" = "$GITHUB_SHA"
+          (cd .downloaded-stable/.release-stable && sha256sum --check SHA256SUMS)
+      - name: Publish governed stable packages with trusted provenance
+        shell: bash
+        run: |
+          set -euo pipefail
+          for file in \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-contracts-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-sdk-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-adapter-sdk-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-desktop-bridge-common-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-desktop-bridge-macos-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-desktop-bridge-windows-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-desktop-bridge-linux-1.0.0.tgz \
+            .downloaded-stable/.release-stable/quoralinex-q1x-community-runtime-1.0.0.tgz; do
+            npm publish --provenance --access public "$file"
+          done
