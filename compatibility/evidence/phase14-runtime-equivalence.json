@@ -1,11 +1,10 @@
 {
-  "fromSha": "29f026dcd7a02f0de7600efcd15d3327d14b5452",
-  "toSha": "6697efa17ae9728bd6d2ac62e6f4dc6058f8a377",
+  "fromSha": "fa604e123960d32e66317d91cb909e82bc4fbd72",
+  "toSha": "cdc9cc65d07f68497e7fd93b2d80d0ddece140e7",
   "schema": "q1x.phase14-runtime-equivalence.v1",
   "equivalent": true,
   "changedPaths": [
-    "scripts/phase14/verify-completion.mjs",
-    "tests/phase14-completion.test.mjs"
+    "compatibility/public-surface.rc1.json"
   ],
   "invalidatingPaths": [],
   "neutralizedPaths": []

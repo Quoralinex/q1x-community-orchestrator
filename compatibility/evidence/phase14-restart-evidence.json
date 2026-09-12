@@ -1,11 +1,11 @@
 {
   "schema": "q1x.phase14-restart-evidence.v1",
-  "sourceSha": "29f026dcd7a02f0de7600efcd15d3327d14b5452",
+  "sourceSha": "fa604e123960d32e66317d91cb909e82bc4fbd72",
   "cyclesRequested": 1000,
   "cyclesCompleted": 1000,
   "reconciledOperations": 199,
   "uncertainOperations": 199,
-  "peakRss": 353808384,
+  "peakRss": 366718976,
   "openHandleCount": 1,
   "fileDescriptorCount": 17,
   "sqliteIntegrity": "ok",
