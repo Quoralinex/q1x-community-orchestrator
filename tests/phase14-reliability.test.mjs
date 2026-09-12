@@ -75,3 +75,28 @@ test('Phase 14 runtime-equivalence policy accepts only explicitly neutral paths'
     'scripts/release/release-metadata.mjs',
   ]);
 });
+
+test('Phase 14 runtime equivalence permits only completion-gate script wiring in root package metadata', async () => {
+  const { isCompletionWiringOnlyPackageChange } = await equivalenceModule();
+  const before = {
+    name: 'q1x-community-orchestrator', version: '0.0.0', private: true,
+    scripts: { check: 'npm run build && npm test', build: 'tsc -b --force' },
+    workspaces: ['packages/*'],
+  };
+  const after = structuredClone(before);
+  after.scripts['verify:phase14'] = 'node scripts/phase14/verify-completion.mjs';
+  after.scripts.check = `${before.scripts.check} && npm run verify:phase14`;
+  assert.equal(isCompletionWiringOnlyPackageChange(before, after), true);
+
+  const versionDrift = structuredClone(after);
+  versionDrift.version = '1.0.0';
+  assert.equal(isCompletionWiringOnlyPackageChange(before, versionDrift), false);
+
+  const dependencyDrift = structuredClone(after);
+  dependencyDrift.dependencies = { example: '1.0.0' };
+  assert.equal(isCompletionWiringOnlyPackageChange(before, dependencyDrift), false);
+
+  const unrelatedScript = structuredClone(after);
+  unrelatedScript.scripts.build = 'echo changed';
+  assert.equal(isCompletionWiringOnlyPackageChange(before, unrelatedScript), false);
+});
