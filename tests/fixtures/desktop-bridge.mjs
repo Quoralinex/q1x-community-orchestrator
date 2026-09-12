@@ -15,7 +15,7 @@ if (mode === 'delay') {
 }
 if (mode === 'ignore-term') {
   process.on('SIGTERM', () => {});
-  await new Promise(resolve => setTimeout(resolve, 600));
+  await new Promise(resolve => setTimeout(resolve, 5000));
 }
 if (mode === 'overflow') {
   process.stdout.write('x'.repeat(16384));
