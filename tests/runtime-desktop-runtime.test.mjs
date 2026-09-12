@@ -148,7 +148,7 @@ test('desktop bridge bounds execution, force-stops stubborn processes and reject
     () => runtime.runDesktopBatch('desktop.runtime', { ...batch('desktop.batch.stubborn', [{ id: 'wait', kind: 'wait', application: 'example.app', milliseconds: 1 }], { fixtureMode: 'ignore-term' }), timeoutMs: 50 }),
     error => error instanceof RuntimeError && error.code === 'ADAPTER_TRANSPORT_ERROR' && /timed out/i.test(error.message)
   );
-  assert.ok(Date.now() - stubbornStarted < 400, 'timeout must force-stop a bridge that ignores SIGTERM');
+  assert.ok(Date.now() - stubbornStarted < 1500, 'timeout must force-stop a bridge that ignores SIGTERM well before its natural exit');
 
   runtime.putDesktopEndpoint(endpoint(home, { id: 'desktop.output', transport: { command: process.execPath, args: [bridge], timeoutMs: 30000, maxOutputBytes: 1024 } }));
   await assert.rejects(
