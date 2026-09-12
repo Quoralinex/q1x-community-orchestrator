@@ -37,6 +37,32 @@ test('stable readiness workflow is read-only by default and has manual long-evid
   assertPinnedActions(workflow);
 });
 
+test('workflows executing Phase 14 completion fetch the historical acceptance commits', async () => {
+  const workflows = [
+    '.github/workflows/repository-baseline.yml',
+    '.github/workflows/stable-readiness.yml',
+    '.github/workflows/beta-readiness.yml',
+    '.github/workflows/public-alpha.yml',
+    '.github/workflows/public-beta.yml',
+    '.github/workflows/public-stable.yml',
+  ];
+  for (const path of workflows) {
+    const workflow = await text(path);
+    const commandIndex = Math.min(
+      ...['npm run check', 'npm run verify:phase14']
+        .map(command => workflow.indexOf(command))
+        .filter(index => index >= 0),
+    );
+    assert.ok(Number.isFinite(commandIndex), `${path} must execute a Phase 14-capable verification command`);
+    const setup = workflow.slice(0, commandIndex);
+    assert.match(
+      setup,
+      /uses:\s*actions\/checkout@[0-9a-f]{40}[^]*?with:\s*\n\s*fetch-depth:\s*0/,
+      `${path} must fetch full Git history before runtime-equivalence verification`,
+    );
+  }
+});
+
 test('public stable workflow separates validation release and npm mutation authority', async () => {
   const workflow = await text('.github/workflows/public-stable.yml');
   assert.match(workflow, /workflow_dispatch:/);
