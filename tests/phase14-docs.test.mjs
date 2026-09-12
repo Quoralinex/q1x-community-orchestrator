@@ -94,3 +94,12 @@ test('active developer and compatibility docs label Alpha and Beta evidence as h
   assert.doesNotMatch(matrix, /Current beta-candidate package-consumer identity/i);
   assert.match(matrix, /Historical[^\n]{0,160}beta-candidate package-consumer identity/i);
 });
+
+test('Phase 14 implementation plan uses executable long-evidence CLI syntax', async () => {
+  const plan = await read('../docs/superpowers/plans/2026-09-11-phase14-stable-release-readiness.md');
+  assert.doesNotMatch(plan, /runtime-equivalence\.mjs --base/);
+  assert.doesNotMatch(plan, /runtime-equivalence\.mjs[^\n]*--head/);
+  assert.doesNotMatch(plan, /run-soak\.mjs[^\n]*--output/);
+  assert.doesNotMatch(plan, /run-restart-campaign\.mjs[^\n]*--output/);
+  assert.match(plan, /runtime-equivalence\.mjs --from[^\n]*--to[^\n]*>/);
+});

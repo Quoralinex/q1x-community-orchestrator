@@ -736,8 +736,8 @@ Capture `RC_RUNTIME_SHA=$(git rev-parse HEAD)`. After this commit, do not change
 Start the six-hour soak detached on the Mac and the 1,000-cycle restart campaign against `RC_RUNTIME_SHA`:
 
 ```bash
-nohup node scripts/phase14/run-soak.mjs --source-sha "$RC_RUNTIME_SHA" --minutes 360 --output "$HOME/q1x-phase14-soak-$RC_RUNTIME_SHA.json" >"$HOME/q1x-phase14-soak-$RC_RUNTIME_SHA.log" 2>&1 &
-node scripts/phase14/run-restart-campaign.mjs --source-sha "$RC_RUNTIME_SHA" --cycles 1000 --output "$HOME/q1x-phase14-restart-$RC_RUNTIME_SHA.json"
+nohup node scripts/phase14/run-soak.mjs --source-sha "$RC_RUNTIME_SHA" --minutes 360 >"$HOME/q1x-phase14-soak-$RC_RUNTIME_SHA.json" 2>"$HOME/q1x-phase14-soak-$RC_RUNTIME_SHA.log" &
+node scripts/phase14/run-restart-campaign.mjs --source-sha "$RC_RUNTIME_SHA" --cycles 1000 >"$HOME/q1x-phase14-restart-$RC_RUNTIME_SHA.json"
 ```
 
 Do not claim acceptance until both evidence files are validated and retained in Task 11.
@@ -837,7 +837,7 @@ node -e "const r=require(process.argv[1]); if(r.state!=='passed'||r.cyclesComple
 If `git rev-parse HEAD` differs from `RC_RUNTIME_SHA`, run:
 
 ```bash
-node scripts/phase14/runtime-equivalence.mjs --base "$RC_RUNTIME_SHA" --head "$(git rev-parse HEAD)" --output compatibility/evidence/phase14-runtime-equivalence.json
+node scripts/phase14/runtime-equivalence.mjs --from "$RC_RUNTIME_SHA" --to "$(git rev-parse HEAD)" > compatibility/evidence/phase14-runtime-equivalence.json
 ```
 
 Expected: `equivalent: true`. If false, restart the six-hour soak on the new runtime SHA; do not override the result.
