@@ -40,7 +40,7 @@ jobs:
           sha="$(git rev-parse HEAD)"
           node scripts/phase13/run-resilience.mjs --source-sha "$sha" --output phase13-evidence/phase13-resilience-evidence.json
           node scripts/phase13/run-stress.mjs --source-sha "$sha" --output phase13-evidence/phase13-stress-evidence.json
-          node scripts/release/verify-reproducible-packages.mjs "$sha" > phase13-evidence/phase13-reproducibility-evidence.json
+          node scripts/release/verify-reproducible-packages.mjs --version 0.2.0-beta.1 --source-sha "$sha" > phase13-evidence/phase13-reproducibility-evidence.json
           node scripts/release/generate-sbom.mjs . --output phase13-evidence/phase13-sbom.spdx.json
           node scripts/phase13/verify-completion.mjs > phase13-evidence/phase13-completion-evidence.json
       - name: Upload beta-readiness evidence
