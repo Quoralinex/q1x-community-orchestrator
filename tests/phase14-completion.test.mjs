@@ -6,7 +6,7 @@ import test from 'node:test';
 
 const root = new URL('..', import.meta.url);
 
-test('Phase 14 completion verifier is fail-closed until retained soak acceptance evidence exists', async () => {
+test('Phase 14 completion verifier accepts the complete stable-readiness evidence set', async () => {
   const { verifyPhase14Root } = await import('../scripts/phase14/verify-completion.mjs');
   const report = await verifyPhase14Root(root);
   assert.equal(report.schema, 'q1x.phase14-completion-verification.v1');
@@ -23,16 +23,15 @@ test('Phase 14 completion verifier is fail-closed until retained soak acceptance
   assert.equal(report.required.stableReadinessWorkflow, true);
   assert.equal(report.required.publicStableWorkflow, true);
   assert.equal(report.required.polyformLicence, true);
-  assert.equal(report.required.acceptedSoakEvidence, false);
+  assert.equal(report.required.acceptedSoakEvidence, true);
   assert.equal(report.required.acceptedRestartEvidence, true);
   assert.equal(report.required.upgradeEvidence, true);
   assert.equal(report.required.upgradeEvidenceRuntimeEquivalence, true);
-  assert.equal(report.required.completionGateWiring, false);
+  assert.equal(report.required.completionGateWiring, true);
   assert.equal(report.required.runtimeEquivalence, true);
   assert.equal(report.required.acceptanceSourceConsistency, true);
-  assert.equal(report.ok, false);
-  assert.ok(report.findings.some(item => item.code === 'phase14.acceptedSoakEvidence'));
-  assert.ok(report.findings.some(item => item.code === 'phase14.completionGateWiring'));
+  assert.equal(report.ok, true, JSON.stringify(report.findings, null, 2));
+  assert.equal(report.findings.length, 0);
 });
 
 test('Phase 14 completion verifier fails closed for an empty root', async t => {

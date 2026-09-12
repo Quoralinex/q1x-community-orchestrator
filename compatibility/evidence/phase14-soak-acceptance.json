@@ -1,0 +1,10 @@
+{
+  "schema": "q1x.phase14-soak-acceptance.v1",
+  "execution": "local-manual",
+  "workflowRunId": null,
+  "sourceSha": "fa604e123960d32e66317d91cb909e82bc4fbd72",
+  "artifactPath": "compatibility/evidence/phase14-soak-evidence.json",
+  "artifactSha256": "f886d887659a58aa4cd1d9ff1edb59d1d40c3a5aa039b1f4a9ae27c95ba4638e",
+  "minimumMinutes": 360,
+  "state": "passed"
+}

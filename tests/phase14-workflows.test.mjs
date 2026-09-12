@@ -70,9 +70,9 @@ test('public stable workflow separates validation release and npm mutation autho
   assertPinnedActions(workflow);
 });
 
-test('repository baseline structurally includes Phase 14 workflow tests before retained long evidence exists', async () => {
+test('repository baseline includes Phase 14 completion verification after retained long evidence exists', async () => {
   const baseline = await text('.github/workflows/repository-baseline.yml');
   assert.match(baseline, /phase14-workflows\.test\.mjs/);
   assert.match(baseline, /release-stable-governance\.test\.mjs/);
-  assert.doesNotMatch(baseline, /npm run verify:phase14/);
+  assert.match(baseline, /npm run verify:phase14/);
 });

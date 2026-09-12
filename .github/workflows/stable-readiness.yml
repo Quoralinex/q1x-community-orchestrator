@@ -31,6 +31,8 @@ jobs:
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run check
+      - name: Verify retained Phase 14 completion contract
+        run: npm run verify:phase14
       - run: npm run test:compatibility
       - run: npm run test:resilience
       - run: npm run test:stress
