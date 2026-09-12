@@ -1,3 +1,4 @@
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile, stat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
@@ -6,8 +7,18 @@ import { fileURLToPath, pathToFileURL } from 'node:url';
 import { verifyStandaloneRoot } from '../phase12/verify-standalone.mjs';
 import { RC_VERSION, assertReleaseIdentity, readReleaseIdentity } from '../release/release-metadata.mjs';
 import { buildDependencyInventory } from './dependency-inventory.mjs';
+import { runtimeEquivalenceBetween } from './runtime-equivalence.mjs';
 
 const EVIDENCE = 'compatibility/evidence';
+
+export function verifyCurrentRuntimeEquivalence(rootInput, fromSha) {
+  const root = resolve(rootInput instanceof URL ? fileURLToPath(rootInput) : rootInput);
+  if (!/^[0-9a-f]{40}$/.test(fromSha ?? '')) throw new Error('A 40-character acceptance source SHA is required');
+  const toSha = execFileSync('git', ['rev-parse', 'HEAD'], {
+    cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
+  }).trim();
+  return runtimeEquivalenceBetween({ root, fromSha, toSha });
+}
 const REQUIRED_DOCS = [
   'docs/versioning.md', 'docs/deprecation-policy.md', 'docs/upgrade-rollback.md',
   'docs/supported-platforms.md', 'docs/stable-release.md',
@@ -146,6 +157,10 @@ export async function verifyPhase14Root(rootInput) {
     && upgradeEvidence?.externalProviderCalls === 0
     && upgradeEvidence?.state === 'passed'
   );
+  let currentRuntimeEquivalence;
+  if (acceptanceSourceSha) {
+    try { currentRuntimeEquivalence = verifyCurrentRuntimeEquivalence(root, acceptanceSourceSha); } catch {}
+  }
   const runtimeEquivalenceValid = Boolean(
     runtimeEquivalence?.schema === 'q1x.phase14-runtime-equivalence.v1'
     && /^[0-9a-f]{40}$/.test(runtimeEquivalence?.fromSha ?? '')
@@ -154,6 +169,7 @@ export async function verifyPhase14Root(rootInput) {
     && (!acceptanceSourceSha || runtimeEquivalence?.fromSha === acceptanceSourceSha)
     && Array.isArray(runtimeEquivalence?.invalidatingPaths)
     && runtimeEquivalence.invalidatingPaths.length === 0
+    && (!acceptanceSourceSha || currentRuntimeEquivalence?.equivalent === true)
   );
 
   const required = {
@@ -220,6 +236,7 @@ export async function verifyPhase14Root(rootInput) {
         state: upgradeEvidence?.state ?? null,
       },
       runtimeEquivalence: runtimeEquivalence ?? null,
+      currentRuntimeEquivalence: currentRuntimeEquivalence ?? null,
     },
     standalone,
     findings,
