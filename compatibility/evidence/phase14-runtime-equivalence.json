@@ -1,0 +1,12 @@
+{
+  "fromSha": "29f026dcd7a02f0de7600efcd15d3327d14b5452",
+  "toSha": "6697efa17ae9728bd6d2ac62e6f4dc6058f8a377",
+  "schema": "q1x.phase14-runtime-equivalence.v1",
+  "equivalent": true,
+  "changedPaths": [
+    "scripts/phase14/verify-completion.mjs",
+    "tests/phase14-completion.test.mjs"
+  ],
+  "invalidatingPaths": [],
+  "neutralizedPaths": []
+}

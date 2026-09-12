@@ -1,0 +1,16 @@
+{
+  "schema": "q1x.phase14-restart-evidence.v1",
+  "sourceSha": "29f026dcd7a02f0de7600efcd15d3327d14b5452",
+  "cyclesRequested": 1000,
+  "cyclesCompleted": 1000,
+  "reconciledOperations": 199,
+  "uncertainOperations": 199,
+  "peakRss": 353808384,
+  "openHandleCount": 1,
+  "fileDescriptorCount": 17,
+  "sqliteIntegrity": "ok",
+  "auditValid": true,
+  "unresolvedExternalOperations": 0,
+  "externalProviderCalls": 0,
+  "state": "passed"
+}
