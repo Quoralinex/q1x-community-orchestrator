@@ -158,7 +158,7 @@
       "target": "Community Adapter SDK conformance and explicit runtime bridge",
       "status": "tested",
       "implementation": "@quoralinex/q1x-community-adapter-sdk",
-      "version": "1.0.0-rc.1 / contract 1.0.0 / runtime 1.0.0-rc.1",
+      "version": "0.2.0-beta.1 / contract 1.0.0 / runtime 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
@@ -179,14 +179,14 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "This RC-candidate tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
+      "notes": "Historical Phase 13 beta-candidate tested status covering the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. Exact RC hosted-runner evidence is not claimed until an RC CI run exists; arbitrary third-party adapter protocols or code are not certified as trusted."
     },
     {
       "id": "desktop.macos.first-party",
       "category": "desktop",
       "target": "First-party macOS Accessibility bridge baseline harness",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-macos 1.0.0-rc.1",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-macos 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
@@ -201,14 +201,14 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "RC-candidate bridge contract and host doctor are tested. The physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim."
+      "notes": "Historical Phase 13 beta-candidate bridge contract and host doctor evidence. Exact RC hosted-runner evidence is not claimed yet. physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim."
     },
     {
       "id": "desktop.windows.first-party",
       "category": "desktop",
       "target": "First-party Windows UI Automation bridge baseline harness",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-windows 1.0.0-rc.1",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-windows 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
@@ -223,14 +223,14 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "RC-candidate deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
+      "notes": "Historical Phase 13 beta-candidate deterministic bridge contract and host doctor evidence. Exact RC hosted-runner evidence is not claimed yet; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
     },
     {
       "id": "desktop.linux.first-party",
       "category": "desktop",
       "target": "First-party Linux AT-SPI bridge on Ubuntu 24.04 virtual accessibility session",
       "status": "tested",
-      "implementation": "@quoralinex/q1x-community-desktop-bridge-linux 1.0.0-rc.1",
+      "implementation": "@quoralinex/q1x-community-desktop-bridge-linux 0.2.0-beta.1",
       "evidence": [
         {
           "kind": "ci",
@@ -245,7 +245,7 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "RC-candidate bridge behavior is tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence."
+      "notes": "Historical Phase 13 beta-candidate bridge behavior tested in the repository Ubuntu virtual X11/AT-SPI accessibility session. Exact RC hosted-runner evidence is not claimed yet; other desktop environments, compositors and Wayland policies require separate evidence."
     },
     {
       "id": "model.openai-chat.local.fixture",

@@ -151,9 +151,23 @@ test('Phase 14 matrix presents RC project identity while retaining historical Be
   assert.equal(consumer.version, '0.2.0-beta.1');
   assert.ok(consumer.evidence.some(item => item.source === '.github/workflows/public-beta.yml'));
   for (const id of ['desktop.macos.first-party', 'desktop.windows.first-party', 'desktop.linux.first-party']) {
-    assert.match(byId.get(id).implementation, /1\.0\.0-rc\.1$/);
+    assert.match(byId.get(id).implementation, /0\.2\.0-beta\.1$/);
+    assert.match(byId.get(id).notes ?? '', /historical[^\n]{0,100}beta|beta[^\n]{0,100}historical/i);
   }
-  assert.match(byId.get('protocol.community-adapter').version, /1\.0\.0-rc\.1/);
+  assert.match(byId.get('protocol.community-adapter').version, /0\.2\.0-beta\.1/);
+  assert.match(byId.get('protocol.community-adapter').notes ?? '', /historical[^\n]{0,100}beta|beta[^\n]{0,100}historical/i);
+});
+
+test('RC-labelled tested compatibility rows require evidence from an RC source commit', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
+  const root = new URL('..', import.meta.url);
+  for (const entry of source.entries.filter(item => item.status === 'tested' && /1\.0\.0-rc\.1/.test(JSON.stringify(item)))) {
+    for (const evidence of entry.evidence ?? []) {
+      const raw = execFileSync('git', ['show', `${evidence.commitSha}:packages/runtime/package.json`], { cwd: root, encoding: 'utf8' });
+      assert.equal(JSON.parse(raw).version, '1.0.0-rc.1', `${entry.id}: ${evidence.commitSha}`);
+    }
+  }
 });
 
 test('generator check mode succeeds only when checked-in markdown matches', () => {
