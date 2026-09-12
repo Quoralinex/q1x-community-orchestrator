@@ -30,7 +30,7 @@
 
 | Target | Status | Implementation | Version | Evidence | Constraints / notes |
 | --- | --- | --- | --- | --- | --- |
-| Governed eight-package Q1X beta-candidate tarballs in an external consumer | tested | npm pack tarballs | 0.2.0-beta.1 | hosted-runner / ci: `.github/workflows/public-beta.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-beta-governance.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-reproducibility.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Current beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately. |
+| Historical governed eight-package Q1X beta-candidate tarballs in an external consumer | tested | npm pack tarballs | 0.2.0-beta.1 | hosted-runner / ci: `.github/workflows/public-beta.yml` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-beta-governance.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba`<br>fixture / ci: `tests/release-reproducibility.test.mjs` @ `69a03c9717fa5e77576e6a80b94880cd38e4e5ba` | Historical Phase 13 beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately; current source identity is governed by the Phase 14 RC surface. |
 
 ## model-transport
 

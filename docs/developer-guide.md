@@ -24,7 +24,7 @@ npm test
 npm run check
 ```
 
-Use Node.js 24+. Keep source manifests on the commissioned release identity unless a governed release task explicitly stages another version.
+Use Node.js 24+. Keep source manifests aligned to the governed source-candidate identity for the current phase. Historical commissioned release identities remain immutable evidence and are never rewritten.
 ## Contracts and compatibility
 
 JSON Schema is normative for the public contract layer. Additive compatible changes belong in the existing major version; incompatible changes require an explicit version boundary rather than silent reinterpretation.
@@ -56,9 +56,9 @@ For generated documentation or evidence, the checked-in artifact must have a `--
 
 ## Release development
 
-The commissioned Alpha 2 source manifests remain unchanged in the repository. Beta preparation stages `0.2.0-beta.1` into a temporary release tree, verifies exact internal dependency versions, generates SHA-256 and SPDX evidence, and compares independent clean builds before a beta can be considered for commissioning.
+The historical commissioned Alpha 2 release remains immutable and its release artifacts/evidence are retained separately from current source manifests. Current source manifests are aligned to `1.0.0-rc.1`; the historical Phase 13 `0.2.0-beta.1` candidate and its evidence remain retained as historical compatibility inputs.
 
-A beta candidate is not commissioned merely because staging succeeds. Tag creation, release publication and any npm publication remain separate governed actions.
+RC or stable staging verifies exact internal dependency versions, SHA-256 evidence, SPDX evidence, clean external-consumer installation and reproducibility before commissioning can even be considered. A staged candidate is not commissioned merely because validation succeeds. Tag creation, release publication and any npm publication remain separate governed actions.
 
 ## Documentation
 

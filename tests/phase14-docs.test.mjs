@@ -83,3 +83,14 @@ test('active navigation exposes Phase 14 while prerelease remains historical Pha
   assert.match(prerelease, /historical|Phase 13/i);
   assert.match(prerelease, /0\.2\.0-beta\.1/);
 });
+
+test('active developer and compatibility docs label Alpha and Beta evidence as historical under the RC identity', async () => {
+  const developer = await read('developer-guide.md');
+  const matrix = await read('compatibility-matrix.md');
+  assert.doesNotMatch(developer, /commissioned Alpha 2 source manifests remain unchanged in the repository/i);
+  assert.doesNotMatch(developer, /Keep source manifests on the commissioned release identity/i);
+  assert.match(developer, /historical[^\n]{0,160}Alpha 2|Alpha 2[^\n]{0,160}historical/i);
+  assert.match(developer, /1\.0\.0-rc\.1/);
+  assert.doesNotMatch(matrix, /Current beta-candidate package-consumer identity/i);
+  assert.match(matrix, /Historical[^\n]{0,160}beta-candidate package-consumer identity/i);
+});
