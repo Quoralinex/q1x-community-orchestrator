@@ -1,0 +1,2147 @@
+{
+  "schema": "q1x.phase14-public-surface.v1",
+  "contracts": {
+    "family": "v1",
+    "schemas": [
+      {
+        "id": "urn:q1x:community:contracts:v1:adapter-endpoint",
+        "file": "packages/contracts/schemas/v1/adapter-endpoint.schema.json",
+        "sha256": "35f59674450822f860a24576ab64be4cd4584fb02436ae1bd6b6ae3c3d9a4740"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:adapter-manifest",
+        "file": "packages/contracts/schemas/v1/adapter-manifest.schema.json",
+        "sha256": "483232fa4067ddd31bb9599274d2c545c4e45308c9666af4964a92359e35f0ce"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:approval",
+        "file": "packages/contracts/schemas/v1/approval.schema.json",
+        "sha256": "1614825b2bb99f6aa80fbd00acd347dcfacf66c3af1d5b127dab4cb256032b91"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:artifact",
+        "file": "packages/contracts/schemas/v1/artifact.schema.json",
+        "sha256": "4b080ea25a77e6b3dd36da6b0eaae75e352eac41a8476bf8d9b4f20165373828"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:audit-receipt",
+        "file": "packages/contracts/schemas/v1/audit-receipt.schema.json",
+        "sha256": "7cff9322b8d26d46dbc63420980145b2808a7b7ac25c7e6780d3abebf3bba5f0"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:browser-action-batch",
+        "file": "packages/contracts/schemas/v1/browser-action-batch.schema.json",
+        "sha256": "707a521594b03eed9eb59e8a109161008ae253f2cea2592515db20015eb5367f"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:browser-endpoint",
+        "file": "packages/contracts/schemas/v1/browser-endpoint.schema.json",
+        "sha256": "a8517572605e088219db1eb1a73726a0e5997a2cfa3d7b95e216043ae6673d51"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:capability",
+        "file": "packages/contracts/schemas/v1/capability.schema.json",
+        "sha256": "42a6b94981a0e99b886dd50e46eb2f7d4e09ab5255bd89af2b800c267291ab1d"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:checkpoint",
+        "file": "packages/contracts/schemas/v1/checkpoint.schema.json",
+        "sha256": "9e206019b894d04a08c92d2d1c91183c660a3a65645d654674c241926da4a857"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:common",
+        "file": "packages/contracts/schemas/v1/common.schema.json",
+        "sha256": "e2dd6d429fff78cbaf9f5a59c8bbf55ad030d07974b7e5f9184c719b44c6dfca"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:deployment-profile",
+        "file": "packages/contracts/schemas/v1/deployment-profile.schema.json",
+        "sha256": "141269acdf47d248b0b9824b971cb1cdb8d6daa47bfd1fc00d9714a8501d35f5"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:desktop-action-batch",
+        "file": "packages/contracts/schemas/v1/desktop-action-batch.schema.json",
+        "sha256": "458ab92768b0f01ddb6136e0ecd14af037f268b377ca53cd4086975f6c3d9355"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:desktop-endpoint",
+        "file": "packages/contracts/schemas/v1/desktop-endpoint.schema.json",
+        "sha256": "a8dd70a08d8f7a18e241a06475f5c50558c0c0cbe267e34041ea7c505d9c2ae4"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:discovery-manifest",
+        "file": "packages/contracts/schemas/v1/discovery-manifest.schema.json",
+        "sha256": "13cc2d7fda39821c0e44867caff6052c812abd77253de856c56c02209f8f4b2c"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:evidence",
+        "file": "packages/contracts/schemas/v1/evidence.schema.json",
+        "sha256": "2be9bafed9420e7babd0fc3958c10af0d1c22a633453ccd03aa33d313a775a52"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:execution-binding",
+        "file": "packages/contracts/schemas/v1/execution-binding.schema.json",
+        "sha256": "63109f9f2e720633f201178aa6e2992039b27e0cba2658cd527c369b0d225b91"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:execution-request",
+        "file": "packages/contracts/schemas/v1/execution-request.schema.json",
+        "sha256": "aaf82406e637d8837909a591ee8b1394a665d3803c57ca6ffd55ac159ad92651"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:execution-result",
+        "file": "packages/contracts/schemas/v1/execution-result.schema.json",
+        "sha256": "df1f6435da25c4358cc76a37ac03ba055d9af510b286647943df69414763f1b3"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:mission",
+        "file": "packages/contracts/schemas/v1/mission.schema.json",
+        "sha256": "6e9f383811a9b79fc11f74445b1fe7262a37aa335d586566912d63b97a7b5004"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:model-endpoint",
+        "file": "packages/contracts/schemas/v1/model-endpoint.schema.json",
+        "sha256": "9d8f7f595de8f79ee4d0385865afd1a20abd4f0eb92662c3e0ebdf42d6c3fdf5"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:model-request",
+        "file": "packages/contracts/schemas/v1/model-request.schema.json",
+        "sha256": "686432136ee41e1da43e95abbc6332112fb8bc91404197db5308e665fd4de4c9"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:model-response",
+        "file": "packages/contracts/schemas/v1/model-response.schema.json",
+        "sha256": "f4ff4144d5dab557524964906c98980647a437621a150f5b3eb93cdb346fdf94"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:programme",
+        "file": "packages/contracts/schemas/v1/programme.schema.json",
+        "sha256": "fa3634eb3ed19a128611977c4abb620afa9f64163118b154fa67aa87dd194021"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:programme-proposal",
+        "file": "packages/contracts/schemas/v1/programme-proposal.schema.json",
+        "sha256": "f91ff2e041e0953f83e1da84b6ad72dabb436216c2a5e1b21fe539b10955ef6d"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:replan-event",
+        "file": "packages/contracts/schemas/v1/replan-event.schema.json",
+        "sha256": "8c4583362044763b8f8787f2c94d181fbbed4bc9c8e0d72acd5b96ee04c1b4c1"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:supervision-cycle",
+        "file": "packages/contracts/schemas/v1/supervision-cycle.schema.json",
+        "sha256": "2af0454524518ee90581f0bcba703664ef145bf3843834fec62e7af8ff60cf02"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:supervision-policy",
+        "file": "packages/contracts/schemas/v1/supervision-policy.schema.json",
+        "sha256": "9395810f7127cde25095b5dcf1a85045f843d1cd5e40b928a3f06e8a2c452e7a"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:team-plan",
+        "file": "packages/contracts/schemas/v1/team-plan.schema.json",
+        "sha256": "ebfa6142a77d072ec481c745dbe583fba1116e17261ec66f7d81b94970c498b0"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:work-assignment",
+        "file": "packages/contracts/schemas/v1/work-assignment.schema.json",
+        "sha256": "92c0c506ec3c21e7bcce2e21e5a85348b2c9da395890c575bce28da88e4261bb"
+      },
+      {
+        "id": "urn:q1x:community:contracts:v1:work-graph",
+        "file": "packages/contracts/schemas/v1/work-graph.schema.json",
+        "sha256": "eacc65ca5673f237b6a122b17aff13fec175e63451ceb11b18c34fe3ea7fb924"
+      }
+    ]
+  },
+  "packages": [
+    {
+      "name": "@quoralinex/q1x-community-adapter-sdk",
+      "directory": "packages/adapter-sdk",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": null,
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-contracts",
+      "directory": "packages/contracts",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./schemas/v1/*": "./schemas/v1/*"
+      },
+      "bin": null,
+      "engines": null,
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-common",
+      "directory": "packages/desktop-bridge-common",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": null,
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-linux",
+      "directory": "packages/desktop-bridge-linux",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./linux": {
+          "import": "./dist/linux.js",
+          "types": "./dist/linux.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-linux": "dist/index.js"
+      },
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-macos",
+      "directory": "packages/desktop-bridge-macos",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./macos": {
+          "import": "./dist/macos.js",
+          "types": "./dist/macos.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-macos": "dist/index.js"
+      },
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-desktop-bridge-windows",
+      "directory": "packages/desktop-bridge-windows",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        },
+        "./windows": {
+          "import": "./dist/windows.js",
+          "types": "./dist/windows.d.ts"
+        }
+      },
+      "bin": {
+        "q1x-desktop-bridge-windows": "dist/index.js"
+      },
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-runtime",
+      "directory": "packages/runtime",
+      "exports": {
+        ".": {
+          "import": "./dist/index.js",
+          "types": "./dist/index.d.ts"
+        }
+      },
+      "bin": {
+        "q1x": "./dist/cli.js"
+      },
+      "engines": {
+        "node": ">=24"
+      },
+      "license": "SEE LICENSE IN LICENSE"
+    },
+    {
+      "name": "@quoralinex/q1x-community-sdk",
+      "directory": "packages/sdk-typescript",
+      "exports": null,
+      "bin": null,
+      "engines": null,
+      "license": "SEE LICENSE IN LICENSE"
+    }
+  ],
+  "typeExports": [
+    {
+      "packageName": "@quoralinex/q1x-community-adapter-sdk",
+      "exports": [
+        {
+          "name": "ADAPTER_CONTRACT_VERSION",
+          "signature": "ADAPTER_CONTRACT_VERSION: '1.0.0'"
+        },
+        {
+          "name": "ADAPTER_RUNTIME_RANGE",
+          "signature": "ADAPTER_RUNTIME_RANGE: '0.1.x'"
+        },
+        {
+          "name": "ADAPTER_SDK_VERSION",
+          "signature": "ADAPTER_SDK_VERSION: '0.1.0-alpha.2'"
+        },
+        {
+          "name": "AdapterCompatibility",
+          "signature": "export interface AdapterCompatibility { sdkVersion: AdapterSdkVersion; contractVersion: '1.0.0'; runtimeRange: '0.1.x'; }"
+        },
+        {
+          "name": "AdapterConformanceCheck",
+          "signature": "export interface AdapterConformanceCheck { name: AdapterConformanceCheckName; ok: boolean; message?: string; }"
+        },
+        {
+          "name": "AdapterConformanceCheckName",
+          "signature": "export type AdapterConformanceCheckName = 'adapter-metadata' | 'execute-result' | 'discover-result' | 'fixture-immutability';"
+        },
+        {
+          "name": "AdapterConformanceOptions",
+          "signature": "export interface AdapterConformanceOptions { endpoint: AdapterEndpoint; request: ExecutionRequest; signal?: AbortSignal; env?: Readonly<Record<string, string | undefined>>; fetch?: typeof globalThis.fetch; }"
+        },
+        {
+          "name": "AdapterConformanceReport",
+          "signature": "export interface AdapterConformanceReport { ok: boolean; protocol: string; checks: AdapterConformanceCheck[]; }"
+        },
+        {
+          "name": "AdapterSdkError",
+          "signature": "export declare class AdapterSdkError extends Error { readonly code: AdapterSdkErrorCode; readonly issues: readonly AdapterValidationIssue[]; constructor(code: AdapterSdkErrorCode, message: string, issues?: readonly AdapterValidationIssue[]); }"
+        },
+        {
+          "name": "AdapterSdkErrorCode",
+          "signature": "export type AdapterSdkErrorCode = 'INVALID_ADAPTER' | 'INCOMPATIBLE_ADAPTER';"
+        },
+        {
+          "name": "AdapterSdkVersion",
+          "signature": "export type AdapterSdkVersion = '0.1.0-alpha.2';"
+        },
+        {
+          "name": "AdapterValidationIssue",
+          "signature": "export interface AdapterValidationIssue { field: string; message: string; }"
+        },
+        {
+          "name": "AdapterValidationResult",
+          "signature": "export interface AdapterValidationResult { ok: boolean; issues: AdapterValidationIssue[]; }"
+        },
+        {
+          "name": "assertCommunityAdapter",
+          "signature": "export declare function assertCommunityAdapter(adapter: unknown): asserts adapter is CommunityAdapter;"
+        },
+        {
+          "name": "CommunityAdapter",
+          "signature": "export interface CommunityAdapter { readonly protocol: string; readonly compatibility: AdapterCompatibility; execute(endpoint: AdapterEndpoint, request: ExecutionRequest, context?: CommunityAdapterContext): Promise<ExecutionResult>; discover?(endpoint: AdapterEndpoint, context?: CommunityAdapterContext): Promise<readonly CapabilityDescriptor[]>; }"
+        },
+        {
+          "name": "CommunityAdapterContext",
+          "signature": "export interface CommunityAdapterContext { signal?: AbortSignal; env?: Readonly<Record<string, string | undefined>>; fetch?: typeof globalThis.fetch; }"
+        },
+        {
+          "name": "createAdapterCompatibility",
+          "signature": "export declare function createAdapterCompatibility(): AdapterCompatibility;"
+        },
+        {
+          "name": "defineCommunityAdapter",
+          "signature": "export declare function defineCommunityAdapter<T extends CommunityAdapter>(adapter: T): T;"
+        },
+        {
+          "name": "runAdapterConformance",
+          "signature": "export declare function runAdapterConformance(candidate: unknown, options: AdapterConformanceOptions): Promise<AdapterConformanceReport>;"
+        },
+        {
+          "name": "validateCommunityAdapter",
+          "signature": "export declare function validateCommunityAdapter(adapter: unknown): AdapterValidationResult;"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-contracts",
+      "exports": [
+        {
+          "name": "ADAPTER_KINDS",
+          "signature": "ADAPTER_KINDS: readonly [ \"native-api\", \"provider-http\", \"openai-protocol\", \"anthropic-protocol\", \"local-inference\", \"mcp\", \"a2a\", \"cli-tui\", \"browser-control\", \"desktop-control\", \"software-runtime\", \"edge-device\" ]"
+        },
+        {
+          "name": "AdapterKind",
+          "signature": "export type AdapterKind = (typeof ADAPTER_KINDS)[number];"
+        },
+        {
+          "name": "BuiltInModelProtocol",
+          "signature": "export type BuiltInModelProtocol = (typeof MODEL_PROTOCOLS)[number];"
+        },
+        {
+          "name": "CONTRACT_VERSION",
+          "signature": "CONTRACT_VERSION: \"1.0.0\""
+        },
+        {
+          "name": "MODEL_PROTOCOLS",
+          "signature": "MODEL_PROTOCOLS: readonly [ \"openai-chat-completions\", \"openai-responses\", \"anthropic-messages\" ]"
+        },
+        {
+          "name": "SCHEMA_IDS",
+          "signature": "SCHEMA_IDS: { readonly common: \"urn:q1x:community:contracts:v1:common\"; readonly mission: \"urn:q1x:community:contracts:v1:mission\"; readonly programme: \"urn:q1x:community:contracts:v1:programme\"; readonly workGraph: \"urn:q1x:community:contracts:v1:work-graph\"; readonly replanEvent: \"urn:q1x:community:contracts:v1:replan-event\"; readonly capability: \"urn:q1x:community:contracts:v1:capability\"; readonly adapterManifest: \"urn:q1x:community:contracts:v1:adapter-manifest\"; readonly executionRequest: \"urn:q1x:community:contracts:v1:execution-request\"; readonly executionResult: \"urn:q1x:community:contracts:v1:execution-result\"; readonly evidence: \"urn:q1x:community:contracts:v1:evidence\"; readonly artifact: \"urn:q1x:community:contracts:v1:artifact\"; readonly approval: \"urn:q1x:community:contracts:v1:approval\"; readonly checkpoint: \"urn:q1x:community:contracts:v1:checkpoint\"; readonly auditReceipt: \"urn:q1x:community:contracts:v1:audit-receipt\"; readonly deploymentProfile: \"urn:q1x:community:contracts:v1:deployment-profile\"; readonly discoveryManifest: \"urn:q1x:community:contracts:v1:discovery-manifest\"; readonly modelEndpoint: \"urn:q1x:community:contracts:v1:model-endpoint\"; readonly modelRequest: \"urn:q1x:community:contracts:v1:model-request\"; readonly modelResponse: \"urn:q1x:community:contracts:v1:model-response\"; readonly adapterEndpoint: \"urn:q1x:community:contracts:v1:adapter-endpoint\"; readonly browserEndpoint: \"urn:q1x:community:contracts:v1:browser-endpoint\"; readonly browserActionBatch: \"urn:q1x:community:contracts:v1:browser-action-batch\"; readonly desktopEndpoint: \"urn:q1x:community:contracts:v1:desktop-endpoint\"; readonly desktopActionBatch: \"urn:q1x:community:contracts:v1:desktop-action-batch\"; readonly executionBinding: \"urn:q1x:community:contracts:v1:execution-binding\"; readonly teamPlan: \"urn:q1x:community:contracts:v1:team-plan\"; readonly workAssignment: \"urn:q1x:community:contracts:v1:work-assignment\"; readonly programmeProposal: \"urn:q1x:community:contracts:v1:programme-proposal\"; readonly supervisionPolicy: \"urn:q1x:community:contracts:v1:supervision-policy\"; readonly supervisionCycle: \"urn:q1x:community:contracts:v1:supervision-cycle\"; }"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-desktop-bridge-common",
+      "exports": [
+        {
+          "name": "BRIDGE_PROTOCOL",
+          "signature": "BRIDGE_PROTOCOL: 'q1x-desktop-bridge/1'"
+        },
+        {
+          "name": "BridgeDiagnosticState",
+          "signature": "export type BridgeDiagnosticState = 'ok' | 'warning' | 'blocked' | 'unsupported' | 'not-configured';"
+        },
+        {
+          "name": "BridgeDoctorCheck",
+          "signature": "export interface BridgeDoctorCheck { id: string; state: BridgeDiagnosticState; message: string; remediation?: string; evidence?: Record<string, unknown>; }"
+        },
+        {
+          "name": "BridgeDoctorResult",
+          "signature": "export interface BridgeDoctorResult { protocol: typeof BRIDGE_PROTOCOL; platform: Exclude<BridgePlatform, 'any'>; state: BridgeDiagnosticState; checks: BridgeDoctorCheck[]; }"
+        },
+        {
+          "name": "BridgeFailure",
+          "signature": "export interface BridgeFailure { ok: false; error: { code: string; message: string; details?: Record<string, unknown>; }; }"
+        },
+        {
+          "name": "BridgeIoError",
+          "signature": "export declare class BridgeIoError extends Error { readonly code: string; constructor(code: string, message: string); }"
+        },
+        {
+          "name": "BridgeOutput",
+          "signature": "export type BridgeOutput = BridgeSuccess | BridgeFailure;"
+        },
+        {
+          "name": "BridgePlatform",
+          "signature": "export type BridgePlatform = 'macos' | 'windows' | 'linux' | 'any';"
+        },
+        {
+          "name": "BridgeSuccess",
+          "signature": "export interface BridgeSuccess { ok: true; result: DesktopBatchResult; }"
+        },
+        {
+          "name": "BridgeValidationResult",
+          "signature": "export type BridgeValidationResult = { ok: true; value: DesktopBridgeEnvelope; } | { ok: false; code: 'INVALID_BRIDGE_ENVELOPE'; message: string; };"
+        },
+        {
+          "name": "createBridgeFailure",
+          "signature": "export declare function createBridgeFailure(code: string, message: string, details?: Record<string, unknown>): BridgeFailure;"
+        },
+        {
+          "name": "createBridgeSuccess",
+          "signature": "export declare function createBridgeSuccess(result: DesktopBatchResult): BridgeSuccess;"
+        },
+        {
+          "name": "DesktopBridgeEnvelope",
+          "signature": "export interface DesktopBridgeEnvelope { protocol: typeof BRIDGE_PROTOCOL; endpoint: { id: string; platform: BridgePlatform; }; batch: DesktopActionBatch; }"
+        },
+        {
+          "name": "MAX_BRIDGE_BYTES",
+          "signature": "MAX_BRIDGE_BYTES: number"
+        },
+        {
+          "name": "readBridgeEnvelope",
+          "signature": "export declare function readBridgeEnvelope(stream?: NodeJS.ReadableStream, maxBytes?: number): Promise<DesktopBridgeEnvelope>;"
+        },
+        {
+          "name": "readJsonInput",
+          "signature": "export declare function readJsonInput(stream?: NodeJS.ReadableStream, maxBytes?: number): Promise<unknown>;"
+        },
+        {
+          "name": "validateBridgeEnvelope",
+          "signature": "export declare function validateBridgeEnvelope(value: unknown): BridgeValidationResult;"
+        },
+        {
+          "name": "writeBridgeFailure",
+          "signature": "export declare function writeBridgeFailure(code: string, message: string, details?: Record<string, unknown>, stream?: NodeJS.WritableStream, maxBytes?: number): void;"
+        },
+        {
+          "name": "writeBridgeSuccess",
+          "signature": "export declare function writeBridgeSuccess(result: DesktopBatchResult, stream?: NodeJS.WritableStream, maxBytes?: number): void;"
+        },
+        {
+          "name": "writeJsonOutput",
+          "signature": "export declare function writeJsonOutput(value: unknown, stream?: NodeJS.WritableStream, maxBytes?: number): void;"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-desktop-bridge-linux",
+      "exports": [
+        {
+          "name": "createLinuxDoctor",
+          "signature": "export declare function createLinuxDoctor(options?: LinuxDoctorOptions): Promise<BridgeDoctorResult>;"
+        },
+        {
+          "name": "createLinuxPythonInvocation",
+          "signature": "export declare function createLinuxPythonInvocation(envelope: DesktopBridgeEnvelope, command?: string, workerPath?: string): LinuxInvocation;"
+        },
+        {
+          "name": "LinuxDoctorOptions",
+          "signature": "export interface LinuxDoctorOptions { platform?: NodeJS.Platform; pythonCommand?: string | null; atspiAvailable?: boolean; displayAvailable?: boolean; sessionType?: string | null; }"
+        },
+        {
+          "name": "LinuxInvocation",
+          "signature": "export interface LinuxInvocation { command: string; args: string[]; stdin: string; shell: false; }"
+        },
+        {
+          "name": "runLinuxBridge",
+          "signature": "export declare function runLinuxBridge(envelope: DesktopBridgeEnvelope): Promise<DesktopBatchResult>;"
+        },
+        {
+          "name": "supportedLinuxActions",
+          "signature": "supportedLinuxActions: readonly [ \"list-applications\", \"launch-application\", \"focus-application\", \"close-application\", \"list-windows\", \"focus-window\", \"inspect\", \"find\", \"click\", \"double-click\", \"type\", \"press\", \"set-value\", \"select\", \"toggle\", \"mouse-move\", \"mouse-down\", \"mouse-up\", \"wheel\", \"drag\", \"wait\", \"screenshot\" ]"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-desktop-bridge-macos",
+      "exports": [
+        {
+          "name": "createMacosDoctor",
+          "signature": "export declare function createMacosDoctor(options?: MacosDoctorOptions): Promise<BridgeDoctorResult>;"
+        },
+        {
+          "name": "createMacosJxaInvocation",
+          "signature": "export declare function createMacosJxaInvocation(envelope: DesktopBridgeEnvelope): MacosInvocation;"
+        },
+        {
+          "name": "MacosDoctorOptions",
+          "signature": "export interface MacosDoctorOptions { platform?: NodeJS.Platform; osascriptExists?: boolean; accessibilityTrusted?: boolean; }"
+        },
+        {
+          "name": "MacosInvocation",
+          "signature": "export interface MacosInvocation { command: string; args: string[]; stdin: string; shell: false; }"
+        },
+        {
+          "name": "runMacosBridge",
+          "signature": "export declare function runMacosBridge(envelope: DesktopBridgeEnvelope): Promise<DesktopBatchResult>;"
+        },
+        {
+          "name": "supportedMacosActions",
+          "signature": "supportedMacosActions: readonly [ \"list-applications\", \"launch-application\", \"focus-application\", \"close-application\", \"list-windows\", \"focus-window\", \"inspect\", \"find\", \"click\", \"double-click\", \"type\", \"press\", \"set-value\", \"mouse-move\", \"mouse-down\", \"mouse-up\", \"wheel\", \"drag\", \"wait\", \"screenshot\" ]"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-desktop-bridge-windows",
+      "exports": [
+        {
+          "name": "createWindowsDoctor",
+          "signature": "export declare function createWindowsDoctor(options?: WindowsDoctorOptions): Promise<BridgeDoctorResult>;"
+        },
+        {
+          "name": "createWindowsPowerShellInvocation",
+          "signature": "export declare function createWindowsPowerShellInvocation(envelope: DesktopBridgeEnvelope, command?: string): WindowsInvocation;"
+        },
+        {
+          "name": "runWindowsBridge",
+          "signature": "export declare function runWindowsBridge(envelope: DesktopBridgeEnvelope): Promise<DesktopBatchResult>;"
+        },
+        {
+          "name": "supportedWindowsActions",
+          "signature": "supportedWindowsActions: readonly [ \"list-applications\", \"launch-application\", \"focus-application\", \"close-application\", \"list-windows\", \"focus-window\", \"inspect\", \"find\", \"click\", \"double-click\", \"type\", \"press\", \"set-value\", \"select\", \"toggle\", \"mouse-move\", \"mouse-down\", \"mouse-up\", \"wheel\", \"drag\", \"wait\", \"screenshot\" ]"
+        },
+        {
+          "name": "WindowsDoctorOptions",
+          "signature": "export interface WindowsDoctorOptions { platform?: NodeJS.Platform; powershellCommand?: string | null; uiAutomationAvailable?: boolean; }"
+        },
+        {
+          "name": "WindowsInvocation",
+          "signature": "export interface WindowsInvocation { command: string; args: string[]; stdin: string; shell: false; }"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-runtime",
+      "exports": [
+        {
+          "name": "AdapterTransport",
+          "signature": "export interface AdapterTransport { readonly protocol: string; execute(endpoint: AdapterEndpoint, request: ExecutionRequest, context?: AdapterTransportContext): Promise<ExecutionResult>; discover?(endpoint: AdapterEndpoint, context?: AdapterTransportContext): Promise<readonly CapabilityDescriptor[]>; }"
+        },
+        {
+          "name": "AdapterTransportContext",
+          "signature": "export interface AdapterTransportContext { env?: NodeJS.ProcessEnv; fetch?: typeof globalThis.fetch; signal?: AbortSignal; }"
+        },
+        {
+          "name": "AdapterTransportRegistry",
+          "signature": "export declare class AdapterTransportRegistry { private readonly transports; constructor(transports?: AdapterTransport[]); register(transport: AdapterTransport): void; get(protocol: string): AdapterTransport | undefined; protocols(): string[]; execute(endpoint: AdapterEndpoint, request: ExecutionRequest, context?: AdapterTransportContext): Promise<ExecutionResult>; discover(endpoint: AdapterEndpoint, context?: AdapterTransportContext): Promise<readonly CapabilityDescriptor[]>; }"
+        },
+        {
+          "name": "aggregateDiagnosticState",
+          "signature": "export declare function aggregateDiagnosticState(checks: readonly DiagnosticCheck[]): DiagnosticState;"
+        },
+        {
+          "name": "AppliedConnectorResult",
+          "signature": "export interface AppliedConnectorResult { connectorId: string; category: ConnectorCategory; endpointId: string; preflightState: DiagnosticState; }"
+        },
+        {
+          "name": "applyConfiguredConnector",
+          "signature": "export declare function applyConfiguredConnector(runtime: OpenControlRuntime, connectorId: string, options?: ApplyConfiguredConnectorOptions): Promise<AppliedConnectorResult>;"
+        },
+        {
+          "name": "ApplyConfiguredConnectorOptions",
+          "signature": "export interface ApplyConfiguredConnectorOptions { preflight?: ConnectorPreflightOptions; browser?: BrowserMaterializationOptions; }"
+        },
+        {
+          "name": "ApplyStateMigrationOptions",
+          "signature": "export interface ApplyStateMigrationOptions { dryRun?: boolean; backupPath?: string; }"
+        },
+        {
+          "name": "applyStateMigrations",
+          "signature": "export declare function applyStateMigrations(home: string, options?: ApplyStateMigrationOptions): Promise<StateMigrationResult>;"
+        },
+        {
+          "name": "applyStateMigrationsWithRegistry",
+          "signature": "export declare function applyStateMigrationsWithRegistry(homeInput: string, registry: readonly StateMigrationStep[], options?: ApplyStateMigrationOptions): Promise<StateMigrationResult>;"
+        },
+        {
+          "name": "assertNextContractRevision",
+          "signature": "export declare function assertNextContractRevision(previous: number | undefined, next: number): void;"
+        },
+        {
+          "name": "assertSafeAdapterEndpoint",
+          "signature": "export declare function assertSafeAdapterEndpoint(endpoint: AdapterEndpoint): void;"
+        },
+        {
+          "name": "assertSafeBrowserEndpoint",
+          "signature": "export declare function assertSafeBrowserEndpoint(endpoint: BrowserEndpoint): void;"
+        },
+        {
+          "name": "assertSafeBrowserNavigation",
+          "signature": "export declare function assertSafeBrowserNavigation(endpoint: BrowserEndpoint, rawUrl: string): URL;"
+        },
+        {
+          "name": "assertSafeDesktopBatch",
+          "signature": "export declare function assertSafeDesktopBatch(endpoint: DesktopEndpoint, batch: DesktopActionBatch): DesktopActionBatch;"
+        },
+        {
+          "name": "assertSafeDesktopEndpoint",
+          "signature": "export declare function assertSafeDesktopEndpoint(endpoint: DesktopEndpoint): void;"
+        },
+        {
+          "name": "assertSafeEndpointConfiguration",
+          "signature": "export declare function assertSafeEndpointConfiguration(endpoint: ModelEndpoint): void;"
+        },
+        {
+          "name": "assertSafeEndpointUrl",
+          "signature": "export declare function assertSafeEndpointUrl(value: string): URL;"
+        },
+        {
+          "name": "assertTransition",
+          "signature": "export declare function assertTransition(kind: LifecycleKind, from: string, to: string): void;"
+        },
+        {
+          "name": "assertWithinResponseLimit",
+          "signature": "export declare function assertWithinResponseLimit(value: unknown, maxBytes: number, label?: string): void;"
+        },
+        {
+          "name": "BackupCreationResult",
+          "signature": "export interface BackupCreationResult extends BackupManifest { directory: string; }"
+        },
+        {
+          "name": "BackupFileRecord",
+          "signature": "export interface BackupFileRecord { path: string; size: number; sha256: string; }"
+        },
+        {
+          "name": "BackupManifest",
+          "signature": "export interface BackupManifest { schema: 'q1x.runtime-backup.v1'; runtimeVersion: string; stateSchemaVersion: number; createdAt: string; sqliteIntegrity: 'ok'; sourceIdentity?: { release?: string; sourceSha?: string; }; files: BackupFileRecord[]; }"
+        },
+        {
+          "name": "BackupVerification",
+          "signature": "export interface BackupVerification { schema: 'q1x.runtime-backup-verification.v1'; backupPath: string; valid: boolean; stateSchemaVersion?: number; findings: string[]; }"
+        },
+        {
+          "name": "beginOperation",
+          "signature": "export declare function beginOperation(store: SqliteStore, input: BeginOperationInput): OperationJournalEntry;"
+        },
+        {
+          "name": "BeginOperationInput",
+          "signature": "export interface BeginOperationInput { id?: string; kind: ExternalOperationKind; subjectId: string; retrySafe: boolean; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "bindingMatches",
+          "signature": "export declare function bindingMatches(binding: ExecutionBinding, capability: CapabilityDescriptor, requirements: CapabilityRoutingRequirements, policy: SupervisionPolicy): boolean;"
+        },
+        {
+          "name": "boundedTimeout",
+          "signature": "export declare function boundedTimeout(configured: number | undefined, ceiling: number): number;"
+        },
+        {
+          "name": "BrowserBackend",
+          "signature": "export interface BrowserBackend { readonly id: string; open(endpoint: BrowserEndpoint): Promise<BrowserBackendSession>; execute(session: BrowserBackendSession, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>; }"
+        },
+        {
+          "name": "BrowserBackendRegistry",
+          "signature": "export declare class BrowserBackendRegistry { private readonly backends; constructor(backends?: BrowserBackend[]); register(backend: BrowserBackend): void; get(id: string): BrowserBackend | undefined; ids(): string[]; }"
+        },
+        {
+          "name": "BrowserBackendSession",
+          "signature": "export interface BrowserBackendSession { readonly persistent: boolean; close(): Promise<void>; }"
+        },
+        {
+          "name": "BrowserMaterializationOptions",
+          "signature": "export interface BrowserMaterializationOptions extends ChromiumDetectionOptions { }"
+        },
+        {
+          "name": "BrowserSessionHandle",
+          "signature": "export interface BrowserSessionHandle { id: string; endpointId: string; backend: string; persistent: boolean; createdAt: string; }"
+        },
+        {
+          "name": "BrowserSessionManager",
+          "signature": "export declare class BrowserSessionManager { private readonly registry; private readonly sessions; constructor(registry: BrowserBackendRegistry); openSession(endpoint: BrowserEndpoint): Promise<BrowserSessionHandle>; getSession(id: string): BrowserSessionHandle | undefined; count(): number; hasBackend(id: string): boolean; registerBackend(backend: BrowserBackend): void; execute(id: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>; closeSession(id: string): Promise<void>; closeAll(): Promise<void>; requireRecord(id: string): SessionRecord; }"
+        },
+        {
+          "name": "ChromiumDetectionOptions",
+          "signature": "export interface ChromiumDetectionOptions { platform?: NodeJS.Platform; env?: NodeJS.ProcessEnv; }"
+        },
+        {
+          "name": "chromiumExecutableCandidates",
+          "signature": "export declare function chromiumExecutableCandidates(platform?: NodeJS.Platform, env?: NodeJS.ProcessEnv): string[];"
+        },
+        {
+          "name": "classifyStateSchema",
+          "signature": "export declare function classifyStateSchema(version: number): StateSchemaClassification;"
+        },
+        {
+          "name": "commandExistsOnPath",
+          "signature": "export declare function commandExistsOnPath(command: string, env?: NodeJS.ProcessEnv): Promise<boolean>;"
+        },
+        {
+          "name": "communityAdapterTransport",
+          "signature": "export declare function communityAdapterTransport(adapter: CommunityAdapter): AdapterTransport;"
+        },
+        {
+          "name": "completeOperation",
+          "signature": "export declare function completeOperation(store: SqliteStore, id: string, input: CompleteOperationInput): OperationJournalEntry;"
+        },
+        {
+          "name": "CompleteOperationInput",
+          "signature": "export interface CompleteOperationInput { state: 'completed' | 'failed'; resultRef?: string; errorCode?: string; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "configureConnector",
+          "signature": "export declare function configureConnector(home: string | undefined, input: ConfigureConnectorInput): ConfiguredConnector;"
+        },
+        {
+          "name": "ConfigureConnectorInput",
+          "signature": "export interface ConfigureConnectorInput { id: string; enabled?: boolean; profile: string; parameters?: Record<string, unknown>; environmentKeys?: Record<string, string>; }"
+        },
+        {
+          "name": "ConfiguredConnector",
+          "signature": "export interface ConfiguredConnector { id: string; enabled: boolean; profile: string; parameters: Record<string, unknown>; environmentKeys: Record<string, string>; updatedAt: string; }"
+        },
+        {
+          "name": "ConnectorCatalogueDocument",
+          "signature": "export interface ConnectorCatalogueDocument { version: '1.0.0'; connectors: ConnectorDefinition[]; }"
+        },
+        {
+          "name": "ConnectorCatalogueValidationResult",
+          "signature": "export type ConnectorCatalogueValidationResult = { ok: true; value: ConnectorCatalogueDocument; } | { ok: false; errors: string[]; };"
+        },
+        {
+          "name": "ConnectorCategory",
+          "signature": "export type ConnectorCategory = 'model' | 'mcp' | 'a2a' | 'cli' | 'browser' | 'desktop';"
+        },
+        {
+          "name": "ConnectorCompatibility",
+          "signature": "export interface ConnectorCompatibility { status: ConnectorCompatibilityStatus; matrixId?: string; note?: string; }"
+        },
+        {
+          "name": "ConnectorCompatibilityStatus",
+          "signature": "export type ConnectorCompatibilityStatus = 'tested' | 'experimental' | 'unsupported';"
+        },
+        {
+          "name": "ConnectorDefinition",
+          "signature": "export interface ConnectorDefinition { id: string; name: string; category: ConnectorCategory; protocol: string; platforms: ConnectorPlatform[]; requirements: ConnectorRequirements; profile: ConnectorProfile; compatibility: ConnectorCompatibility; provenance: ConnectorProvenance; }"
+        },
+        {
+          "name": "ConnectorPlatform",
+          "signature": "export type ConnectorPlatform = 'macos' | 'windows' | 'linux' | 'any';"
+        },
+        {
+          "name": "ConnectorPreflightOptions",
+          "signature": "export interface ConnectorPreflightOptions { platform?: NodeJS.Platform; env?: NodeJS.ProcessEnv; commandExists?: (command: string) => Promise<boolean>; desktopDoctor?: (platform: 'macos' | 'windows' | 'linux') => Promise<NativeDoctorReport>; fetch?: typeof globalThis.fetch; }"
+        },
+        {
+          "name": "ConnectorPreflightReport",
+          "signature": "export interface ConnectorPreflightReport { connectorId: string; state: DiagnosticState; checks: DiagnosticCheck[]; }"
+        },
+        {
+          "name": "ConnectorProfile",
+          "signature": "export interface ConnectorProfile { kind: string; platform?: Exclude<ConnectorPlatform, 'any'>; template?: string; }"
+        },
+        {
+          "name": "ConnectorProvenance",
+          "signature": "export type ConnectorProvenance = 'first-party' | 'community';"
+        },
+        {
+          "name": "ConnectorRequirements",
+          "signature": "export interface ConnectorRequirements { commands?: string[]; environmentKeys?: string[]; }"
+        },
+        {
+          "name": "CONTRACT_VERSION",
+          "signature": "CONTRACT_VERSION: \"1.0.0\""
+        },
+        {
+          "name": "createA2AAdapterTransport",
+          "signature": "export declare function createA2AAdapterTransport(): AdapterTransport;"
+        },
+        {
+          "name": "createCliAdapterTransports",
+          "signature": "export declare function createCliAdapterTransports(): AdapterTransport[];"
+        },
+        {
+          "name": "createDefaultAdapterTransportRegistry",
+          "signature": "export declare function createDefaultAdapterTransportRegistry(): AdapterTransportRegistry;"
+        },
+        {
+          "name": "createDefaultBrowserBackendRegistry",
+          "signature": "export declare function createDefaultBrowserBackendRegistry(): BrowserBackendRegistry;"
+        },
+        {
+          "name": "createDefaultDesktopBackendRegistry",
+          "signature": "export declare function createDefaultDesktopBackendRegistry(): DesktopBackendRegistry;"
+        },
+        {
+          "name": "createDefaultModelTransportRegistry",
+          "signature": "export declare function createDefaultModelTransportRegistry(): ModelTransportRegistry;"
+        },
+        {
+          "name": "createFirstPartyDesktopEndpoint",
+          "signature": "export declare function createFirstPartyDesktopEndpoint(options?: FirstPartyDesktopEndpointOptions): DesktopEndpoint;"
+        },
+        {
+          "name": "createMcpAdapterTransports",
+          "signature": "export declare function createMcpAdapterTransports(): AdapterTransport[];"
+        },
+        {
+          "name": "createRuntimeBackup",
+          "signature": "export declare function createRuntimeBackup(homeInput: string, outputDir: string): Promise<BackupCreationResult>;"
+        },
+        {
+          "name": "CURRENT_STATE_SCHEMA_VERSION",
+          "signature": "CURRENT_STATE_SCHEMA_VERSION = 1"
+        },
+        {
+          "name": "DEFAULT_RUNTIME_LIMITS",
+          "signature": "DEFAULT_RUNTIME_LIMITS: RuntimeLimits"
+        },
+        {
+          "name": "DesktopBackend",
+          "signature": "export interface DesktopBackend { readonly id: string; execute(endpoint: DesktopEndpoint, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult>; }"
+        },
+        {
+          "name": "DesktopBackendRegistry",
+          "signature": "export declare class DesktopBackendRegistry { private readonly backends; constructor(backends?: DesktopBackend[]); register(backend: DesktopBackend): void; get(id: string): DesktopBackend | undefined; has(id: string): boolean; ids(): string[]; execute(endpoint: DesktopEndpoint, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult>; }"
+        },
+        {
+          "name": "desktopPlatformForHost",
+          "signature": "export declare function desktopPlatformForHost(hostPlatform?: NodeJS.Platform): Exclude<DesktopPlatform, 'any'> | undefined;"
+        },
+        {
+          "name": "detectChromiumExecutable",
+          "signature": "export declare function detectChromiumExecutable(options?: ChromiumDetectionOptions): string;"
+        },
+        {
+          "name": "DiagnosticCheck",
+          "signature": "export interface DiagnosticCheck { id: string; state: DiagnosticState; message: string; remediation?: string; evidence?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DiagnosticState",
+          "signature": "export type DiagnosticState = 'ok' | 'warning' | 'blocked' | 'unsupported' | 'not-configured';"
+        },
+        {
+          "name": "digestRuntimeBackup",
+          "signature": "export declare function digestRuntimeBackup(pathInput: string): Promise<string>;"
+        },
+        {
+          "name": "discoverManifest",
+          "signature": "export declare function discoverManifest(manifest: DiscoveryManifest, context?: DiscoveryContext): Promise<DiscoveryResult>;"
+        },
+        {
+          "name": "DiscoveryContext",
+          "signature": "export interface DiscoveryContext { platform?: Platform; env?: NodeJS.ProcessEnv; home?: string; }"
+        },
+        {
+          "name": "DiscoveryResult",
+          "signature": "export interface DiscoveryResult { manifestId: string; capability: CapabilityDescriptor; probes: ProbeResult[]; }"
+        },
+        {
+          "name": "DoctorOptions",
+          "signature": "export interface DoctorOptions { platform?: NodeJS.Platform; env?: NodeJS.ProcessEnv; commandExists?: (command: string) => Promise<boolean>; desktopDoctor?: (platform: 'macos' | 'windows' | 'linux') => Promise<NativeDoctorReport>; }"
+        },
+        {
+          "name": "DoctorReport",
+          "signature": "export interface DoctorReport { contractVersion: '1.0.0'; state: DiagnosticState; platform: string; home: string; checks: DiagnosticCheck[]; connectors: ConnectorPreflightReport[]; limits: { effective: RuntimeLimits; weakened: (keyof RuntimeLimits)[]; }; }"
+        },
+        {
+          "name": "executePlaywrightBatch",
+          "signature": "export declare function executePlaywrightBatch(session: PlaywrightBrowserSession, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>;"
+        },
+        {
+          "name": "ExternalOperationKind",
+          "signature": "export type ExternalOperationKind = 'model' | 'adapter' | 'browser' | 'desktop' | 'supervision';"
+        },
+        {
+          "name": "ExternalOperationState",
+          "signature": "export type ExternalOperationState = 'intent-recorded' | 'dispatched' | 'completed' | 'failed' | 'interrupted-uncertain';"
+        },
+        {
+          "name": "FirstPartyDesktopBridge",
+          "signature": "export interface FirstPartyDesktopBridge { platform: Exclude<DesktopPlatform, 'any'>; command: string; supportedActions: readonly DesktopActionKind[]; }"
+        },
+        {
+          "name": "FirstPartyDesktopEndpointOptions",
+          "signature": "export interface FirstPartyDesktopEndpointOptions { platform?: NodeJS.Platform | Exclude<DesktopPlatform, 'any'>; id?: string; name?: string; outputDir?: string; }"
+        },
+        {
+          "name": "getBuiltInConnector",
+          "signature": "export declare function getBuiltInConnector(id: string): ConnectorDefinition | undefined;"
+        },
+        {
+          "name": "getConfiguredConnector",
+          "signature": "export declare function getConfiguredConnector(home: string | undefined, id: string): ConfiguredConnector | undefined;"
+        },
+        {
+          "name": "getFirstPartyDesktopBridge",
+          "signature": "export declare function getFirstPartyDesktopBridge(platform?: NodeJS.Platform | Exclude<DesktopPlatform, 'any'>): FirstPartyDesktopBridge;"
+        },
+        {
+          "name": "HARD_RUNTIME_LIMITS",
+          "signature": "HARD_RUNTIME_LIMITS: RuntimeLimits"
+        },
+        {
+          "name": "HeadPointer",
+          "signature": "export interface HeadPointer { kind: string; id: string; storageRevision: number; scopeId: string | null; }"
+        },
+        {
+          "name": "inspectRuntimeState",
+          "signature": "export declare function inspectRuntimeState(home: string): StateMigrationInspection;"
+        },
+        {
+          "name": "isDesktopEndpointPlatformCompatible",
+          "signature": "export declare function isDesktopEndpointPlatformCompatible(endpoint: DesktopEndpoint, hostPlatform?: NodeJS.Platform): boolean;"
+        },
+        {
+          "name": "isDesktopPathWithin",
+          "signature": "export declare function isDesktopPathWithin(root: string, candidate: string, style?: 'native' | 'win32'): boolean;"
+        },
+        {
+          "name": "knownCapabilityCost",
+          "signature": "export declare function knownCapabilityCost(capability: CapabilityDescriptor): number | undefined;"
+        },
+        {
+          "name": "LifecycleKind",
+          "signature": "export type LifecycleKind = 'mission' | 'programme' | 'work-node';"
+        },
+        {
+          "name": "listConfiguredConnectors",
+          "signature": "export declare function listConfiguredConnectors(home: string | undefined): ConfiguredConnector[];"
+        },
+        {
+          "name": "loadA2AConnectorProfile",
+          "signature": "export declare function loadA2AConnectorProfile(kind: string): A2AProfileDocument;"
+        },
+        {
+          "name": "loadBrowserConnectorProfile",
+          "signature": "export declare function loadBrowserConnectorProfile(kind: string): BrowserProfileDocument;"
+        },
+        {
+          "name": "loadBuiltInConnectorCatalogue",
+          "signature": "export declare function loadBuiltInConnectorCatalogue(): readonly ConnectorDefinition[];"
+        },
+        {
+          "name": "loadCliConnectorProfile",
+          "signature": "export declare function loadCliConnectorProfile(kind: string): CliProfileDocument;"
+        },
+        {
+          "name": "loadContractSchemas",
+          "signature": "export declare function loadContractSchemas(): Map<string, ValidateFunction>;"
+        },
+        {
+          "name": "loadDiscoveryManifests",
+          "signature": "export declare function loadDiscoveryManifests(input: string): DiscoveryManifest[];"
+        },
+        {
+          "name": "loadMcpConnectorProfile",
+          "signature": "export declare function loadMcpConnectorProfile(kind: string): McpProfileDocument;"
+        },
+        {
+          "name": "loadModelConnectorProfile",
+          "signature": "export declare function loadModelConnectorProfile(kind: string): ModelConnectorProfileDocument;"
+        },
+        {
+          "name": "markOperationDispatched",
+          "signature": "export declare function markOperationDispatched(store: SqliteStore, id: string): OperationJournalEntry;"
+        },
+        {
+          "name": "markOperationUncertain",
+          "signature": "export declare function markOperationUncertain(store: SqliteStore, id: string): OperationJournalEntry;"
+        },
+        {
+          "name": "materializeA2AConnector",
+          "signature": "export declare function materializeA2AConnector(definition: ConnectorDefinition, configuration: ConfiguredConnector): AdapterEndpoint;"
+        },
+        {
+          "name": "materializeBrowserConnector",
+          "signature": "export declare function materializeBrowserConnector(definition: ConnectorDefinition, configuration: ConfiguredConnector, options?: BrowserMaterializationOptions): BrowserEndpoint;"
+        },
+        {
+          "name": "materializeCliConnector",
+          "signature": "export declare function materializeCliConnector(definition: ConnectorDefinition, configuration: ConfiguredConnector): AdapterEndpoint;"
+        },
+        {
+          "name": "materializeMcpConnector",
+          "signature": "export declare function materializeMcpConnector(definition: ConnectorDefinition, configuration: ConfiguredConnector): AdapterEndpoint;"
+        },
+        {
+          "name": "materializeModelConnector",
+          "signature": "export declare function materializeModelConnector(definition: ConnectorDefinition, configuration: ConfiguredConnector): ModelEndpoint;"
+        },
+        {
+          "name": "McpConnectorProfileKind",
+          "signature": "export type McpConnectorProfileKind = 'mcp-stdio' | 'mcp-streamable-http';"
+        },
+        {
+          "name": "ModelConnectorProfileDocument",
+          "signature": "export interface ModelConnectorProfileDocument { version: '1.0.0'; kind: ModelConnectorProfileKind; protocol: 'openai-chat-completions' | 'openai-responses' | 'anthropic-messages'; adapterKind: 'local-inference' | 'provider-http'; scope: 'local' | 'hosted'; defaultTimeoutMs: number; credential?: { environmentName: string; header: string; prefix?: string; }; }"
+        },
+        {
+          "name": "ModelConnectorProfileKind",
+          "signature": "export type ModelConnectorProfileKind = 'model-openai-chat-local' | 'model-openai-responses-local' | 'model-anthropic-messages-local' | 'model-openai-compatible-hosted' | 'model-anthropic-compatible-hosted';"
+        },
+        {
+          "name": "ModelTransport",
+          "signature": "export interface ModelTransport { readonly protocol: string; invoke(endpoint: ModelEndpoint, request: ModelRequest, context?: ModelTransportContext): Promise<ModelResponse>; }"
+        },
+        {
+          "name": "ModelTransportContext",
+          "signature": "export interface ModelTransportContext { env?: NodeJS.ProcessEnv; fetch?: typeof globalThis.fetch; }"
+        },
+        {
+          "name": "ModelTransportRegistry",
+          "signature": "export declare class ModelTransportRegistry { private readonly transports; constructor(transports?: ModelTransport[]); register(transport: ModelTransport): void; get(protocol: string): ModelTransport | undefined; protocols(): string[]; invoke(endpoint: ModelEndpoint, request: ModelRequest, context?: ModelTransportContext): Promise<ModelResponse>; }"
+        },
+        {
+          "name": "OpenControlRuntime",
+          "signature": "export declare class OpenControlRuntime { readonly home: string; readonly databasePath: string; private readonly store; private readonly modelTransports; private readonly adapterTransports; private readonly browserSessions; private readonly desktopBackends; readonly limits: RuntimeLimits; readonly limitWarnings: (keyof RuntimeLimits)[]; private constructor(); static open(options?: RuntimeOpenOptions): OpenControlRuntime; close(): void; getStateSchemaVersion(): number; beginExternalOperation(input: BeginOperationInput): OperationJournalEntry; markExternalOperationDispatched(id: string): OperationJournalEntry; completeExternalOperation(id: string, input: CompleteOperationInput): OperationJournalEntry; markExternalOperationUncertain(id: string): OperationJournalEntry; getExternalOperation(id: string): OperationJournalEntry | undefined; listExternalOperations(): OperationJournalEntry[]; reconcileExternalOperations(): OperationJournalEntry[]; putMission(mission: Mission): Mission; getMission(id: string): Mission | undefined; listMissions(): Mission[]; putProgramme(programme: Programme): Programme; getProgramme(id: string): Programme | undefined; listProgrammes(): Programme[]; putWorkGraph(graph: WorkGraph): WorkGraph; getWorkGraph(id: string): WorkGraph | undefined; listWorkGraphs(programmeId?: string): WorkGraph[]; recordReplanEvent(event: ReplanEvent): ReplanEvent; listReplanEvents(programmeId?: string): ReplanEvent[]; putCapability(capability: CapabilityDescriptor): CapabilityDescriptor; getCapability(id: string): CapabilityDescriptor | undefined; listCapabilities(): CapabilityDescriptor[]; putAdapterManifest(manifest: AdapterManifest): AdapterManifest; getAdapterManifest(id: string): AdapterManifest | undefined; listAdapterManifests(): AdapterManifest[]; putModelEndpoint(endpoint: ModelEndpoint): ModelEndpoint; getModelEndpoint(id: string): ModelEndpoint | undefined; listModelEndpoints(): ModelEndpoint[]; putBrowserEndpoint(endpoint: BrowserEndpoint): BrowserEndpoint; getBrowserEndpoint(id: string): BrowserEndpoint | undefined; listBrowserEndpoints(): BrowserEndpoint[]; registerBrowserBackend(backend: BrowserBackend): void; openBrowserSession(endpointId: string): Promise<BrowserSessionHandle>; executeBrowserSession(sessionId: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>; closeBrowserSession(sessionId: string): Promise<void>; runBrowserBatch(endpointId: string, batch: BrowserActionBatch, signal?: AbortSignal): Promise<BrowserBatchResult>; discoverBrowserCapability(endpointId: string): CapabilityDescriptor; putDesktopEndpoint(endpoint: DesktopEndpoint): DesktopEndpoint; getDesktopEndpoint(id: string): DesktopEndpoint | undefined; listDesktopEndpoints(): DesktopEndpoint[]; registerDesktopBackend(backend: DesktopBackend): void; runDesktopBatch(endpointId: string, batch: DesktopActionBatch, signal?: AbortSignal): Promise<DesktopBatchResult>; discoverDesktopCapability(endpointId: string): CapabilityDescriptor; putAdapterEndpoint(endpoint: AdapterEndpoint): AdapterEndpoint; getAdapterEndpoint(id: string): AdapterEndpoint | undefined; listAdapterEndpoints(): AdapterEndpoint[]; registerAdapterTransport(transport: AdapterTransport): void; executeAdapter(endpointId: string, request: ExecutionRequest, context?: AdapterTransportContext): Promise<ExecutionResult>; discoverAdapterCapabilities(endpointId: string, context?: AdapterTransportContext): Promise<CapabilityDescriptor[]>; registerModelTransport(transport: ModelTransport): void; invokeModel(request: ModelRequest, context?: ModelTransportContext): Promise<ModelResponse>; discover(manifest: DiscoveryManifest, context?: DiscoveryContext): Promise<DiscoveryResult>; discoverMany(manifests: DiscoveryManifest[], context?: DiscoveryContext): Promise<DiscoveryResult[]>; recordExecutionRequest(request: ExecutionRequest): ExecutionRequest; getExecutionRequest(id: string): ExecutionRequest | undefined; listExecutionRequests(programmeId?: string): ExecutionRequest[]; recordExecutionResult(result: ExecutionResult): ExecutionResult; getExecutionResult(requestId: string): ExecutionResult | undefined; listExecutionResults(programmeId?: string): ExecutionResult[]; createCheckpoint(programmeId: string, checkpointId?: string): Checkpoint; listCheckpoints(programmeId?: string): Checkpoint[]; restoreCheckpoint(checkpointId: string): Checkpoint; getStatus(programmeId?: string): RuntimeStatus; private findWorkItem; private assertWorkNodeTransitions; }"
+        },
+        {
+          "name": "OperationJournalEntry",
+          "signature": "export interface OperationJournalEntry { id: string; kind: ExternalOperationKind; subjectId: string; retrySafe: boolean; state: ExternalOperationState; metadata: Record<string, unknown>; createdAt: string; updatedAt: string; }"
+        },
+        {
+          "name": "PlanningContext",
+          "signature": "export interface PlanningContext { mission: Mission; programme?: Programme; workGraph?: WorkGraph; policy?: SupervisionPolicy; recentCycles?: SupervisionCycle[]; evidence?: unknown[]; }"
+        },
+        {
+          "name": "PlanningStrategy",
+          "signature": "export interface PlanningStrategy { id: string; propose(context: PlanningContext): Promise<ProgrammeProposal> | ProgrammeProposal; }"
+        },
+        {
+          "name": "planStateMigration",
+          "signature": "export declare function planStateMigration(home: string): StateMigrationPlan;"
+        },
+        {
+          "name": "PlaywrightBrowserSession",
+          "signature": "export declare class PlaywrightBrowserSession implements BrowserBackendSession { readonly endpoint: BrowserEndpoint; readonly browser: Browser | null; readonly context: BrowserContext; readonly page: Page; readonly persistent: boolean; private readonly connected; private readonly navigationRoute?; constructor(endpoint: BrowserEndpoint, browser: Browser | null, context: BrowserContext, page: Page, persistent: boolean, connected: boolean, navigationRoute?: ((route: Route) => Promise<void>) | undefined); close(): Promise<void>; }"
+        },
+        {
+          "name": "ProbeResult",
+          "signature": "export interface ProbeResult { kind: DiscoveryProbe['kind']; applicable: boolean; success: boolean; detail?: string; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "PutDocumentInput",
+          "signature": "export interface PutDocumentInput<T = unknown> { kind: string; id: string; scopeId: string | null; document: T; expectedHeadRevision?: number; }"
+        },
+        {
+          "name": "rankBoundCapabilities",
+          "signature": "export declare function rankBoundCapabilities(capabilities: CapabilityDescriptor[], bindings: ExecutionBinding[], requirements: CapabilityRoutingRequirements, policy: SupervisionPolicy): Array<{ capability: CapabilityDescriptor; binding: ExecutionBinding; }>;"
+        },
+        {
+          "name": "reconcileInterruptedOperations",
+          "signature": "export declare function reconcileInterruptedOperations(store: SqliteStore): OperationJournalEntry[];"
+        },
+        {
+          "name": "redactAuditMetadata",
+          "signature": "export declare function redactAuditMetadata(value: unknown): unknown;"
+        },
+        {
+          "name": "resolveAdapterEnvironment",
+          "signature": "export declare function resolveAdapterEnvironment(transport: AdapterStdioTransport, env?: NodeJS.ProcessEnv): NodeJS.ProcessEnv;"
+        },
+        {
+          "name": "resolveAdapterHeaders",
+          "signature": "export declare function resolveAdapterHeaders(transport: AdapterHttpTransport, env?: NodeJS.ProcessEnv): Record<string, string>;"
+        },
+        {
+          "name": "resolveDesktopEnvironment",
+          "signature": "export declare function resolveDesktopEnvironment(endpoint: DesktopEndpoint, env?: NodeJS.ProcessEnv): NodeJS.ProcessEnv;"
+        },
+        {
+          "name": "resolveEndpointHeaders",
+          "signature": "export declare function resolveEndpointHeaders(endpoint: ModelEndpoint, env?: NodeJS.ProcessEnv): Record<string, string>;"
+        },
+        {
+          "name": "resolveRuntimeHome",
+          "signature": "export declare function resolveRuntimeHome(input?: string): string;"
+        },
+        {
+          "name": "restoreRuntimeBackup",
+          "signature": "export declare function restoreRuntimeBackup(pathInput: string, targetHomeInput: string): Promise<BackupManifest>;"
+        },
+        {
+          "name": "retryDecision",
+          "signature": "export declare function retryDecision(input: { dispatched: boolean; retrySafe: boolean; attempt: number; limits: RuntimeLimits; }): 'retry' | 'uncertain' | 'stop';"
+        },
+        {
+          "name": "runConnectorPreflight",
+          "signature": "export declare function runConnectorPreflight(home: string | undefined, connectorId: string, options?: ConnectorPreflightOptions): Promise<ConnectorPreflightReport>;"
+        },
+        {
+          "name": "runDoctor",
+          "signature": "export declare function runDoctor(runtime: OpenControlRuntime, options?: DoctorOptions): Promise<DoctorReport>;"
+        },
+        {
+          "name": "runProbe",
+          "signature": "export declare function runProbe(probe: DiscoveryProbe, context?: DiscoveryContext): Promise<ProbeResult>;"
+        },
+        {
+          "name": "RuntimeError",
+          "signature": "export declare class RuntimeError extends Error { readonly code: RuntimeErrorCode; readonly details?: unknown; constructor(code: RuntimeErrorCode, message: string, details?: unknown); }"
+        },
+        {
+          "name": "RuntimeErrorCode",
+          "signature": "export type RuntimeErrorCode = 'SCHEMA_INVALID' | 'NOT_FOUND' | 'CONFLICT' | 'INVALID_REFERENCE' | 'INVALID_REVISION' | 'INVALID_TRANSITION' | 'GRAPH_CYCLE' | 'EXECUTION_CONFLICT' | 'CHECKPOINT_NOT_FOUND' | 'STORAGE_ERROR' | 'INCOMPATIBLE_STATE' | 'MIGRATION_REQUIRED' | 'MIGRATION_FAILED' | 'RESOURCE_LIMIT' | 'BACKUP_INTEGRITY_FAILED' | 'BACKUP_TARGET_NOT_EMPTY' | 'INSECURE_ENDPOINT' | 'MISSING_CREDENTIAL' | 'TRANSPORT_NOT_FOUND' | 'MODEL_TRANSPORT_ERROR' | 'ADAPTER_TRANSPORT_ERROR' | 'AUTHORIZATION_REQUIRED' | 'AUDIT_INTEGRITY' | 'UNSUPPORTED_PLATFORM';"
+        },
+        {
+          "name": "RuntimeLimits",
+          "signature": "export interface RuntimeLimits { maxConcurrentAssignments: number; childProcessTimeoutMs: number; networkTimeoutMs: number; maxResponseBytes: number; maxBrowserSessions: number; desktopBatchTimeoutMs: number; maxSupervisionWorkPerCycle: number; maxRetryAttempts: number; sqliteBusyTimeoutMs: number; }"
+        },
+        {
+          "name": "RuntimeLimitValidation",
+          "signature": "export interface RuntimeLimitValidation { limits: RuntimeLimits; weakened: (keyof RuntimeLimits)[]; }"
+        },
+        {
+          "name": "RuntimeOpenOptions",
+          "signature": "export interface RuntimeOpenOptions { home?: string; adapterTransports?: readonly AdapterTransport[]; limits?: Partial<RuntimeLimits>; }"
+        },
+        {
+          "name": "RuntimeStateKind",
+          "signature": "export type RuntimeStateKind = 'fresh' | 'current' | 'migration-required' | 'future' | 'invalid';"
+        },
+        {
+          "name": "RuntimeStatus",
+          "signature": "export interface RuntimeStatus { contractVersion: typeof CONTRACT_VERSION; home: string; databasePath: string; programmeId?: string; counts: { missions: number; programmes: number; workGraphs: number; executionRequestsPending: number; executionResults: number; checkpoints: number; capabilities: number; adapters: number; modelEndpoints: number; adapterEndpoints: number; browserEndpoints: number; desktopEndpoints: number; }; }"
+        },
+        {
+          "name": "sanitizeOperationMetadata",
+          "signature": "export declare function sanitizeOperationMetadata(value?: Record<string, unknown>): Record<string, unknown>;"
+        },
+        {
+          "name": "SecurityAuditStore",
+          "signature": "export declare class SecurityAuditStore { private readonly db; private constructor(); static open(home?: string): SecurityAuditStore; close(): void; append(eventType: string, subject: Reference, scopeId?: string, metadata?: Record<string, unknown>): AuditReceipt; list(): AuditReceipt[]; verify(): AuditVerification; }"
+        },
+        {
+          "name": "setConnectorEnabled",
+          "signature": "export declare function setConnectorEnabled(home: string | undefined, id: string, enabled: boolean): ConfiguredConnector;"
+        },
+        {
+          "name": "SqliteStore",
+          "signature": "export declare class SqliteStore { readonly home: string; readonly databasePath: string; private readonly db; private constructor(); static open(homeInput?: string, options?: SqliteStoreOpenOptions): SqliteStore; close(): void; getStateSchemaVersion(): number; verifyIntegrity(): { ok: boolean; message: string; }; getHeadRevision(kind: string, id: string): number | undefined; getDocumentScope(kind: string, id: string): string | null | undefined; putDocument<T>({ kind, id, scopeId, document, expectedHeadRevision }: PutDocumentInput<T>): number; putImmutableDocument<T>(input: Omit<PutDocumentInput<T>, 'expectedHeadRevision'>): number; getDocument<T = unknown>(kind: string, id: string): T | undefined; listDocuments<T = unknown>(kind: string, scopeId?: string): T[]; captureScopeHeads(scopeId: string): HeadPointer[]; saveCheckpoint<T>(id: string, programmeId: string, checkpoint: T, snapshot: HeadPointer[]): void; getCheckpoint<T = unknown>(id: string): StoredCheckpoint<T> | undefined; listCheckpoints<T = unknown>(programmeId?: string): T[]; restoreScopeHeads(scopeId: string, snapshot: HeadPointer[]): void; insertExternalOperation(entry: OperationJournalEntry): void; getExternalOperation(id: string): OperationJournalEntry | undefined; listExternalOperations(): OperationJournalEntry[]; transitionExternalOperation(id: string, expectedStates: readonly ExternalOperationState[], state: ExternalOperationState, metadata?: Record<string, unknown>): OperationJournalEntry; private externalOperationFromRow; appendEvent(eventType: string, subjectType: string, subjectId: string, scopeId: string | null, payload: unknown): void; }"
+        },
+        {
+          "name": "SqliteStoreOpenOptions",
+          "signature": "export interface SqliteStoreOpenOptions { busyTimeoutMs?: number; }"
+        },
+        {
+          "name": "StateMigrationInspection",
+          "signature": "export interface StateMigrationInspection { schema: 'q1x.runtime-state-inspection.v1'; state: RuntimeStateKind; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: string[]; }"
+        },
+        {
+          "name": "StateMigrationPlan",
+          "signature": "export interface StateMigrationPlan { schema: 'q1x.runtime-state-migration-plan.v1'; state: RuntimeStateKind; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: Array<{ id: string; source: StateMigrationSource; target: number; destructive: boolean; }>; }"
+        },
+        {
+          "name": "StateMigrationResult",
+          "signature": "export interface StateMigrationResult { schema: 'q1x.runtime-state-migration-result.v1'; applied: boolean; sourceSchemaVersion: number | null; targetSchemaVersion: number; steps: string[]; }"
+        },
+        {
+          "name": "StateMigrationSource",
+          "signature": "export type StateMigrationSource = number | 'legacy-unversioned';"
+        },
+        {
+          "name": "StateMigrationStep",
+          "signature": "export interface StateMigrationStep { id: string; source: StateMigrationSource; target: number; destructive: boolean; precondition(db: DatabaseSync): void; apply(db: DatabaseSync): void; verify(db: DatabaseSync): void; }"
+        },
+        {
+          "name": "StateSchemaClassification",
+          "signature": "export type StateSchemaClassification = 'current' | 'upgradeable' | 'future';"
+        },
+        {
+          "name": "StoredCheckpoint",
+          "signature": "export interface StoredCheckpoint<T = unknown> { checkpoint: T; snapshot: HeadPointer[]; }"
+        },
+        {
+          "name": "SupervisionCycleOptions",
+          "signature": "export interface SupervisionCycleOptions { inputsByWorkItem?: Record<string, unknown>; signal?: AbortSignal; }"
+        },
+        {
+          "name": "SupervisionRunOptions",
+          "signature": "export interface SupervisionRunOptions extends SupervisionCycleOptions { maxCycles?: number; evidence?: unknown[]; }"
+        },
+        {
+          "name": "validateConnectorCatalogue",
+          "signature": "export declare function validateConnectorCatalogue(value: unknown): ConnectorCatalogueValidationResult;"
+        },
+        {
+          "name": "validateContract",
+          "signature": "export declare function validateContract<T>(schemaId: string, value: T): T;"
+        },
+        {
+          "name": "validateGraphStructure",
+          "signature": "export declare function validateGraphStructure(graph: WorkGraph, allowedParentIds?: Iterable<string>): void;"
+        },
+        {
+          "name": "validateRuntimeLimits",
+          "signature": "export declare function validateRuntimeLimits(overrides?: Partial<RuntimeLimits>): RuntimeLimitValidation;"
+        },
+        {
+          "name": "verifyRuntimeBackup",
+          "signature": "export declare function verifyRuntimeBackup(pathInput: string): Promise<BackupVerification>;"
+        },
+        {
+          "name": "WorkExecutionContext",
+          "signature": "export interface WorkExecutionContext { binding: ExecutionBinding; assignment: WorkAssignment; input?: unknown; signal?: AbortSignal; }"
+        },
+        {
+          "name": "WorkExecutionOutcome",
+          "signature": "export interface WorkExecutionOutcome { status: 'succeeded' | 'failed' | 'cancelled' | 'partial'; resultRef?: string; usage?: { cost?: number; currency?: string; durationMs?: number; }; errorCode?: string; }"
+        },
+        {
+          "name": "WorkExecutor",
+          "signature": "export interface WorkExecutor { id: string; execute(context: WorkExecutionContext): Promise<WorkExecutionOutcome>; }"
+        }
+      ]
+    },
+    {
+      "packageName": "@quoralinex/q1x-community-sdk",
+      "exports": [
+        {
+          "name": "AcceptedProgrammeProposal",
+          "signature": "export interface AcceptedProgrammeProposal { proposalId: Identifier; programme: Programme; workGraph: WorkGraph; checkpointId?: Identifier; }"
+        },
+        {
+          "name": "Actor",
+          "signature": "export interface Actor { id: Identifier; kind: ActorKind; displayName?: string; }"
+        },
+        {
+          "name": "ActorKind",
+          "signature": "export type ActorKind = \"human\" | \"agent\" | \"service\" | \"device\" | \"system\";"
+        },
+        {
+          "name": "AdapterCredentialHeader",
+          "signature": "export interface AdapterCredentialHeader { header: string; environmentKey: string; prefix?: string; }"
+        },
+        {
+          "name": "AdapterEndpoint",
+          "signature": "export interface AdapterEndpoint { contractVersion: ContractVersion; id: Identifier; name: string; adapterKind: ExecutableAdapterKind; protocol: string; capabilityIds?: Identifier[]; transport: AdapterStdioTransport | AdapterHttpTransport; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "AdapterEnvironmentMapping",
+          "signature": "export interface AdapterEnvironmentMapping { name: string; environmentKey: string; }"
+        },
+        {
+          "name": "AdapterHttpTransport",
+          "signature": "export interface AdapterHttpTransport { kind: \"http\"; url: string; timeoutMs?: number; staticHeaders?: Record<string, string>; credentials?: AdapterCredentialHeader[]; }"
+        },
+        {
+          "name": "AdapterKind",
+          "signature": "export type AdapterKind = (typeof ADAPTER_KINDS)[number];"
+        },
+        {
+          "name": "AdapterManifest",
+          "signature": "export interface AdapterManifest { contractVersion: ContractVersion; id: Identifier; name: string; version: string; adapterKind: AdapterKind; platforms: Platform[]; capabilityIds: Identifier[]; transport?: { protocol?: string; endpointTemplate?: string; }; configurationKeys?: string[]; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "AdapterStdioTransport",
+          "signature": "export interface AdapterStdioTransport { kind: \"stdio\"; command: string; args?: string[]; cwd?: string; timeoutMs?: number; maxOutputBytes?: number; inputMode?: \"json\" | \"text\" | \"none\"; outputMode?: \"json\" | \"text\"; environment?: AdapterEnvironmentMapping[]; }"
+        },
+        {
+          "name": "Approval",
+          "signature": "export interface Approval { contractVersion: ContractVersion; id: Identifier; subject: Reference; state: \"pending\" | \"approved\" | \"rejected\" | \"expired\" | \"cancelled\" | \"consumed\"; requestedAt: Timestamp; requestedBy: Actor; requiredApproverKinds?: (\"human\" | \"agent\" | \"service\")[]; decision?: ApprovalDecision; }"
+        },
+        {
+          "name": "ApprovalDecision",
+          "signature": "export interface ApprovalDecision { actor: Actor; action: \"approve\" | \"reject\"; decidedAt: Timestamp; reason?: string; }"
+        },
+        {
+          "name": "Artifact",
+          "signature": "export interface Artifact { contractVersion: ContractVersion; id: Identifier; kind: \"document\" | \"code\" | \"dataset\" | \"image\" | \"audio\" | \"video\" | \"model\" | \"archive\" | \"report\" | \"configuration\" | \"other\"; uri: string; mediaType?: string; checksum?: { algorithm: \"sha256\" | \"sha512\"; value: string; }; createdBy?: Actor; createdAt: Timestamp; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "AuditReceipt",
+          "signature": "export interface AuditReceipt { contractVersion: ContractVersion; id: Identifier; sequence: number; eventType: string; subject: Reference; scopeId?: Identifier; metadata?: Record<string, unknown>; previousDigest?: string; digest: string; occurredAt: Timestamp; }"
+        },
+        {
+          "name": "AuditVerification",
+          "signature": "export interface AuditVerification { valid: boolean; checked: number; firstInvalidSequence?: number; expectedDigest?: string; actualDigest?: string; }"
+        },
+        {
+          "name": "AvailabilityState",
+          "signature": "export type AvailabilityState = \"unknown\" | \"available\" | \"degraded\" | \"busy\" | \"offline\" | \"disabled\";"
+        },
+        {
+          "name": "BrowserAction",
+          "signature": "export interface BrowserAction { id: Identifier; kind: BrowserActionKind; target?: BrowserTarget; source?: BrowserTarget; url?: string; text?: string; key?: string; value?: string; values?: string[]; x?: number; y?: number; deltaX?: number; deltaY?: number; button?: 'left' | 'middle' | 'right'; paths?: string[]; outputPath?: string; extract?: 'text' | 'html' | 'attribute'; attribute?: string; fullPage?: boolean; milliseconds?: number; timeoutMs?: number; }"
+        },
+        {
+          "name": "BrowserActionBatch",
+          "signature": "export interface BrowserActionBatch { contractVersion: ContractVersion; id: Identifier; actions: BrowserAction[]; stopOnError?: boolean; timeoutMs?: number; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "BrowserActionKind",
+          "signature": "export type BrowserActionKind = 'navigate' | 'back' | 'forward' | 'reload' | 'inspect' | 'extract' | 'click' | 'double-click' | 'hover' | 'fill' | 'type' | 'press' | 'select' | 'check' | 'uncheck' | 'mouse-move' | 'mouse-down' | 'mouse-up' | 'wheel' | 'drag' | 'wait' | 'upload' | 'download' | 'screenshot';"
+        },
+        {
+          "name": "BrowserActionResult",
+          "signature": "export interface BrowserActionResult { id: Identifier; status: 'succeeded' | 'failed' | 'cancelled'; durationMs: number; output?: unknown; error?: { code: string; message: string; }; }"
+        },
+        {
+          "name": "BrowserBatchResult",
+          "signature": "export interface BrowserBatchResult { contractVersion: ContractVersion; id: Identifier; batchId: Identifier; status: 'succeeded' | 'failed' | 'cancelled' | 'partial'; finalUrl?: string; finalTitle?: string; actions: BrowserActionResult[]; startedAt?: string; finishedAt?: string; }"
+        },
+        {
+          "name": "BrowserEndpoint",
+          "signature": "export interface BrowserEndpoint { contractVersion: ContractVersion; id: Identifier; name: string; backend: string; mode: BrowserMode; engine?: BrowserEngine; headless?: boolean; browserChannel?: string; executablePath?: string; userDataDir?: string; launchArgs?: string[]; cdpUrl?: string; viewport?: { width: number; height: number; }; downloadDir?: string; fileAccessRoots?: string[]; navigation?: { allowedOrigins?: string[]; blockedOrigins?: string[]; }; timeoutMs?: number; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "BrowserEngine",
+          "signature": "export type BrowserEngine = 'chromium' | 'firefox' | 'webkit';"
+        },
+        {
+          "name": "BrowserMode",
+          "signature": "export type BrowserMode = 'managed' | 'cdp';"
+        },
+        {
+          "name": "BrowserTarget",
+          "signature": "export type BrowserTarget = { by: 'selector'; value: string; } | { by: 'text'; value: string; exact?: boolean; } | { by: 'role'; role: string; name?: string; exact?: boolean; } | { by: 'label'; value: string; exact?: boolean; } | { by: 'placeholder'; value: string; exact?: boolean; };"
+        },
+        {
+          "name": "CapabilityAdapter",
+          "signature": "export interface CapabilityAdapter { readonly manifest: AdapterManifest; discover(signal?: AbortSignal): Promise<readonly CapabilityDescriptor[]>; execute(request: ExecutionRequest, signal?: AbortSignal): Promise<ExecutionResult>; }"
+        },
+        {
+          "name": "CapabilityCandidate",
+          "signature": "export interface CapabilityCandidate { capability: CapabilityDescriptor; binding: ExecutionBinding; }"
+        },
+        {
+          "name": "CapabilityDescriptor",
+          "signature": "export interface CapabilityDescriptor { contractVersion: ContractVersion; id: Identifier; name: string; adapterKind: AdapterKind; operations: string[]; modalities: { input: Modality[]; output: Modality[]; }; availability: { state: AvailabilityState; checkedAt: Timestamp; detail?: string; }; cost: { class: CostClass; currency?: string; unitCost?: number; unit?: string; }; privacy: { executionLocation: PrivacyLevel; dataRetention?: \"none\" | \"session\" | \"provider-policy\" | \"configurable\" | \"unknown\"; }; trust: { level: TrustLevel; validatedAt?: Timestamp; source?: string; }; platforms: Platform[]; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "CapabilityRequirement",
+          "signature": "export interface CapabilityRequirement { operation: string; adapterKinds?: AdapterKind[]; inputModalities?: Modality[]; outputModalities?: Modality[]; }"
+        },
+        {
+          "name": "CapabilityRoutingRequirements",
+          "signature": "export interface CapabilityRoutingRequirements extends ExecutionRequirements { adapterKinds?: AdapterKind[]; }"
+        },
+        {
+          "name": "CapabilityTemplate",
+          "signature": "export type CapabilityTemplate = Omit<CapabilityDescriptor, \"contractVersion\" | \"availability\">;"
+        },
+        {
+          "name": "Checkpoint",
+          "signature": "export interface Checkpoint { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; workGraphRevision: number; resumableNodeIds?: Identifier[]; stateRefs?: Reference[]; artifactRefs?: Identifier[]; evidenceRefs?: Identifier[]; createdAt: Timestamp; }"
+        },
+        {
+          "name": "ContractVersion",
+          "signature": "export type ContractVersion = \"1.0.0\";"
+        },
+        {
+          "name": "CostClass",
+          "signature": "export type CostClass = \"no-usage-fee\" | \"free-tier\" | \"metered\" | \"subscription\" | \"unknown\";"
+        },
+        {
+          "name": "DeploymentProfile",
+          "signature": "export interface DeploymentProfile { contractVersion: ContractVersion; id: Identifier; class: \"personal\" | \"team\" | \"distributed\"; persistence: { state: \"embedded\" | \"external\"; artifacts: \"filesystem\" | \"s3-compatible\" | \"external\" | \"none\"; }; coordination: \"inline\" | \"database\" | \"distributed\"; networkMode: \"local-only\" | \"lan\" | \"internet\"; workerConcurrency: number; minimumResources?: { cpuCores?: number; memoryMb?: number; storageMb?: number; }; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DesktopAction",
+          "signature": "export interface DesktopAction { id: Identifier; kind: DesktopActionKind; application?: string; arguments?: string[]; windowId?: string; target?: DesktopTarget; source?: DesktopTarget; text?: string; key?: string; value?: string | number | boolean | null; values?: string[]; x?: number; y?: number; width?: number; height?: number; deltaX?: number; deltaY?: number; button?: 'left' | 'middle' | 'right'; outputPath?: string; milliseconds?: number; timeoutMs?: number; }"
+        },
+        {
+          "name": "DesktopActionBatch",
+          "signature": "export interface DesktopActionBatch { contractVersion: ContractVersion; id: Identifier; actions: DesktopAction[]; stopOnError?: boolean; timeoutMs?: number; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DesktopActionKind",
+          "signature": "export type DesktopActionKind = 'list-applications' | 'launch-application' | 'focus-application' | 'close-application' | 'list-windows' | 'focus-window' | 'move-window' | 'resize-window' | 'inspect' | 'find' | 'click' | 'double-click' | 'hover' | 'type' | 'press' | 'set-value' | 'select' | 'toggle' | 'mouse-move' | 'mouse-down' | 'mouse-up' | 'wheel' | 'drag' | 'wait' | 'screenshot';"
+        },
+        {
+          "name": "DesktopActionResult",
+          "signature": "export interface DesktopActionResult { id: Identifier; status: 'succeeded' | 'failed' | 'cancelled'; durationMs: number; output?: unknown; error?: { code: string; message: string; }; }"
+        },
+        {
+          "name": "DesktopBatchResult",
+          "signature": "export interface DesktopBatchResult { contractVersion: ContractVersion; id: Identifier; batchId: Identifier; status: 'succeeded' | 'failed' | 'cancelled' | 'partial'; actions: DesktopActionResult[]; startedAt?: string; finishedAt?: string; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DesktopEndpoint",
+          "signature": "export interface DesktopEndpoint { contractVersion: ContractVersion; id: Identifier; name: string; backend: string; platform: DesktopPlatform; executionLocation: DesktopExecutionLocation; supportedActions: DesktopActionKind[]; transport?: DesktopStdioTransport; backendConfig?: Record<string, unknown>; applicationPolicy?: { allowedApplications?: string[]; blockedApplications?: string[]; }; outputDir?: string; fileAccessRoots?: string[]; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DesktopEnvironmentMapping",
+          "signature": "export interface DesktopEnvironmentMapping { name: string; environmentKey: string; }"
+        },
+        {
+          "name": "DesktopExecutionLocation",
+          "signature": "export type DesktopExecutionLocation = 'local' | 'private-network' | 'managed-cloud' | 'public-cloud';"
+        },
+        {
+          "name": "DesktopPlatform",
+          "signature": "export type DesktopPlatform = Extract<Platform, 'macos' | 'windows' | 'linux'> | 'any';"
+        },
+        {
+          "name": "DesktopStdioTransport",
+          "signature": "export interface DesktopStdioTransport { command: string; args?: string[]; cwd?: string; timeoutMs?: number; maxOutputBytes?: number; environment?: DesktopEnvironmentMapping[]; }"
+        },
+        {
+          "name": "DesktopTarget",
+          "signature": "export type DesktopTarget = { by: 'accessibility-id'; value: string; } | { by: 'role'; role: string; name?: string; exact?: boolean; } | { by: 'name'; value: string; exact?: boolean; } | { by: 'text'; value: string; exact?: boolean; } | { by: 'path'; value: string[]; };"
+        },
+        {
+          "name": "DiscoveryManifest",
+          "signature": "export interface DiscoveryManifest { contractVersion: ContractVersion; id: Identifier; name: string; version: string; platforms: Platform[]; activation: \"any\" | \"all\"; probes: DiscoveryProbe[]; capability: CapabilityTemplate; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "DiscoveryProbe",
+          "signature": "export type DiscoveryProbe = { kind: \"command\"; names: string[]; versionArgs?: string[]; timeoutMs?: number; platforms?: Platform[]; } | { kind: \"path\"; paths: string[]; platforms?: Platform[]; } | { kind: \"environment\"; keys: string[]; match?: \"any\" | \"all\"; platforms?: Platform[]; } | { kind: \"http\"; url: string; method?: \"GET\" | \"HEAD\"; acceptedStatus?: number[]; timeoutMs?: number; platforms?: Platform[]; };"
+        },
+        {
+          "name": "Evidence",
+          "signature": "export interface Evidence { contractVersion: ContractVersion; id: Identifier; kind: \"source\" | \"observation\" | \"test-result\" | \"simulation-result\" | \"review\" | \"measurement\" | \"citation\" | \"other\"; summary: string; sourceUri?: string; artifactRef?: Identifier; executionRef?: Identifier; resultRef?: Identifier; contentDigest?: { algorithm: \"sha256\" | \"sha512\"; value: string; }; claims?: string[]; provenance?: { actor?: Actor; method?: string; }; collectedAt: Timestamp; }"
+        },
+        {
+          "name": "ExecutableAdapterKind",
+          "signature": "export type ExecutableAdapterKind = \"mcp\" | \"a2a\" | \"cli-tui\";"
+        },
+        {
+          "name": "ExecutionBinding",
+          "signature": "export interface ExecutionBinding { contractVersion: ContractVersion; id: Identifier; capabilityId: Identifier; executorKind: ExecutorKind; endpointId?: Identifier; operations: string[]; enabled: boolean; priority?: number; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "ExecutionError",
+          "signature": "export interface ExecutionError { code: string; message: string; retryable: boolean; details?: unknown; }"
+        },
+        {
+          "name": "ExecutionPolicy",
+          "signature": "export interface ExecutionPolicy { timeoutSeconds?: number; maxAttempts?: number; maxCost?: number; currency?: string; privacy?: PrivacyLevel; }"
+        },
+        {
+          "name": "ExecutionRequest",
+          "signature": "export interface ExecutionRequest { contractVersion: ContractVersion; id: Identifier; workItemId: Identifier; requirements: ExecutionRequirements; input: unknown; contextRefs?: Reference[]; policy?: ExecutionPolicy; createdAt: Timestamp; }"
+        },
+        {
+          "name": "ExecutionRequirements",
+          "signature": "export interface ExecutionRequirements { operations: string[]; adapterKinds?: AdapterKind[]; inputModalities?: Modality[]; outputModalities?: Modality[]; localOnly?: boolean; minimumTrust?: TrustLevel; }"
+        },
+        {
+          "name": "ExecutionResult",
+          "signature": "export interface ExecutionResult { contractVersion: ContractVersion; id: Identifier; requestId: Identifier; workItemId: Identifier; status: \"succeeded\" | \"failed\" | \"cancelled\" | \"partial\"; output?: unknown; artifactRefs?: Identifier[]; evidenceRefs?: Identifier[]; usage?: { inputUnits?: number; outputUnits?: number; cost?: number; currency?: string; durationMs?: number; }; error?: ExecutionError; startedAt: Timestamp; finishedAt: Timestamp; }"
+        },
+        {
+          "name": "ExecutorKind",
+          "signature": "export type ExecutorKind = \"model-endpoint\" | \"adapter-endpoint\" | \"browser-endpoint\" | \"desktop-endpoint\" | \"external\";"
+        },
+        {
+          "name": "Identifier",
+          "signature": "export type Identifier = string;"
+        },
+        {
+          "name": "Mission",
+          "signature": "export interface Mission { contractVersion: ContractVersion; id: Identifier; title: string; objective: string; outcomes: MissionOutcome[]; constraints?: Record<string, unknown>; tags?: string[]; status: \"proposed\" | \"active\" | \"paused\" | \"completed\" | \"cancelled\"; createdAt: Timestamp; }"
+        },
+        {
+          "name": "MissionOutcome",
+          "signature": "export interface MissionOutcome { id: Identifier; description: string; successCriteria: string[]; }"
+        },
+        {
+          "name": "Modality",
+          "signature": "export type Modality = \"text\" | \"image\" | \"audio\" | \"video\" | \"document\" | \"structured-data\" | \"code\" | \"binary\" | \"sensor-data\" | \"control\";"
+        },
+        {
+          "name": "ModelEndpoint",
+          "signature": "export interface ModelEndpoint { contractVersion: ContractVersion; id: Identifier; name: string; adapterKind: AdapterKind; protocol: string; url: string; defaultModel: string; timeoutMs?: number; staticHeaders?: Record<string, string>; credentials?: ModelEndpointCredential[]; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "ModelEndpointCredential",
+          "signature": "export interface ModelEndpointCredential { header: string; environmentKey: string; prefix?: string; }"
+        },
+        {
+          "name": "ModelMessage",
+          "signature": "export interface ModelMessage { role: \"system\" | \"user\" | \"assistant\"; content: string; }"
+        },
+        {
+          "name": "ModelRequest",
+          "signature": "export interface ModelRequest { contractVersion: ContractVersion; id: Identifier; endpointId: Identifier; model?: string; messages: ModelMessage[]; temperature?: number; maxOutputTokens?: number; createdAt: Timestamp; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "ModelResponse",
+          "signature": "export interface ModelResponse { contractVersion: ContractVersion; id: Identifier; requestId: Identifier; endpointId: Identifier; outputText: string; model?: string; usage?: { inputTokens?: number; outputTokens?: number; }; finishReason?: string; startedAt: Timestamp; finishedAt: Timestamp; metadata?: Record<string, unknown>; }"
+        },
+        {
+          "name": "Platform",
+          "signature": "export type Platform = \"any\" | \"macos\" | \"windows\" | \"linux\" | \"web\" | \"container\" | \"mobile\" | \"embedded\";"
+        },
+        {
+          "name": "PrivacyLevel",
+          "signature": "export type PrivacyLevel = \"local\" | \"private-network\" | \"managed-cloud\" | \"public-cloud\" | \"browser-session\" | \"unknown\";"
+        },
+        {
+          "name": "Programme",
+          "signature": "export interface Programme { contractVersion: ContractVersion; id: Identifier; missionId: Identifier; revision: number; status: \"planned\" | \"active\" | \"paused\" | \"completed\" | \"cancelled\"; workstreams: Workstream[]; assumptions?: string[]; createdAt: Timestamp; updatedAt: Timestamp; }"
+        },
+        {
+          "name": "ProgrammeProposal",
+          "signature": "export interface ProgrammeProposal { contractVersion: ContractVersion; id: Identifier; missionId: Identifier; programme: Programme; workGraph: WorkGraph; assumptions?: string[]; rationale: string; plannerStrategyId: Identifier; proposedAt: Timestamp; }"
+        },
+        {
+          "name": "ProgrammeProposalValidation",
+          "signature": "export interface ProgrammeProposalValidation { valid: boolean; errors: string[]; }"
+        },
+        {
+          "name": "Reference",
+          "signature": "export interface Reference { id: Identifier; kind?: string; uri?: string; }"
+        },
+        {
+          "name": "ReplanEvent",
+          "signature": "export interface ReplanEvent { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; trigger: \"evidence\" | \"failure\" | \"constraint-change\" | \"user-change\" | \"capability-change\" | \"dependency-change\" | \"other\"; rationale: string; invalidatedNodeIds?: Identifier[]; createdNodeIds?: Identifier[]; evidenceRefs?: Identifier[]; occurredAt: Timestamp; }"
+        },
+        {
+          "name": "SupervisionCycle",
+          "signature": "export interface SupervisionCycle { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; workGraphId: Identifier; workGraphRevision: number; sequence: number; status: \"running\" | \"completed\" | \"failed\" | \"cancelled\"; readyWorkItemIds: Identifier[]; assignmentIds: Identifier[]; completedWorkItemIds: Identifier[]; failedWorkItemIds: Identifier[]; stopReason?: SupervisionStopReason; checkpointId?: Identifier; startedAt: Timestamp; finishedAt?: Timestamp; }"
+        },
+        {
+          "name": "SupervisionPolicy",
+          "signature": "export interface SupervisionPolicy { contractVersion: ContractVersion; id: Identifier; maxConcurrentAssignments: number; maxAttemptsPerWorkItem: number; maxKnownCost?: number; currency?: string; deadlineAt?: Timestamp; allowedExecutionLocations?: PrivacyLevel[]; minimumTrust?: TrustLevel; preferNoUsageFee?: boolean; preferLocal?: boolean; allowUnknownCost?: boolean; failureThresholdBeforeReplan?: number; checkpointEveryCycles?: number; plannerStrategyId?: Identifier; stopConditions: SupervisionStopReason[]; }"
+        },
+        {
+          "name": "SupervisionRunResult",
+          "signature": "export interface SupervisionRunResult { programmeId: Identifier; stopReason: SupervisionStopReason; cycles: SupervisionCycle[]; }"
+        },
+        {
+          "name": "SupervisionStopReason",
+          "signature": "export type SupervisionStopReason = \"completed\" | \"idle\" | \"blocked\" | \"approval-required\" | \"budget-exhausted\" | \"deadline-reached\" | \"replan-required\" | \"max-cycles\" | \"cancelled\";"
+        },
+        {
+          "name": "TeamFormationOptions",
+          "signature": "export interface TeamFormationOptions { policy: SupervisionPolicy; }"
+        },
+        {
+          "name": "TeamMember",
+          "signature": "export interface TeamMember { id: Identifier; role: string; capabilityId: Identifier; bindingId: Identifier; operations: string[]; workItemIds: Identifier[]; state: \"planned\" | \"ready\" | \"running\" | \"blocked\" | \"completed\" | \"failed\"; alternates?: TeamMemberAlternate[]; }"
+        },
+        {
+          "name": "TeamMemberAlternate",
+          "signature": "export interface TeamMemberAlternate { capabilityId: Identifier; bindingId: Identifier; }"
+        },
+        {
+          "name": "TeamPlan",
+          "signature": "export interface TeamPlan { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; workGraphId: Identifier; workGraphRevision: number; members: TeamMember[]; status: \"planned\" | \"active\" | \"completed\" | \"cancelled\"; createdAt: Timestamp; updatedAt: Timestamp; }"
+        },
+        {
+          "name": "Timestamp",
+          "signature": "export type Timestamp = string;"
+        },
+        {
+          "name": "TrustLevel",
+          "signature": "export type TrustLevel = \"unverified\" | \"discovered\" | \"configured\" | \"validated\" | \"trusted\";"
+        },
+        {
+          "name": "WorkAssignment",
+          "signature": "export interface WorkAssignment { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; workGraphId: Identifier; workGraphRevision: number; workItemId: Identifier; teamPlanId: Identifier; teamMemberId: Identifier; bindingId: Identifier; capabilityId: Identifier; attempt: number; requirements: ExecutionRequirements; contextRefs?: Reference[]; status: \"planned\" | \"running\" | \"succeeded\" | \"failed\" | \"cancelled\" | \"interrupted\" | \"blocked\"; resultRef?: Identifier; usage?: { cost?: number; currency?: string; durationMs?: number; }; errorCode?: string; createdAt: Timestamp; updatedAt: Timestamp; }"
+        },
+        {
+          "name": "WorkEdge",
+          "signature": "export interface WorkEdge { from: Identifier; to: Identifier; type: \"depends-on\" | \"blocks\" | \"produces\" | \"informs\" | \"invalidates\"; }"
+        },
+        {
+          "name": "WorkGraph",
+          "signature": "export interface WorkGraph { contractVersion: ContractVersion; id: Identifier; programmeId: Identifier; revision: number; nodes: WorkNode[]; edges: WorkEdge[]; updatedAt: Timestamp; }"
+        },
+        {
+          "name": "WorkNode",
+          "signature": "export interface WorkNode { id: Identifier; kind: \"workstream\" | \"work-package\" | \"task\" | \"experiment\" | \"decision\" | \"milestone\"; title: string; description?: string; parentId?: Identifier; status: \"pending\" | \"ready\" | \"running\" | \"blocked\" | \"completed\" | \"failed\" | \"cancelled\"; capabilityRequirements?: CapabilityRequirement[]; approvalRequired?: boolean; }"
+        },
+        {
+          "name": "Workstream",
+          "signature": "export interface Workstream { id: Identifier; title: string; objective: string; status: \"planned\" | \"active\" | \"blocked\" | \"completed\" | \"cancelled\"; }"
+        }
+      ]
+    }
+  ],
+  "cli": {
+    "outputContract": {
+      "encoding": "json",
+      "errorSchema": "q1x.cli-error.v1",
+      "failureExitCode": 1,
+      "failureStream": "stderr",
+      "schema": "q1x.cli-output-contract.v1",
+      "successExitCode": 0,
+      "successStream": "stdout",
+      "valuesPerInvocation": 1
+    },
+    "commands": [
+      {
+        "usage": "q1x --home <empty-target> backup restore <backup-path>",
+        "purpose": "Restore a verified backup into an empty runtime home."
+      },
+      {
+        "usage": "q1x --home <path> adapter discover <endpoint-id>",
+        "purpose": "Discover capabilities exposed by an adapter endpoint."
+      },
+      {
+        "usage": "q1x --home <path> adapter execute <endpoint-id> --file <json>",
+        "purpose": "Execute a request through an adapter endpoint."
+      },
+      {
+        "usage": "q1x --home <path> adapter-endpoints get <id>",
+        "purpose": "Get one adapter endpoint."
+      },
+      {
+        "usage": "q1x --home <path> adapter-endpoints list",
+        "purpose": "List adapter endpoints."
+      },
+      {
+        "usage": "q1x --home <path> adapter-endpoints put --file <json>",
+        "purpose": "Persist an adapter endpoint."
+      },
+      {
+        "usage": "q1x --home <path> adapters get <id>",
+        "purpose": "Get one adapter manifest."
+      },
+      {
+        "usage": "q1x --home <path> adapters list",
+        "purpose": "List adapter manifests."
+      },
+      {
+        "usage": "q1x --home <path> approval apply <id>",
+        "purpose": "Consume an approved authorisation and unblock protected work."
+      },
+      {
+        "usage": "q1x --home <path> approval decide <id> --file <json>",
+        "purpose": "Approve or reject a pending approval."
+      },
+      {
+        "usage": "q1x --home <path> approval list [--programme <id>]",
+        "purpose": "List approval records."
+      },
+      {
+        "usage": "q1x --home <path> approval request --file <json>",
+        "purpose": "Create a fail-closed approval request."
+      },
+      {
+        "usage": "q1x --home <path> approval show <id>",
+        "purpose": "Show one approval record."
+      },
+      {
+        "usage": "q1x --home <path> assignment cancel <assignment-id>",
+        "purpose": "Cancel a planned assignment durably."
+      },
+      {
+        "usage": "q1x --home <path> audit list",
+        "purpose": "List tamper-evident audit receipts."
+      },
+      {
+        "usage": "q1x --home <path> audit verify",
+        "purpose": "Verify the local audit hash chain."
+      },
+      {
+        "usage": "q1x --home <path> backup create --output <dir>",
+        "purpose": "Create a verified SQLite runtime backup."
+      },
+      {
+        "usage": "q1x --home <path> bindings get <id>",
+        "purpose": "Get one execution binding."
+      },
+      {
+        "usage": "q1x --home <path> bindings list",
+        "purpose": "List execution bindings."
+      },
+      {
+        "usage": "q1x --home <path> bindings put --file <json>",
+        "purpose": "Persist an execution binding."
+      },
+      {
+        "usage": "q1x --home <path> browser discover <endpoint-id>",
+        "purpose": "Register browser-control capability evidence."
+      },
+      {
+        "usage": "q1x --home <path> browser run <endpoint-id> --file <json>",
+        "purpose": "Run a browser action batch."
+      },
+      {
+        "usage": "q1x --home <path> browser-endpoints get <id>",
+        "purpose": "Get one browser endpoint."
+      },
+      {
+        "usage": "q1x --home <path> browser-endpoints list",
+        "purpose": "List browser endpoints."
+      },
+      {
+        "usage": "q1x --home <path> browser-endpoints put --file <json>",
+        "purpose": "Persist a browser endpoint."
+      },
+      {
+        "usage": "q1x --home <path> capabilities get <id>",
+        "purpose": "Get one capability descriptor."
+      },
+      {
+        "usage": "q1x --home <path> capabilities list",
+        "purpose": "List known capabilities."
+      },
+      {
+        "usage": "q1x --home <path> capabilities put --file <json>",
+        "purpose": "Persist a capability descriptor."
+      },
+      {
+        "usage": "q1x --home <path> checkpoint create <programme-id> [--id <id>]",
+        "purpose": "Create a durable programme checkpoint."
+      },
+      {
+        "usage": "q1x --home <path> checkpoint list [--programme <id>]",
+        "purpose": "List checkpoints."
+      },
+      {
+        "usage": "q1x --home <path> checkpoint restore <id>",
+        "purpose": "Restore a programme checkpoint."
+      },
+      {
+        "usage": "q1x --home <path> connectors add <id>",
+        "purpose": "Add a connector to local configuration."
+      },
+      {
+        "usage": "q1x --home <path> connectors apply <id>",
+        "purpose": "Materialise an enabled connector into a runtime endpoint."
+      },
+      {
+        "usage": "q1x --home <path> connectors configure <id> [--parameter key=value] [--environment name=ENV_KEY]",
+        "purpose": "Configure connector parameters and environment-key mappings."
+      },
+      {
+        "usage": "q1x --home <path> connectors disable <id>",
+        "purpose": "Disable a configured connector."
+      },
+      {
+        "usage": "q1x --home <path> connectors enable <id>",
+        "purpose": "Enable a configured connector."
+      },
+      {
+        "usage": "q1x --home <path> connectors list",
+        "purpose": "List built-in connector profiles."
+      },
+      {
+        "usage": "q1x --home <path> connectors show <id>",
+        "purpose": "Show one built-in connector profile."
+      },
+      {
+        "usage": "q1x --home <path> connectors test <id>",
+        "purpose": "Run connector preflight without executing provider work."
+      },
+      {
+        "usage": "q1x --home <path> desktop discover <endpoint-id>",
+        "purpose": "Register desktop-control capability evidence."
+      },
+      {
+        "usage": "q1x --home <path> desktop run <endpoint-id> --file <json>",
+        "purpose": "Run a desktop action batch."
+      },
+      {
+        "usage": "q1x --home <path> desktop setup-first-party [--id <id>] [--name <name>] [--output-dir <dir>]",
+        "purpose": "Configure the first-party desktop bridge for the host OS."
+      },
+      {
+        "usage": "q1x --home <path> desktop-endpoints get <id>",
+        "purpose": "Get one desktop endpoint."
+      },
+      {
+        "usage": "q1x --home <path> desktop-endpoints list",
+        "purpose": "List desktop endpoints."
+      },
+      {
+        "usage": "q1x --home <path> desktop-endpoints put --file <json>",
+        "purpose": "Persist a desktop endpoint."
+      },
+      {
+        "usage": "q1x --home <path> discover --manifest <path>",
+        "purpose": "Run capability discovery manifests."
+      },
+      {
+        "usage": "q1x --home <path> doctor [--json]",
+        "purpose": "Run local runtime, connector and desktop diagnostics."
+      },
+      {
+        "usage": "q1x --home <path> endpoints get <id>",
+        "purpose": "Get one model endpoint."
+      },
+      {
+        "usage": "q1x --home <path> endpoints list",
+        "purpose": "List model endpoints."
+      },
+      {
+        "usage": "q1x --home <path> endpoints put --file <json>",
+        "purpose": "Persist a model endpoint."
+      },
+      {
+        "usage": "q1x --home <path> evidence list [--programme <id>]",
+        "purpose": "List evidence records."
+      },
+      {
+        "usage": "q1x --home <path> evidence record --file <json> [--programme <id>]",
+        "purpose": "Record immutable evidence."
+      },
+      {
+        "usage": "q1x --home <path> evidence show <id>",
+        "purpose": "Show one evidence record."
+      },
+      {
+        "usage": "q1x --home <path> execution request --file <json>",
+        "purpose": "Record an execution request."
+      },
+      {
+        "usage": "q1x --home <path> execution result --file <json>",
+        "purpose": "Record an execution result."
+      },
+      {
+        "usage": "q1x --home <path> graph put --file <json>",
+        "purpose": "Persist a work graph."
+      },
+      {
+        "usage": "q1x --home <path> graph show <id>",
+        "purpose": "Show one work graph."
+      },
+      {
+        "usage": "q1x --home <path> init",
+        "purpose": "Initialise/open runtime state and return status."
+      },
+      {
+        "usage": "q1x --home <path> limits show",
+        "purpose": "Show effective runtime limits and weakened overrides."
+      },
+      {
+        "usage": "q1x --home <path> migration apply [--backup <path>]",
+        "purpose": "Apply explicit runtime-state migration and record audit evidence."
+      },
+      {
+        "usage": "q1x --home <path> migration compatibility",
+        "purpose": "Report whether runtime state is compatible or explicitly migratable."
+      },
+      {
+        "usage": "q1x --home <path> migration dry-run [--backup <path>]",
+        "purpose": "Plan runtime-state migration without applying changes."
+      },
+      {
+        "usage": "q1x --home <path> migration inspect",
+        "purpose": "Inspect runtime-state migration requirements without mutation."
+      },
+      {
+        "usage": "q1x --home <path> mission list",
+        "purpose": "List missions."
+      },
+      {
+        "usage": "q1x --home <path> mission put --file <json>",
+        "purpose": "Persist a mission."
+      },
+      {
+        "usage": "q1x --home <path> mission show <id>",
+        "purpose": "Show one mission."
+      },
+      {
+        "usage": "q1x --home <path> model invoke --file <json>",
+        "purpose": "Invoke a configured model endpoint."
+      },
+      {
+        "usage": "q1x --home <path> programme list",
+        "purpose": "List programmes."
+      },
+      {
+        "usage": "q1x --home <path> programme put --file <json>",
+        "purpose": "Persist a programme."
+      },
+      {
+        "usage": "q1x --home <path> programme show <id>",
+        "purpose": "Show one programme."
+      },
+      {
+        "usage": "q1x --home <path> proposal accept --file <json>",
+        "purpose": "Accept a validated proposal with checkpoint protection."
+      },
+      {
+        "usage": "q1x --home <path> proposal validate --file <json>",
+        "purpose": "Validate a programme proposal without applying it."
+      },
+      {
+        "usage": "q1x --home <path> recovery reconcile [--programme <id>]",
+        "purpose": "Reconcile interrupted assignments after restart."
+      },
+      {
+        "usage": "q1x --home <path> replan record --file <json>",
+        "purpose": "Record a replan event."
+      },
+      {
+        "usage": "q1x --home <path> status [--programme <id>]",
+        "purpose": "Return runtime or programme status."
+      },
+      {
+        "usage": "q1x --home <path> supervision cycle <programme-id> --policy <json>",
+        "purpose": "Run one bounded supervision cycle."
+      },
+      {
+        "usage": "q1x --home <path> supervision cycles <programme-id> --policy <json>",
+        "purpose": "List supervision-cycle records."
+      },
+      {
+        "usage": "q1x --home <path> supervision run <programme-id> --policy <json> [--max-cycles <n>]",
+        "purpose": "Supervise until an explicit stop condition."
+      },
+      {
+        "usage": "q1x --home <path> team assignments <programme-id>",
+        "purpose": "List programme work assignments."
+      },
+      {
+        "usage": "q1x --home <path> team form <programme-id> --policy <json>",
+        "purpose": "Form a capability-routed team for ready work."
+      },
+      {
+        "usage": "q1x --home <path> team plans <programme-id>",
+        "purpose": "List programme team plans."
+      },
+      {
+        "usage": "q1x backup verify <backup-path>",
+        "purpose": "Verify backup hashes, schema and SQLite integrity."
+      },
+      {
+        "usage": "q1x help",
+        "purpose": "Return the machine-readable command catalogue."
+      }
+    ]
+  },
+  "connectors": [
+    {
+      "id": "a2a.jsonrpc",
+      "category": "a2a",
+      "protocol": "a2a-jsonrpc",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "a2a-jsonrpc",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "browser.chromium.cdp",
+      "category": "browser",
+      "protocol": "browser-playwright-cdp",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "browser-cdp-chromium",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "browser.chromium.managed",
+      "category": "browser",
+      "protocol": "browser-playwright-managed",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "browser-managed-chromium",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "cli.json",
+      "category": "cli",
+      "protocol": "cli-json-stdio",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "cli-json-stdio",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "cli.text",
+      "category": "cli",
+      "protocol": "cli-text-stdio",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "cli-text-stdio",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "desktop.linux.first-party",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "requirementCommands": [
+        "python3",
+        "q1x-desktop-bridge-linux"
+      ],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "linux",
+        "template": null
+      }
+    },
+    {
+      "id": "desktop.macos.first-party",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "requirementCommands": [
+        "/usr/bin/osascript",
+        "q1x-desktop-bridge-macos"
+      ],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "macos",
+        "template": null
+      }
+    },
+    {
+      "id": "desktop.windows.first-party",
+      "category": "desktop",
+      "protocol": "q1x-desktop-bridge/1",
+      "requirementCommands": [
+        "powershell.exe",
+        "q1x-desktop-bridge-windows"
+      ],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "desktop-first-party",
+        "platform": "windows",
+        "template": null
+      }
+    },
+    {
+      "id": "mcp.stdio",
+      "category": "mcp",
+      "protocol": "mcp-stdio-v2",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "mcp-stdio",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "mcp.streamable-http",
+      "category": "mcp",
+      "protocol": "mcp-streamable-http-v2",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "mcp-streamable-http",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "model.anthropic-compatible.hosted",
+      "category": "model",
+      "protocol": "anthropic-messages",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "model-anthropic-compatible-hosted",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "model.anthropic-messages.local",
+      "category": "model",
+      "protocol": "anthropic-messages",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "model-anthropic-messages-local",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "model.openai-chat.local",
+      "category": "model",
+      "protocol": "openai-chat-completions",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "model-openai-chat-local",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "model.openai-compatible.hosted",
+      "category": "model",
+      "protocol": "openai-responses",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "model-openai-compatible-hosted",
+        "platform": null,
+        "template": null
+      }
+    },
+    {
+      "id": "model.openai-responses.local",
+      "category": "model",
+      "protocol": "openai-responses",
+      "requirementCommands": [],
+      "environmentKeys": [],
+      "profile": {
+        "kind": "model-openai-responses-local",
+        "platform": null,
+        "template": null
+      }
+    }
+  ]
+}

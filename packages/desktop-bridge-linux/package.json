@@ -1,6 +1,6 @@
 {
   "name": "@quoralinex/q1x-community-desktop-bridge-linux",
-  "version": "0.2.0-beta.1",
+  "version": "1.0.0-rc.1",
   "description": "First-party Linux AT-SPI desktop bridge for Q1X Community Orchestrator.",
   "type": "module",
   "engines": {
@@ -26,8 +26,8 @@
     }
   },
   "dependencies": {
-    "@quoralinex/q1x-community-desktop-bridge-common": "0.2.0-beta.1",
-    "@quoralinex/q1x-community-sdk": "0.2.0-beta.1"
+    "@quoralinex/q1x-community-desktop-bridge-common": "1.0.0-rc.1",
+    "@quoralinex/q1x-community-sdk": "1.0.0-rc.1"
   },
   "license": "SEE LICENSE IN LICENSE",
   "repository": {

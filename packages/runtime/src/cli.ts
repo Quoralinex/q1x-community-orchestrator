@@ -11,9 +11,10 @@ import { createFirstPartyDesktopEndpoint } from './first-party-desktop.js';
 import { executeConnectorCli } from './connectors/cli.js';
 import { applyConfiguredConnector } from './connectors/apply.js';
 import { runDoctor } from './doctor.js';
-import { createRuntimeBackup, restoreRuntimeBackup, verifyRuntimeBackup } from './backup.js';
+import { createRuntimeBackup, digestRuntimeBackup, restoreRuntimeBackup, verifyRuntimeBackup } from './backup.js';
 import { resolveRuntimeHome } from './home.js';
-import { getCliCommandCatalogue } from './cli-catalogue.js';
+import { CLI_OUTPUT_CONTRACT, getCliCommandCatalogue } from './cli-catalogue.js';
+import { applyStateMigrations, inspectRuntimeState, planStateMigration } from './state-migrations.js';
 
 function takeOption(args: string[], name: string): string | undefined {
   const index = args.indexOf(name);
@@ -37,6 +38,54 @@ function readJsonFile(path: string): unknown {
 function required<T>(value: T | undefined, kind: string, id: string): T {
   if (value === undefined) throw new RuntimeError('NOT_FOUND', `${kind} not found: ${id}`);
   return value;
+}
+
+async function executeMigration(homeInput: string | undefined, args: string[]): Promise<unknown> {
+  if (!homeInput) throw new Error('migration requires --home <path>');
+  const home = resolveRuntimeHome(homeInput);
+  const action = args.shift();
+  const backupPath = takeOption(args, '--backup');
+  if (args.length > 0) throw new Error(`Unexpected migration arguments: ${args.join(' ')}`);
+  if (action === 'inspect') {
+    if (backupPath) throw new Error('migration inspect does not accept --backup');
+    const inspection = inspectRuntimeState(home);
+    return {
+      schema: 'q1x.runtime-migration-cli.v1', action, state: inspection.state,
+      sourceSchemaVersion: inspection.sourceSchemaVersion, targetSchemaVersion: inspection.targetSchemaVersion,
+      steps: inspection.steps,
+    };
+  }
+  if (action === 'compatibility') {
+    if (backupPath) throw new Error('migration compatibility does not accept --backup');
+    const inspection = inspectRuntimeState(home);
+    return {
+      schema: 'q1x.runtime-migration-cli.v1', action, state: inspection.state,
+      sourceSchemaVersion: inspection.sourceSchemaVersion, targetSchemaVersion: inspection.targetSchemaVersion,
+      steps: inspection.steps, compatible: !['future', 'invalid'].includes(inspection.state),
+    };
+  }
+  if (action !== 'dry-run' && action !== 'apply') throw new Error(`Unknown migration action: ${action ?? '<missing>'}`);
+  let backupDigest: string | undefined;
+  if (backupPath) backupDigest = await digestRuntimeBackup(backupPath);
+  const result = await applyStateMigrations(home, { dryRun: action === 'dry-run', backupPath });
+  let auditReceiptId: string | undefined;
+  if (action === 'apply' && result.applied) {
+    const runtime = OpenControlRuntime.open({ home });
+    try {
+      const receipt = runtime.appendAuditReceipt('state.migration.applied', { id: 'runtime.state', kind: 'runtime-state' }, undefined, {
+        migrationIds: result.steps, sourceSchemaVersion: result.sourceSchemaVersion,
+        targetSchemaVersion: result.targetSchemaVersion, ...(backupDigest ? { backupDigest } : {}),
+      });
+      auditReceiptId = receipt.id;
+    } finally {
+      runtime.close();
+    }
+  }
+  return {
+    schema: 'q1x.runtime-migration-cli.v1', action, applied: result.applied,
+    sourceSchemaVersion: result.sourceSchemaVersion, targetSchemaVersion: result.targetSchemaVersion,
+    steps: result.steps, ...(backupDigest ? { backupDigest } : {}), ...(auditReceiptId ? { auditReceiptId } : {}),
+  };
 }
 
 async function executeBackup(home: string | undefined, args: string[]): Promise<unknown> {
@@ -300,14 +349,17 @@ function writeResult(value: unknown): void {
 function writeError(error: unknown): void {
   const code = error instanceof RuntimeError ? error.code : 'CLI_ERROR';
   const message = error instanceof Error ? error.message : String(error);
-  process.stderr.write(`${JSON.stringify({ error: { code, message } })}\n`);
+  process.stderr.write(`${JSON.stringify({ schema: CLI_OUTPUT_CONTRACT.errorSchema, error: { code, message } })}\n`);
 }
 
 const args = process.argv.slice(2);
 let runtime: OpenControlRuntime | undefined;
 try {
   const home = takeOption(args, '--home');
-  if (args[0] === 'backup') {
+  if (args[0] === 'migration') {
+    args.shift();
+    writeResult(await executeMigration(home, args));
+  } else if (args[0] === 'backup') {
     args.shift();
     writeResult(await executeBackup(home, args));
   } else {

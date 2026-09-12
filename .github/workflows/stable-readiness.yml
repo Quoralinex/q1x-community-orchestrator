@@ -1,0 +1,114 @@
+name: Stable Readiness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      run_long_evidence:
+        description: Run the six-hour soak and 1,000-cycle restart evidence jobs
+        required: true
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stable-readiness-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  stable-readiness:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run check
+      - name: Verify retained Phase 14 completion contract
+        run: npm run verify:phase14
+      - run: npm run test:compatibility
+      - run: npm run test:resilience
+      - run: npm run test:stress
+      - run: npm run test:surface
+      - name: Generate exact-head stable-readiness evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p phase14-evidence .release-rc
+          sha="$GITHUB_SHA"
+          node scripts/phase14/run-upgrade-matrix.mjs --source-sha "$sha" > phase14-evidence/phase14-upgrade-evidence.json
+          node scripts/phase14/run-restart-campaign.mjs --source-sha "$sha" --cycles 25 > phase14-evidence/phase14-restart-smoke.json
+          node scripts/phase14/dependency-inventory.mjs > phase14-evidence/phase14-dependency-inventory.json
+          node scripts/phase14/public-surface.mjs --check compatibility/public-surface.rc1.json
+          node scripts/release/prepare-prerelease.mjs --version 1.0.0-rc.1 --output .release-rc --source-sha "$sha"
+          node scripts/release/verify-packed-consumer.mjs --artifacts .release-rc > phase14-evidence/phase14-packed-consumer.json
+          node scripts/release/verify-reproducible-packages.mjs --version 1.0.0-rc.1 --source-sha "$sha" > phase14-evidence/phase14-reproducibility.json
+          node scripts/phase14/package-surface.mjs --artifacts .release-rc --check compatibility/package-surface.rc1.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase14-stable-readiness-${{ github.sha }}
+          path: |
+            phase14-evidence/*.json
+            .release-rc/
+          if-no-files-found: error
+          include-hidden-files: true
+          retention-days: 30
+
+  soak:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_long_evidence == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 390
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Run six-hour local-only soak
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p phase14-evidence
+          node scripts/phase14/run-soak.mjs --source-sha "$GITHUB_SHA" --minutes 360 > phase14-evidence/phase14-soak-evidence.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase14-soak-${{ github.sha }}
+          path: phase14-evidence/phase14-soak-evidence.json
+          if-no-files-found: error
+          retention-days: 30
+
+  restart-campaign:
+    if: github.event_name == 'workflow_dispatch' && inputs.run_long_evidence == true
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - run: npm run build
+      - name: Run 1,000-cycle restart campaign
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p phase14-evidence
+          node scripts/phase14/run-restart-campaign.mjs --source-sha "$GITHUB_SHA" --cycles 1000 > phase14-evidence/phase14-restart-evidence.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: phase14-restart-${{ github.sha }}
+          path: phase14-evidence/phase14-restart-evidence.json
+          if-no-files-found: error
+          retention-days: 30

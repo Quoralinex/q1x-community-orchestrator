@@ -139,10 +139,10 @@ test('Phase 12 matrix records tested baseline product surfaces with concrete evi
   assert.equal(byId.get('desktop.windows.first-party').notes?.includes('physical-host'), true);
 });
 
-test('Phase 13 matrix presents beta candidate identity without stale Alpha package identity', async () => {
+test('Phase 14 matrix presents RC project identity while retaining historical Beta package-consumer evidence', async () => {
   const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
   const byId = new Map(source.entries.map(entry => [entry.id, entry]));
-  assert.equal(source.projectVersion, '0.2.0-beta.1');
+  assert.equal(source.projectVersion, '1.0.0-rc.1');
   assert.match(source.generatedFrom, /^[0-9a-f]{40}$/);
   assert.equal(byId.has('package-consumer.alpha-tarballs'), false);
   const consumer = byId.get('package-consumer.beta-tarballs');
@@ -152,8 +152,22 @@ test('Phase 13 matrix presents beta candidate identity without stale Alpha packa
   assert.ok(consumer.evidence.some(item => item.source === '.github/workflows/public-beta.yml'));
   for (const id of ['desktop.macos.first-party', 'desktop.windows.first-party', 'desktop.linux.first-party']) {
     assert.match(byId.get(id).implementation, /0\.2\.0-beta\.1$/);
+    assert.match(byId.get(id).notes ?? '', /historical[^\n]{0,100}beta|beta[^\n]{0,100}historical/i);
   }
   assert.match(byId.get('protocol.community-adapter').version, /0\.2\.0-beta\.1/);
+  assert.match(byId.get('protocol.community-adapter').notes ?? '', /historical[^\n]{0,100}beta|beta[^\n]{0,100}historical/i);
+});
+
+test('RC-labelled tested compatibility rows require evidence from an RC source commit', async () => {
+  const { execFileSync } = await import('node:child_process');
+  const source = JSON.parse(await readFile(new URL('../compatibility/matrix.json', import.meta.url), 'utf8'));
+  const root = new URL('..', import.meta.url);
+  for (const entry of source.entries.filter(item => item.status === 'tested' && /1\.0\.0-rc\.1/.test(JSON.stringify(item)))) {
+    for (const evidence of entry.evidence ?? []) {
+      const raw = execFileSync('git', ['show', `${evidence.commitSha}:packages/runtime/package.json`], { cwd: root, encoding: 'utf8' });
+      assert.equal(JSON.parse(raw).version, '1.0.0-rc.1', `${entry.id}: ${evidence.commitSha}`);
+    }
+  }
 });
 
 test('generator check mode succeeds only when checked-in markdown matches', () => {

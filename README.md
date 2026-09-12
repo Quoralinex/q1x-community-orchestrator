@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phases 1–12 are implemented on protected `main`, and Phase 13 hardening produces `0.2.0-beta.1` as a beta-ready candidate. The historical `v0.1.0-alpha.1` remains immutable and `v0.1.0-alpha.2` remains the current commissioned GitHub public alpha. No beta tag or beta release is claimed by the source candidate. npm publication remains separately optional. The project remains experimental and must not be treated as production-ready or generally available.
+> **Status:** Phases 1–13 are implemented on protected `main`; Phase 14 prepares `1.0.0-rc.1` as the stable-readiness candidate. `1.0.0` is not commissioned. The historical `v0.1.0-alpha.1` remains immutable and `v0.1.0-alpha.2` remains the current commissioned GitHub public alpha; the Phase 13 `0.2.0-beta.1` beta candidate remains uncommissioned. npm publication remains separately optional. The project remains experimental and must not be treated as production-ready, generally available or covered by an SLA.
 
 ## What it is
 
@@ -162,6 +162,14 @@ Phase 12 turns the extension-capable architecture into a practical standalone ba
 
 The baseline requires no private Quoralinex service. Legitimate prerequisites remain operator-owned: a local model service or hosted API credential, a supported installed Chromium-family browser, public MCP/A2A service credentials where applicable, and ordinary operating-system accessibility/session permission for native desktop control. See [`docs/product-usability.md`](docs/product-usability.md).
 
+## Phase 13: product hardening and beta readiness
+
+Phase 13 adds durable state/version checks, verified backup/restore, crash-consistent operation journalling, bounded runtime limits, deterministic resilience/stress/soak evidence, reproducible artifacts with SPDX SBOM, compatibility evidence tiers and complete operating manuals. Its governed `0.2.0-beta.1` identity remains a beta-ready candidate rather than a commissioned beta release. See [`docs/prerelease.md`](docs/prerelease.md).
+
+## Phase 14: stable release readiness
+
+Phase 14 freezes the intended stable public and package surfaces, makes state migration explicit, adds executable Alpha 2/Phase 13 upgrade evidence, strengthens long-duration restart/soak evidence, records deterministic dependency/licence evidence and prepares `1.0.0-rc.1` as the stable-readiness candidate. `1.0.0` is not commissioned. See [`docs/stable-release.md`](docs/stable-release.md), [`docs/versioning.md`](docs/versioning.md), [`docs/deprecation-policy.md`](docs/deprecation-policy.md), [`docs/upgrade-rollback.md`](docs/upgrade-rollback.md) and [`docs/supported-platforms.md`](docs/supported-platforms.md).
+
 ## Capability fabric
 
 Implemented foundations now cover durable orchestration state, capability discovery, provider-neutral model transport, MCP/A2A/CLI execution, managed browser/web control, shipped first-party desktop/application bridges, dynamic team formation, adaptive programme supervision, cross-platform local/container packaging, security/approval/evidence/audit/recovery hardening, standalone connector diagnostics, public-alpha release governance, the compatibility matrix and the Community Adapter SDK.
@@ -181,7 +189,7 @@ The supported alpha baseline is a zero-cost single-node profile using an embedde
 
 The detailed architecture, use cases, deployment model, public-alpha guidance, compatibility evidence, adapter authoring guidance, governance and delivery roadmap live in the project documentation and GitHub Pages site under [`docs/`](docs/).
 
-For the hardened candidate and its commissioning boundary, see [`docs/prerelease.md`](docs/prerelease.md).
+For the Phase 14 RC/stable-readiness boundary, see [`docs/stable-release.md`](docs/stable-release.md). The Phase 13 beta-candidate history remains in [`docs/prerelease.md`](docs/prerelease.md).
 
 ## Contributing
 

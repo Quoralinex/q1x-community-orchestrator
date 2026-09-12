@@ -35,7 +35,8 @@ test('Phase 13 completion verifier requires every hardening evidence surface', a
   assert.equal(report.required.compatibilityEvidenceTiers, true);
   assert.equal(report.required.manuals, true);
   assert.equal(report.required.standalone, true);
-  assert.equal(report.required.betaPackageIdentity, true);
+  assert.equal(report.currentPackageVersion, '1.0.0-rc.1');
+  assert.equal(report.required.currentPackageAlignment, true);
   assert.equal(report.required.publicBetaWorkflow, true);
   assert.equal(report.ok, true, JSON.stringify(report.findings, null, 2));
 });

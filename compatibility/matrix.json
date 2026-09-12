@@ -1,6 +1,6 @@
 {
   "matrixVersion": "1.0.0",
-  "projectVersion": "0.2.0-beta.1",
+  "projectVersion": "1.0.0-rc.1",
   "generatedFrom": "69a03c9717fa5e77576e6a80b94880cd38e4e5ba",
   "entries": [
     {
@@ -66,7 +66,7 @@
     {
       "id": "package-consumer.beta-tarballs",
       "category": "package-consumer",
-      "target": "Governed eight-package Q1X beta-candidate tarballs in an external consumer",
+      "target": "Historical governed eight-package Q1X beta-candidate tarballs in an external consumer",
       "status": "tested",
       "implementation": "npm pack tarballs",
       "evidence": [
@@ -90,7 +90,7 @@
         }
       ],
       "version": "0.2.0-beta.1",
-      "notes": "Current beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately."
+      "notes": "Historical Phase 13 beta-candidate package-consumer identity. Historical Alpha 2 release artifacts remain immutable and are documented separately; current source identity is governed by the Phase 14 RC surface."
     },
     {
       "id": "model-transport.provider-combinations",
@@ -179,7 +179,7 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "This beta-candidate tested status covers the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. It does not certify arbitrary third-party adapter protocols or code as trusted."
+      "notes": "Historical Phase 13 beta-candidate tested status covering the public SDK compatibility tuple, conformance runner, deterministic local reference adapter and explicit runtime bridge. Exact RC hosted-runner evidence is not claimed until an RC CI run exists; arbitrary third-party adapter protocols or code are not certified as trusted."
     },
     {
       "id": "desktop.macos.first-party",
@@ -201,7 +201,7 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "Beta-candidate bridge contract and host doctor are tested. The physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim."
+      "notes": "Historical Phase 13 beta-candidate bridge contract and host doctor evidence. Exact RC hosted-runner evidence is not claimed yet. physical-host Accessibility action execution remains blocked without granted OS permission; the sanitized blocked host record is retained separately and is not promoted into a pass claim."
     },
     {
       "id": "desktop.windows.first-party",
@@ -223,7 +223,7 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "Beta-candidate deterministic bridge contract and host doctor are tested; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
+      "notes": "Historical Phase 13 beta-candidate deterministic bridge contract and host doctor evidence. Exact RC hosted-runner evidence is not claimed yet; physical-host application-control behavior remains application/elevation dependent and is not implied by this entry."
     },
     {
       "id": "desktop.linux.first-party",
@@ -245,7 +245,7 @@
           "environmentTier": "fixture"
         }
       ],
-      "notes": "Beta-candidate bridge behavior is tested in the repository Ubuntu virtual X11/AT-SPI accessibility session; other desktop environments, compositors and Wayland policies require separate evidence."
+      "notes": "Historical Phase 13 beta-candidate bridge behavior tested in the repository Ubuntu virtual X11/AT-SPI accessibility session. Exact RC hosted-runner evidence is not claimed yet; other desktop environments, compositors and Wayland policies require separate evidence."
     },
     {
       "id": "model.openai-chat.local.fixture",

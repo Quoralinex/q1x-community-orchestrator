@@ -1,0 +1,17 @@
+{
+  "schema": "q1x.phase14-soak-evidence.v1",
+  "sourceSha": "fa604e123960d32e66317d91cb909e82bc4fbd72",
+  "generatedAt": "2026-09-12T15:41:29.756Z",
+  "requestedMinutes": 360,
+  "elapsedMs": 21601525,
+  "iterations": 22591,
+  "peakRss": 468279296,
+  "openHandleCount": 1,
+  "fileDescriptorCount": 18,
+  "sqliteIntegrity": "ok",
+  "auditValid": true,
+  "unresolvedExternalOperations": 0,
+  "limitBreaches": [],
+  "externalProviderCalls": 0,
+  "state": "passed"
+}

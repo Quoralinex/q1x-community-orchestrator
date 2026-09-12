@@ -127,6 +127,22 @@ export async function createRuntimeBackup(homeInput: string, outputDir: string):
 async function readManifest(backupPath: string): Promise<BackupManifest> {
   return JSON.parse(await readFile(join(backupPath, 'backup-manifest.json'), 'utf8')) as BackupManifest;
 }
+
+export async function digestRuntimeBackup(pathInput: string): Promise<string> {
+  const verification = await verifyRuntimeBackup(pathInput);
+  if (!verification.valid) {
+    throw new RuntimeError('BACKUP_INTEGRITY_FAILED', `Backup verification failed: ${verification.findings.join('; ')}`);
+  }
+  const manifest = await readManifest(verification.backupPath);
+  const canonical = {
+    schema: manifest.schema,
+    stateSchemaVersion: manifest.stateSchemaVersion,
+    files: [...manifest.files]
+      .map(({ path, size, sha256 }) => ({ path, size, sha256 }))
+      .sort((a, b) => a.path.localeCompare(b.path)),
+  };
+  return createHash('sha256').update(JSON.stringify(canonical)).digest('hex');
+}
 export async function verifyRuntimeBackup(pathInput: string): Promise<BackupVerification> {
   const backupPath = resolve(pathInput);
   const findings: string[] = [];

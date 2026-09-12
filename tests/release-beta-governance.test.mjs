@@ -25,11 +25,11 @@ function betaIdentity(alphaIdentity) {
   }
   return copy;
 }
-test('release metadata accepts current beta identity and preserves historical Alpha 2 identity support', async () => {
+test('release metadata preserves historical Beta and Alpha 2 identity support', async () => {
   assert.equal(BETA_VERSION, '0.2.0-beta.1');
   const source = await readReleaseIdentity(root);
-  assert.equal(source.version, BETA_VERSION);
-  assert.equal(assertReleaseIdentity(source, { version: BETA_VERSION }), source);
+  const beta = betaIdentity(source);
+  assert.equal(assertReleaseIdentity(beta, { version: BETA_VERSION }), beta);
   const alpha = betaIdentity(source);
   alpha.version = RELEASE_VERSION;
   alpha.tag = `v${RELEASE_VERSION}`;
@@ -67,8 +67,8 @@ test('beta manifest carries reproducibility and evidence baselines', async () =>
   assert.ok(manifest.artifacts.every(item => Array.isArray(item.inventory)));
 });
 
-test('beta candidate governs all eight public packages at one exact version', async () => {
-  const identity = await readReleaseIdentity(root);
+test('historical beta candidate governs all eight public packages at one exact version', async () => {
+  const identity = betaIdentity(await readReleaseIdentity(root));
   assert.equal(identity.version, BETA_VERSION);
   assert.equal(identity.tag, `v${BETA_VERSION}`);
   assert.equal(assertReleaseIdentity(identity, { version: BETA_VERSION }), identity);

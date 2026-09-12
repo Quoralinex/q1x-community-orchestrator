@@ -22,7 +22,11 @@ function success(result) {
 test('q1x CLI performs core runtime round trips', async t => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-runtime-cli-'));
   t.after(() => rm(home, { recursive: true, force: true }));
-  assert.equal(success(run(home, 'init')).contractVersion, '1.0.0');
+  const initResult = run(home, 'init');
+  assert.equal(initResult.status, 0, initResult.stderr);
+  assert.equal(initResult.stderr, '');
+  assert.equal(initResult.stdout.trim().split('\n').length, 1);
+  assert.equal(JSON.parse(initResult.stdout).contractVersion, '1.0.0');
 
   const mission = success(run(home, 'mission', 'put', '--file', example('mission.json')));
   assert.equal(mission.id, 'mission.company-launch');
@@ -45,8 +49,11 @@ test('q1x CLI returns structured errors without stack traces', async t => {
   const home = await mkdtemp(join(tmpdir(), 'q1x-runtime-cli-error-'));
   t.after(() => rm(home, { recursive: true, force: true }));
   const result = run(home, 'mission', 'show', 'mission.missing');
-  assert.notEqual(result.status, 0);
+  assert.equal(result.status, 1);
+  assert.equal(result.stdout, '');
+  assert.equal(result.stderr.trim().split('\n').length, 1);
   const payload = JSON.parse(result.stderr);
+  assert.equal(payload.schema, 'q1x.cli-error.v1');
   assert.equal(payload.error.code, 'NOT_FOUND');
   assert.match(payload.error.message, /mission/i);
   assert.doesNotMatch(result.stderr, /\n\s+at /);

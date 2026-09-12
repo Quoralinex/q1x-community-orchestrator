@@ -25,14 +25,18 @@ Software delivery is only one workload. The project is designed for research, co
 
 <div class="callout"><strong>Design rule:</strong> models are capabilities, not the architecture. The system routes work by capability, cost, privacy, modality, evidence, trust and availability.</div>
 
-## Public alpha
+## Current release status
 
-The historical `v0.1.0-alpha.1` public alpha remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha with eight public package artifacts. Phase 13 hardening prepares `0.2.0-beta.1` as a beta-ready candidate with recovery, bounded execution, resilience, reproducibility, SBOM and operating-manual evidence. No beta tag or beta release is claimed until the separate commissioning workflow is explicitly authorised from protected `main`. npm publication remains separately optional. The software remains experimental and is not production-ready.
+The historical `v0.1.0-alpha.1` public alpha remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha with eight public package artifacts. Phase 13 prepared `0.2.0-beta.1` as an uncommissioned beta-ready candidate. Phase 14 now prepares `1.0.0-rc.1` as the stable-readiness candidate; `1.0.0` is not commissioned. npm publication remains separately optional. The software remains experimental and carries no production or SLA guarantee.
 
 Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK. Phase 12 adds the standalone connector catalogue/configuration/doctor UX, no-custom-code baseline model/MCP/A2A/CLI/browser flows and shipped first-party desktop bridges. Compatibility labels remain scoped to cited repository evidence; adapter conformance is not a trust or sandbox guarantee.
 
 - [Public alpha quick start](public-alpha.md) — release identity, installation, integrity verification, upgrade and rollback.
-- [Beta-ready candidate](prerelease.md) — Phase 13 evidence, distribution boundary and commissioning requirements.
+- [Stable-release readiness](stable-release.md) — Phase 14 RC evidence, stable commissioning boundary and explicit nonclaims.
+- [Versioning policy](versioning.md) and [deprecation policy](deprecation-policy.md) — governed stable compatibility scope.
+- [Upgrade and rollback](upgrade-rollback.md) — explicit migration, verified backup and restore-based rollback.
+- [Supported platforms](supported-platforms.md) — evidence-bounded platform claims.
+- [Beta-ready candidate](prerelease.md) — historical Phase 13 beta-readiness evidence and commissioning requirements.
 - [Phase 12 product usability](product-usability.md) — baseline setup, prerequisites, no-code connector flows and evidence boundaries.
 - [Compatibility Matrix](compatibility-matrix.md) — tested, experimental and unsupported surfaces with repository-verifiable evidence.
 - [Community Adapter SDK](community-adapter-sdk.md) — public authoring, conformance, explicit registration and trust boundaries.

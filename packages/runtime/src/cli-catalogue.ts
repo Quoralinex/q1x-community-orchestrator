@@ -3,6 +3,17 @@ export interface CliCommandSpec {
   purpose: string;
 }
 
+export const CLI_OUTPUT_CONTRACT = Object.freeze({
+  schema: 'q1x.cli-output-contract.v1',
+  encoding: 'json',
+  valuesPerInvocation: 1,
+  successStream: 'stdout',
+  failureStream: 'stderr',
+  successExitCode: 0,
+  failureExitCode: 1,
+  errorSchema: 'q1x.cli-error.v1',
+});
+
 export const CLI_COMMAND_CATALOGUE: readonly CliCommandSpec[] = [
   { usage: 'q1x help', purpose: 'Return the machine-readable command catalogue.' },
   { usage: 'q1x --home <path> init', purpose: 'Initialise/open runtime state and return status.' },
@@ -11,6 +22,10 @@ export const CLI_COMMAND_CATALOGUE: readonly CliCommandSpec[] = [
   { usage: 'q1x --home <path> discover --manifest <path>', purpose: 'Run capability discovery manifests.' },
   { usage: 'q1x --home <path> limits show', purpose: 'Show effective runtime limits and weakened overrides.' },
   { usage: 'q1x --home <path> backup create --output <dir>', purpose: 'Create a verified SQLite runtime backup.' },
+  { usage: 'q1x --home <path> migration inspect', purpose: 'Inspect runtime-state migration requirements without mutation.' },
+  { usage: 'q1x --home <path> migration compatibility', purpose: 'Report whether runtime state is compatible or explicitly migratable.' },
+  { usage: 'q1x --home <path> migration dry-run [--backup <path>]', purpose: 'Plan runtime-state migration without applying changes.' },
+  { usage: 'q1x --home <path> migration apply [--backup <path>]', purpose: 'Apply explicit runtime-state migration and record audit evidence.' },
   { usage: 'q1x backup verify <backup-path>', purpose: 'Verify backup hashes, schema and SQLite integrity.' },
   { usage: 'q1x --home <empty-target> backup restore <backup-path>', purpose: 'Restore a verified backup into an empty runtime home.' },
   { usage: 'q1x --home <path> connectors list', purpose: 'List built-in connector profiles.' },

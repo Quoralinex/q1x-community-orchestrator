@@ -3,7 +3,7 @@ import { mkdtemp, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, isAbsolute, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { BETA_VERSION, PUBLIC_PACKAGES, RELEASE_VERSION, sha256File } from './release-metadata.mjs';
+import { BETA_VERSION, PUBLIC_PACKAGES, RC_VERSION, RELEASE_VERSION, STABLE_VERSION, sha256File } from './release-metadata.mjs';
 
 const root = dirname(fileURLToPath(new URL('../../package.json', import.meta.url)));
 const npmCommand = process.platform === 'win32' ? 'npm.cmd' : 'npm';
@@ -31,13 +31,17 @@ async function readManifest(directory) {
   }
 }
 
-function validateManifestShape(manifest) {
+export function validatePackedManifest(manifest) {
   const expectedVersion = manifest?.status === 'public-alpha'
     ? RELEASE_VERSION
     : manifest?.status === 'beta-candidate'
       ? BETA_VERSION
-      : undefined;
-  if (!expectedVersion) throw new Error('Release manifest status must be public-alpha or beta-candidate');
+      : manifest?.status === 'stable-rc-candidate'
+        ? RC_VERSION
+        : manifest?.status === 'stable'
+          ? STABLE_VERSION
+          : undefined;
+  if (!expectedVersion) throw new Error('Release manifest status must be public-alpha, beta-candidate, stable-rc-candidate or stable');
   if (manifest?.version !== expectedVersion) throw new Error(`Release manifest version must be ${expectedVersion}`);
   if (!Array.isArray(manifest.artifacts) || manifest.artifacts.length !== PUBLIC_PACKAGES.length) {
     throw new Error(`Release manifest must contain exactly ${PUBLIC_PACKAGES.length} package artifacts`);
@@ -81,7 +85,7 @@ async function localThirdPartyPackageDirectories() {
 export async function verifyPackedConsumer(artifactsDirectory) {
   const directory = isAbsolute(artifactsDirectory) ? artifactsDirectory : resolve(root, artifactsDirectory);
   const manifest = await readManifest(directory);
-  validateManifestShape(manifest);
+  validatePackedManifest(manifest);
 
   const tarballs = [];
   for (const artifact of manifest.artifacts) {

@@ -28,7 +28,7 @@ test('backup round-trip preserves state and audit integrity', async t => {
   const { home, mission } = await seededRuntimeHome(t);
   const output = await tempDir(t, 'q1x-backup-output-');
   const target = join(output, 'restored-home');
-  const { createRuntimeBackup, verifyRuntimeBackup, restoreRuntimeBackup, OpenControlRuntime, SecurityAuditStore } = await module();
+  const { createRuntimeBackup, verifyRuntimeBackup, restoreRuntimeBackup, digestRuntimeBackup, OpenControlRuntime, SecurityAuditStore } = await module();
 
   const backup = await createRuntimeBackup(home, output);
   assert.equal(backup.schema, 'q1x.runtime-backup.v1');
@@ -40,6 +40,14 @@ test('backup round-trip preserves state and audit integrity', async t => {
   const verification = await verifyRuntimeBackup(backup.directory);
   assert.equal(verification.valid, true);
   assert.deepEqual(verification.findings, []);
+
+  const firstDigest = await digestRuntimeBackup(backup.directory);
+  assert.match(firstDigest, /^[0-9a-f]{64}$/);
+  const manifestPath = join(backup.directory, 'backup-manifest.json');
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  manifest.createdAt = '2099-01-01T00:00:00.000Z';
+  await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  assert.equal(await digestRuntimeBackup(backup.directory), firstDigest);
 
   const restored = await restoreRuntimeBackup(backup.directory, target);
   assert.equal(restored.stateSchemaVersion, 1);
@@ -59,12 +67,14 @@ test('backup round-trip preserves state and audit integrity', async t => {
 test('verification and restore reject corruption and non-empty targets', async t => {
   const { home } = await seededRuntimeHome(t);
   const output = await tempDir(t, 'q1x-backup-corrupt-');
-  const { createRuntimeBackup, verifyRuntimeBackup, restoreRuntimeBackup, RuntimeError } = await module();
+  const { createRuntimeBackup, verifyRuntimeBackup, restoreRuntimeBackup, digestRuntimeBackup, RuntimeError } = await module();
   const backup = await createRuntimeBackup(home, output);
 
   await writeFile(join(backup.directory, 'state.sqlite'), Buffer.from('corrupted'));
   const verification = await verifyRuntimeBackup(backup.directory);
   assert.equal(verification.valid, false);
+  await assert.rejects(() => digestRuntimeBackup(backup.directory), error =>
+    error instanceof RuntimeError && error.code === 'BACKUP_INTEGRITY_FAILED');
   assert.ok(verification.findings.length > 0);
   await assert.rejects(
     () => restoreRuntimeBackup(backup.directory, join(output, 'restore-corrupt')),
@@ -85,10 +95,12 @@ test('verification and restore reject corruption and non-empty targets', async t
 test('verification rejects unmanifested files', async t => {
   const { home } = await seededRuntimeHome(t);
   const output = await tempDir(t, 'q1x-backup-extra-');
-  const { createRuntimeBackup, verifyRuntimeBackup } = await module();
+  const { createRuntimeBackup, verifyRuntimeBackup, digestRuntimeBackup, RuntimeError } = await module();
   const backup = await createRuntimeBackup(home, output);
   await writeFile(join(backup.directory, 'unexpected.txt'), 'unexpected');
   const verification = await verifyRuntimeBackup(backup.directory);
   assert.equal(verification.valid, false);
+  await assert.rejects(() => digestRuntimeBackup(backup.directory), error =>
+    error instanceof RuntimeError && error.code === 'BACKUP_INTEGRITY_FAILED');
   assert.ok(verification.findings.some(item => /unexpected/i.test(item)));
 });

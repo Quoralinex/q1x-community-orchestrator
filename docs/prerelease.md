@@ -1,5 +1,7 @@
 # Q1X Community Orchestrator 0.2.0-beta.1 candidate
 
+> **Historical Phase 13 context:** this page records the `0.2.0-beta.1` beta-ready candidate. The newer Phase 14 RC/stable-readiness status is documented in [Stable release readiness](stable-release.md).
+
 `0.2.0-beta.1` is the governed Phase 13 **beta-ready candidate**. It is not a commissioned beta release until the separate `public-beta.yml` release authority is explicitly dispatched from protected `main` after every required gate is green.
 
 The current commissioned public release remains `v0.1.0-alpha.2`. The historical `v0.1.0-alpha.1` and `v0.1.0-alpha.2` tags and release artifacts remain immutable.

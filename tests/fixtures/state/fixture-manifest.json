@@ -1,0 +1,15 @@
+{
+  "schema": "q1x.phase14-state-fixtures.v1",
+  "fixtures": [
+    {
+      "release": "v0.1.0-alpha.2",
+      "recipe": "tests/fixtures/state/v0.1.0-alpha.2.sql",
+      "sha256": "031abdb4da2d55a7df32734b3ffcabe871948ed1398f29fda0ba3bf56ef94676"
+    },
+    {
+      "release": "0.2.0-beta.1",
+      "recipe": "tests/fixtures/state/phase13-0.2.0-beta.1.sql",
+      "sha256": "9eb5c4b2948513c91eb8ab2c6e5a4d0cec041e25d8b42a6663aa06c6c784ea26"
+    }
+  ]
+}

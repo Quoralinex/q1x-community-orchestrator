@@ -10,6 +10,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24
@@ -20,9 +22,15 @@ jobs:
           required=(README.md LICENSE COMMERCIAL-LICENSING.md CONTRIBUTING.md SECURITY.md CODE_OF_CONDUCT.md .github/CODEOWNERS)
           for file in "${required[@]}"; do test -s "$file" || { echo "Missing or empty: $file"; exit 1; }; done
           git diff --check
+      - name: Install dependencies
+        run: npm ci --no-audit --no-fund
       - name: Verify standalone public boundary
         run: npm run verify:standalone
       - name: Verify Phase 12 completion contract
         run: npm run verify:phase12
       - name: Verify Phase 13 beta-readiness contract
         run: npm run verify:phase13
+      - name: Verify Phase 14 stable-readiness workflow structure
+        run: node --test tests/phase14-workflows.test.mjs tests/release-stable-governance.test.mjs
+      - name: Verify Phase 14 stable-readiness contract
+        run: npm run verify:phase14
