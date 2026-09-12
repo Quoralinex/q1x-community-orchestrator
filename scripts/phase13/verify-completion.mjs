@@ -4,7 +4,7 @@ import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
 import { verifyStandaloneRoot } from '../phase12/verify-standalone.mjs';
-import { BETA_VERSION as GOVERNED_BETA_VERSION, assertReleaseIdentity, readReleaseIdentity } from '../release/release-metadata.mjs';
+import { BETA_VERSION as GOVERNED_BETA_VERSION, RC_VERSION, assertReleaseIdentity, readReleaseIdentity } from '../release/release-metadata.mjs';
 
 export const BETA_VERSION = GOVERNED_BETA_VERSION;
 const REQUIRED_SCENARIOS = [
@@ -89,10 +89,12 @@ export async function verifyPhase13Root(rootInput) {
   const betaWorkflow = await text(join(root, '.github/workflows/beta-readiness.yml'));
   const publicBetaWorkflow = await text(join(root, '.github/workflows/public-beta.yml'));
   const packageJson = await json(join(root, 'package.json'));
-  let betaPackageIdentity = false;
+  let currentPackageVersion = null;
+  let currentPackageAlignment = false;
   try {
     const identity = await readReleaseIdentity(root);
-    betaPackageIdentity = assertReleaseIdentity(identity, { version: BETA_VERSION }) === identity;
+    currentPackageVersion = identity.version ?? null;
+    currentPackageAlignment = assertReleaseIdentity(identity, { version: RC_VERSION }) === identity;
   } catch {}
   const required = {
     stateVersioning: /CURRENT_STATE_SCHEMA_VERSION\s*=\s*1/.test(stateSchema)
@@ -123,7 +125,7 @@ export async function verifyPhase13Root(rootInput) {
       && /test:resilience/.test(betaWorkflow) && /test:stress/.test(betaWorkflow),
     repositoryBaseline: /verify:phase13/.test(baseline),
     packageScript: /verify-completion\.mjs/.test(packageJson?.scripts?.['verify:phase13'] ?? ''),
-    betaPackageIdentity,
+    currentPackageAlignment,
     publicBetaWorkflow: /0\.2\.0-beta\.1/.test(publicBetaWorkflow)
       && /workflow_dispatch/.test(publicBetaWorkflow) && /publish_npm/.test(publicBetaWorkflow),
   };
@@ -137,6 +139,7 @@ export async function verifyPhase13Root(rootInput) {
     schema: 'q1x.phase13-completion-verification.v1',
     phase: 13,
     betaVersion: BETA_VERSION,
+    currentPackageVersion,
     ok: findings.length === 0,
     required,
     requiredResilienceScenarios: REQUIRED_SCENARIOS,
