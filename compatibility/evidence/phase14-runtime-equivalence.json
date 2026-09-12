@@ -1,11 +1,31 @@
 {
   "fromSha": "fa604e123960d32e66317d91cb909e82bc4fbd72",
-  "toSha": "cdc9cc65d07f68497e7fd93b2d80d0ddece140e7",
+  "toSha": "35ecac7850b214592de537e46d46a2677591b090",
   "schema": "q1x.phase14-runtime-equivalence.v1",
   "equivalent": true,
   "changedPaths": [
-    "compatibility/public-surface.rc1.json"
+    ".github/workflows/repository-baseline.yml",
+    ".github/workflows/stable-readiness.yml",
+    "compatibility/evidence/phase14-restart-acceptance.json",
+    "compatibility/evidence/phase14-restart-evidence.json",
+    "compatibility/evidence/phase14-runtime-equivalence.json",
+    "compatibility/evidence/phase14-soak-acceptance.json",
+    "compatibility/evidence/phase14-soak-evidence.json",
+    "compatibility/evidence/phase14-upgrade-evidence.json",
+    "compatibility/matrix.json",
+    "compatibility/public-surface.rc1.json",
+    "docs/compatibility-matrix.md",
+    "docs/developer-guide.md",
+    "docs/superpowers/plans/2026-09-11-phase14-stable-release-readiness.md",
+    "package.json",
+    "scripts/phase14/verify-completion.mjs",
+    "tests/compatibility-matrix.test.mjs",
+    "tests/phase14-completion.test.mjs",
+    "tests/phase14-docs.test.mjs",
+    "tests/phase14-workflows.test.mjs"
   ],
   "invalidatingPaths": [],
-  "neutralizedPaths": []
+  "neutralizedPaths": [
+    "package.json"
+  ]
 }
