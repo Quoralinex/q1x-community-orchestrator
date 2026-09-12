@@ -157,6 +157,10 @@ export async function verifyPhase14Root(rootInput) {
     && upgradeEvidence?.externalProviderCalls === 0
     && upgradeEvidence?.state === 'passed'
   );
+  let upgradeEvidenceRuntimeEquivalence;
+  if (/^[0-9a-f]{40}$/.test(upgradeEvidence?.sourceSha ?? '')) {
+    try { upgradeEvidenceRuntimeEquivalence = verifyCurrentRuntimeEquivalence(root, upgradeEvidence.sourceSha); } catch {}
+  }
   let currentRuntimeEquivalence;
   if (acceptanceSourceSha) {
     try { currentRuntimeEquivalence = verifyCurrentRuntimeEquivalence(root, acceptanceSourceSha); } catch {}
@@ -192,6 +196,7 @@ export async function verifyPhase14Root(rootInput) {
     acceptedSoakEvidence: soak.ok,
     acceptedRestartEvidence: restart.ok,
     upgradeEvidence: upgradeEvidenceValid,
+    upgradeEvidenceRuntimeEquivalence: upgradeEvidenceRuntimeEquivalence?.equivalent === true,
     runtimeEquivalence: runtimeEquivalenceValid,
     acceptanceSourceConsistency,
     standalone: standalone.ok,
@@ -234,6 +239,7 @@ export async function verifyPhase14Root(rootInput) {
       upgrade: {
         sourceSha: upgradeEvidence?.sourceSha ?? null,
         state: upgradeEvidence?.state ?? null,
+        currentRuntimeEquivalence: upgradeEvidenceRuntimeEquivalence ?? null,
       },
       runtimeEquivalence: runtimeEquivalence ?? null,
       currentRuntimeEquivalence: currentRuntimeEquivalence ?? null,
