@@ -115,3 +115,9 @@ test('repository baseline includes Phase 14 completion verification after retain
   assert.match(baseline, /release-stable-governance\.test\.mjs/);
   assert.match(baseline, /npm run verify:phase14/);
 });
+
+test('Dependabot keeps Node typings on the governed Node 24 compatibility line', async () => {
+  const dependabot = await text('.github/dependabot.yml');
+  assert.match(dependabot, /dependency-name:\s*["']?@types\/node["']?/);
+  assert.match(dependabot, /update-types:\s*\n\s*-\s*["']?version-update:semver-major["']?/);
+});

@@ -30,3 +30,9 @@ test('Phase 14 runtime-equivalence verifier changes are governance-only', () => 
   assert.equal(result.equivalent, true);
   assert.deepEqual(result.invalidatingPaths, []);
 });
+
+test('Dependabot policy changes are governance-only for Phase 14 runtime equivalence', () => {
+  const result = evaluateRuntimeEquivalence(['.github/dependabot.yml']);
+  assert.equal(result.equivalent, true);
+  assert.deepEqual(result.invalidatingPaths, []);
+});
