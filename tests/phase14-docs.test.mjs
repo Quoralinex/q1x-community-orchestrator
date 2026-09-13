@@ -103,3 +103,12 @@ test('Phase 14 implementation plan uses executable long-evidence CLI syntax', as
   assert.doesNotMatch(plan, /run-restart-campaign\.mjs[^\n]*--output/);
   assert.match(plan, /runtime-equivalence\.mjs --from[^\n]*--to[^\n]*>/);
 });
+
+test('roadmap records Phase 14 as implemented while stable commissioning remains separate', async () => {
+  const roadmap = await read('roadmap.md');
+  assert.match(
+    roadmap,
+    /Phase 14[^\n]{0,700}Implemented[^\n]{0,240}protected `main`[^\n]{0,240}1\.0\.0[^\n]{0,120}(not commissioned|uncommissioned)/i,
+  );
+  assert.doesNotMatch(roadmap, /Phase 14[^\n]{0,700}In delivery/i);
+});
