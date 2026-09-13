@@ -17,6 +17,17 @@ function normalized(path) { return String(path).replaceAll('\\', '/').replace(/^
 function neutral(path) {
   return RUNTIME_NEUTRAL_EXACT.includes(path) || RUNTIME_NEUTRAL_PREFIXES.some(prefix => path.startsWith(prefix));
 }
+function node24Range(value) {
+  return typeof value === 'string' && /^\^24\.\d+\.\d+$/.test(value);
+}
+function node24Version(value) {
+  return typeof value === 'string' && /^24\.\d+\.\d+$/.test(value);
+}
+function npmNodeTypesRecord(record) {
+  if (!record || typeof record !== 'object' || record.dev !== true || !node24Version(record.version)) return false;
+  if (record.resolved !== `https://registry.npmjs.org/@types/node/-/node-${record.version}.tgz`) return false;
+  return typeof record.integrity === 'string' && record.integrity.startsWith('sha512-');
+}
 
 export function isCompletionWiringOnlyPackageChange(beforeInput, afterInput) {
   if (!beforeInput || !afterInput || typeof beforeInput !== 'object' || typeof afterInput !== 'object') return false;
@@ -57,6 +68,36 @@ export function isCompletionWiringOnlyPackageChange(beforeInput, afterInput) {
   return afterTest === beforeTest || afterTest === expectedTest;
 }
 
+export function isNode24TypesRuntimeNeutralPackageChange(beforeInput, afterInput) {
+  if (!beforeInput || !afterInput || typeof beforeInput !== 'object' || typeof afterInput !== 'object') return false;
+  const beforeRange = beforeInput.devDependencies?.['@types/node'];
+  const afterRange = afterInput.devDependencies?.['@types/node'];
+  if (!node24Range(beforeRange) || !node24Range(afterRange) || beforeRange === afterRange) return false;
+  const before = structuredClone(beforeInput);
+  const after = structuredClone(afterInput);
+  after.devDependencies['@types/node'] = before.devDependencies['@types/node'];
+  return isCompletionWiringOnlyPackageChange(before, after);
+}
+
+export function isNode24TypesOnlyLockfileChange(beforeInput, afterInput) {
+  if (!beforeInput || !afterInput || typeof beforeInput !== 'object' || typeof afterInput !== 'object') return false;
+  const before = structuredClone(beforeInput);
+  const after = structuredClone(afterInput);
+  const beforeRoot = before.packages?.[''];
+  const afterRoot = after.packages?.[''];
+  const beforeRecord = before.packages?.['node_modules/@types/node'];
+  const afterRecord = after.packages?.['node_modules/@types/node'];
+  const beforeRange = beforeRoot?.devDependencies?.['@types/node'];
+  const afterRange = afterRoot?.devDependencies?.['@types/node'];
+  if (!node24Range(beforeRange) || !node24Range(afterRange) || beforeRange === afterRange) return false;
+  if (!npmNodeTypesRecord(beforeRecord) || !npmNodeTypesRecord(afterRecord)) return false;
+  if (beforeRecord.version === afterRecord.version) return false;
+
+  afterRoot.devDependencies['@types/node'] = beforeRange;
+  for (const key of ['version', 'resolved', 'integrity']) afterRecord[key] = beforeRecord[key];
+  return JSON.stringify(before) === JSON.stringify(after);
+}
+
 export function evaluateRuntimeEquivalence(changedPaths) {
   const changed = [...new Set((changedPaths ?? []).map(normalized).filter(Boolean))].sort();
   const invalidatingPaths = changed.filter(path => !neutral(path));
@@ -78,19 +119,36 @@ export function runtimeEquivalenceBetween({ root = process.cwd(), fromSha, toSha
   });
   const report = evaluateRuntimeEquivalence(output.split(/\r?\n/).filter(Boolean));
   const neutralizedPaths = [];
+  let beforePackage;
+  let afterPackage;
   if (report.invalidatingPaths.includes('package.json')) {
     try {
-      const before = JSON.parse(execFileSync('git', ['show', `${fromSha}:package.json`], { cwd, encoding: 'utf8' }));
-      const after = JSON.parse(execFileSync('git', ['show', `${toSha}:package.json`], { cwd, encoding: 'utf8' }));
-      if (isCompletionWiringOnlyPackageChange(before, after)) neutralizedPaths.push('package.json');
+      beforePackage = JSON.parse(execFileSync('git', ['show', `${fromSha}:package.json`], { cwd, encoding: 'utf8' }));
+      afterPackage = JSON.parse(execFileSync('git', ['show', `${toSha}:package.json`], { cwd, encoding: 'utf8' }));
+      if (isCompletionWiringOnlyPackageChange(beforePackage, afterPackage)) neutralizedPaths.push('package.json');
     } catch {}
   }
-  const invalidatingPaths = report.invalidatingPaths.filter(path => !neutralizedPaths.includes(path));
+  if (report.invalidatingPaths.includes('package.json') && report.invalidatingPaths.includes('package-lock.json')) {
+    try {
+      beforePackage ??= JSON.parse(execFileSync('git', ['show', `${fromSha}:package.json`], { cwd, encoding: 'utf8' }));
+      afterPackage ??= JSON.parse(execFileSync('git', ['show', `${toSha}:package.json`], { cwd, encoding: 'utf8' }));
+      const beforeLock = JSON.parse(execFileSync('git', ['show', `${fromSha}:package-lock.json`], { cwd, encoding: 'utf8' }));
+      const afterLock = JSON.parse(execFileSync('git', ['show', `${toSha}:package-lock.json`], { cwd, encoding: 'utf8' }));
+      if (
+        isNode24TypesRuntimeNeutralPackageChange(beforePackage, afterPackage)
+        && isNode24TypesOnlyLockfileChange(beforeLock, afterLock)
+      ) {
+        neutralizedPaths.push('package.json', 'package-lock.json');
+      }
+    } catch {}
+  }
+  const uniqueNeutralizedPaths = [...new Set(neutralizedPaths)].sort();
+  const invalidatingPaths = report.invalidatingPaths.filter(path => !uniqueNeutralizedPaths.includes(path));
   return {
     fromSha, toSha, ...report,
     equivalent: invalidatingPaths.length === 0,
     invalidatingPaths,
-    neutralizedPaths,
+    neutralizedPaths: uniqueNeutralizedPaths,
   };
 }
 
