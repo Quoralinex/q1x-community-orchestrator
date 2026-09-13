@@ -23,6 +23,12 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 0
+      - name: Fetch retained Phase 14 evidence commits
+        shell: bash
+        run: |
+          set -euo pipefail
+          git fetch --no-tags origin fa604e123960d32e66317d91cb909e82bc4fbd72
+          git fetch --no-tags origin 35ecac7850b214592de537e46d46a2677591b090
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
         with:
           node-version: 24

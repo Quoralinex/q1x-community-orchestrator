@@ -1,6 +1,6 @@
 # Current candidate known limitations
 
-Q1X Community Orchestrator remains experimental software. The historical `v0.1.0-alpha.1` release remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha. Phase 13 prepared `0.2.0-beta.1` as an uncommissioned beta-ready candidate; Phase 14 prepares `1.0.0-rc.1` as the stable-readiness candidate. `1.0.0` is not commissioned. npm publication remains separately optional. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
+Q1X Community Orchestrator remains experimental software. The historical `v0.1.0-alpha.1` release remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha. Phase 13 prepared `0.2.0-beta.1` as an uncommissioned beta-ready candidate; Phase 14 is implemented and validated on protected `main` as the `1.0.0-rc.1` stable-readiness candidate. Validation-only stable packaging has passed, but `1.0.0` is not commissioned. npm publication remains separately optional. The statements below define important limits of the current Community surface and prevent tested capabilities from being mistaken for broader guarantees.
 
 1. **Local actor identity is caller-asserted.** Approval actor identifiers are not cryptographically authenticated by the current local JSON-first CLI. `requiredApproverKinds` is a governance-contract boundary, not enterprise IAM, signed identity or an authenticated multi-user control plane.
 

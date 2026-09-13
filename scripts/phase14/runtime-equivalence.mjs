@@ -6,7 +6,9 @@ export const RUNTIME_NEUTRAL_PREFIXES = Object.freeze([
   '.github/workflows/', 'docs/', 'tests/', 'compatibility/evidence/',
 ]);
 export const RUNTIME_NEUTRAL_EXACT = Object.freeze([
+  'README.md',
   'scripts/phase14/verify-completion.mjs',
+  'scripts/phase14/runtime-equivalence.mjs',
   'compatibility/matrix.json',
   'compatibility/public-surface.rc1.json',
   'compatibility/package-surface.rc1.json',

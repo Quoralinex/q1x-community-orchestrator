@@ -6,7 +6,7 @@
 
 Q1X Community Orchestrator is a provider-neutral, OS-neutral orchestration runtime for turning broad goals into governed, long-horizon programmes of work across AI models, agents, tools, software and digital services.
 
-> **Status:** Phases 1–13 are implemented on protected `main`; Phase 14 prepares `1.0.0-rc.1` as the stable-readiness candidate. `1.0.0` is not commissioned. The historical `v0.1.0-alpha.1` remains immutable and `v0.1.0-alpha.2` remains the current commissioned GitHub public alpha; the Phase 13 `0.2.0-beta.1` beta candidate remains uncommissioned. npm publication remains separately optional. The project remains experimental and must not be treated as production-ready, generally available or covered by an SLA.
+> **Status:** Phases 1–14 are implemented on protected `main`; Phase 14 is validated as the `1.0.0-rc.1` stable-readiness candidate. Validation-only stable packaging has passed, but `1.0.0` is not commissioned. The historical `v0.1.0-alpha.1` remains immutable and `v0.1.0-alpha.2` remains the current commissioned GitHub public alpha; the Phase 13 `0.2.0-beta.1` beta candidate remains uncommissioned. npm publication remains separately optional. The project remains experimental and must not be treated as production-ready, generally available or covered by an SLA.
 
 ## What it is
 
@@ -168,7 +168,7 @@ Phase 13 adds durable state/version checks, verified backup/restore, crash-consi
 
 ## Phase 14: stable release readiness
 
-Phase 14 freezes the intended stable public and package surfaces, makes state migration explicit, adds executable Alpha 2/Phase 13 upgrade evidence, strengthens long-duration restart/soak evidence, records deterministic dependency/licence evidence and prepares `1.0.0-rc.1` as the stable-readiness candidate. `1.0.0` is not commissioned. See [`docs/stable-release.md`](docs/stable-release.md), [`docs/versioning.md`](docs/versioning.md), [`docs/deprecation-policy.md`](docs/deprecation-policy.md), [`docs/upgrade-rollback.md`](docs/upgrade-rollback.md) and [`docs/supported-platforms.md`](docs/supported-platforms.md).
+Phase 14 is implemented and validated on protected `main`. It freezes the intended stable public and package surfaces, makes state migration explicit, adds executable Alpha 2/Phase 13 upgrade evidence, strengthens long-duration restart/soak evidence, records deterministic dependency/licence evidence and governs `1.0.0-rc.1` as the stable-readiness candidate. Validation-only stable packaging has passed; `1.0.0` is not commissioned. See [`docs/stable-release.md`](docs/stable-release.md), [`docs/versioning.md`](docs/versioning.md), [`docs/deprecation-policy.md`](docs/deprecation-policy.md), [`docs/upgrade-rollback.md`](docs/upgrade-rollback.md) and [`docs/supported-platforms.md`](docs/supported-platforms.md).
 
 ## Capability fabric
 

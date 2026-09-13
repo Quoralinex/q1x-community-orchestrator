@@ -51,6 +51,8 @@ test('Phase 14 runtime-equivalence policy accepts only explicitly neutral paths'
     'tests/phase14-docs.test.mjs',
     'compatibility/evidence/phase14-soak.json',
     'scripts/phase14/verify-completion.mjs',
+    'scripts/phase14/runtime-equivalence.mjs',
+    'README.md',
     'compatibility/matrix.json',
     'compatibility/public-surface.rc1.json',
     'compatibility/package-surface.rc1.json',

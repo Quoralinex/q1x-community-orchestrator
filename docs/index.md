@@ -27,7 +27,7 @@ Software delivery is only one workload. The project is designed for research, co
 
 ## Current release status
 
-The historical `v0.1.0-alpha.1` public alpha remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha with eight public package artifacts. Phase 13 prepared `0.2.0-beta.1` as an uncommissioned beta-ready candidate. Phase 14 now prepares `1.0.0-rc.1` as the stable-readiness candidate; `1.0.0` is not commissioned. npm publication remains separately optional. The software remains experimental and carries no production or SLA guarantee.
+The historical `v0.1.0-alpha.1` public alpha remains immutable, and `v0.1.0-alpha.2` remains the commissioned GitHub public alpha with eight public package artifacts. Phase 13 prepared `0.2.0-beta.1` as an uncommissioned beta-ready candidate. Phase 14 is implemented and validated on protected `main` as the `1.0.0-rc.1` stable-readiness candidate; validation-only stable packaging has passed, but `1.0.0` is not commissioned. npm publication remains separately optional. The software remains experimental and carries no production or SLA guarantee.
 
 Phase 11 adds the evidence-driven compatibility matrix and Community Adapter SDK. Phase 12 adds the standalone connector catalogue/configuration/doctor UX, no-custom-code baseline model/MCP/A2A/CLI/browser flows and shipped first-party desktop bridges. Compatibility labels remain scoped to cited repository evidence; adapter conformance is not a trust or sandbox guarantee.
 
