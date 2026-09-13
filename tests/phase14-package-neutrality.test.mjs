@@ -131,6 +131,28 @@ test('same-major Node 24 typings package and lockfile update is runtime neutral'
   assert.deepEqual(result.neutralizedPaths, ['package-lock.json', 'package.json']);
 });
 
+test('Node typings package and lockfile ranges must remain paired', async () => {
+  const result = await runtimeEquivalenceFor({
+    beforePackage: packageDocument(),
+    afterPackage: packageDocument({ nodeTypes: '^24.13.4' }),
+    beforeLock: lockDocument(),
+    afterLock: lockDocument({ nodeTypes: '^24.12.0', nodeVersion: '24.13.4' }),
+  });
+  assert.equal(result.equivalent, false);
+  assert.deepEqual(result.invalidatingPaths, ['package-lock.json', 'package.json']);
+});
+
+test('Node typings installed version must satisfy the paired declared range', async () => {
+  const result = await runtimeEquivalenceFor({
+    beforePackage: packageDocument(),
+    afterPackage: packageDocument({ nodeTypes: '^24.13.4' }),
+    beforeLock: lockDocument(),
+    afterLock: lockDocument({ nodeTypes: '^24.13.4', nodeVersion: '24.12.0' }),
+  });
+  assert.equal(result.equivalent, false);
+  assert.deepEqual(result.invalidatingPaths, ['package-lock.json', 'package.json']);
+});
+
 test('Node typings major-version jump remains runtime invalidating', async () => {
   const result = await runtimeEquivalenceFor({
     beforePackage: packageDocument(),
