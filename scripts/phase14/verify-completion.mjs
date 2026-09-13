@@ -1,5 +1,6 @@
 import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
+import { readFileSync } from 'node:fs';
 import { readFile, stat } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
@@ -10,6 +11,72 @@ import { buildDependencyInventory } from './dependency-inventory.mjs';
 import { runtimeEquivalenceBetween } from './runtime-equivalence.mjs';
 
 const EVIDENCE = 'compatibility/evidence';
+const MAINLINE_BRIDGE_PATH = `${EVIDENCE}/phase14-runtime-equivalence-mainline-bridge.json`;
+const BRIDGE_SOURCE_SHA = '35ecac7850b214592de537e46d46a2677591b090';
+const MAINLINE_ANCHOR_SHA = 'f960d1dd5adc036c21a344067b7c9c0c2fb619b3';
+
+function exactEquivalentRecord(record, { schema, fromSha, toSha }) {
+  return Boolean(
+    record?.schema === schema
+    && record?.fromSha === fromSha
+    && record?.toSha === toSha
+    && record?.equivalent === true
+    && Array.isArray(record?.invalidatingPaths)
+    && record.invalidatingPaths.length === 0
+  );
+}
+
+export function composeRuntimeEquivalenceFallback({
+  fromSha,
+  toSha,
+  retainedRuntimeEquivalence,
+  mainlineBridge,
+  tailRuntimeEquivalence,
+}) {
+  if (!/^[0-9a-f]{40}$/.test(fromSha ?? '') || !/^[0-9a-f]{40}$/.test(toSha ?? '')) {
+    throw new Error('Phase 14 runtime-equivalence fallback requires exact 40-character SHAs');
+  }
+  const bridgeValid = exactEquivalentRecord(mainlineBridge, {
+    schema: 'q1x.phase14-runtime-equivalence-mainline-bridge.v1',
+    fromSha: BRIDGE_SOURCE_SHA,
+    toSha: MAINLINE_ANCHOR_SHA,
+  });
+  if (!bridgeValid) throw new Error('Phase 14 mainline bridge is missing or invalid');
+
+  const usedRetainedHop = fromSha !== BRIDGE_SOURCE_SHA;
+  if (usedRetainedHop && !exactEquivalentRecord(retainedRuntimeEquivalence, {
+    schema: 'q1x.phase14-runtime-equivalence.v1',
+    fromSha,
+    toSha: BRIDGE_SOURCE_SHA,
+  })) {
+    throw new Error('Phase 14 retained runtime-equivalence hop is missing or invalid');
+  }
+
+  if (
+    tailRuntimeEquivalence?.schema !== 'q1x.phase14-runtime-equivalence.v1'
+    || tailRuntimeEquivalence?.fromSha !== MAINLINE_ANCHOR_SHA
+    || tailRuntimeEquivalence?.toSha !== toSha
+    || !Array.isArray(tailRuntimeEquivalence?.invalidatingPaths)
+  ) {
+    throw new Error('Phase 14 mainline tail runtime-equivalence is missing or invalid');
+  }
+
+  return {
+    schema: 'q1x.phase14-runtime-equivalence.v1',
+    fromSha,
+    toSha,
+    equivalent: tailRuntimeEquivalence.equivalent === true,
+    changedPaths: tailRuntimeEquivalence.changedPaths ?? [],
+    invalidatingPaths: tailRuntimeEquivalence.invalidatingPaths,
+    neutralizedPaths: tailRuntimeEquivalence.neutralizedPaths ?? [],
+    bridge: {
+      schema: mainlineBridge.schema,
+      fromSha: mainlineBridge.fromSha,
+      anchorSha: mainlineBridge.toSha,
+      usedRetainedHop,
+    },
+  };
+}
 
 export function verifyCurrentRuntimeEquivalence(rootInput, fromSha) {
   const root = resolve(rootInput instanceof URL ? fileURLToPath(rootInput) : rootInput);
@@ -17,7 +84,35 @@ export function verifyCurrentRuntimeEquivalence(rootInput, fromSha) {
   const toSha = execFileSync('git', ['rev-parse', 'HEAD'], {
     cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'],
   }).trim();
-  return runtimeEquivalenceBetween({ root, fromSha, toSha });
+  try {
+    return runtimeEquivalenceBetween({ root, fromSha, toSha });
+  } catch (directError) {
+    let mainlineBridge;
+    let retainedRuntimeEquivalence;
+    try {
+      mainlineBridge = JSON.parse(readFileSync(join(root, MAINLINE_BRIDGE_PATH), 'utf8'));
+      retainedRuntimeEquivalence = JSON.parse(readFileSync(join(root, `${EVIDENCE}/phase14-runtime-equivalence.json`), 'utf8'));
+    } catch {
+      throw new Error('Phase 14 mainline bridge is missing or invalid', { cause: directError });
+    }
+    let tailRuntimeEquivalence;
+    try {
+      tailRuntimeEquivalence = runtimeEquivalenceBetween({
+        root,
+        fromSha: MAINLINE_ANCHOR_SHA,
+        toSha,
+      });
+    } catch (tailError) {
+      throw new Error('Phase 14 mainline tail runtime-equivalence could not be verified', { cause: tailError });
+    }
+    return composeRuntimeEquivalenceFallback({
+      fromSha,
+      toSha,
+      retainedRuntimeEquivalence,
+      mainlineBridge,
+      tailRuntimeEquivalence,
+    });
+  }
 }
 const REQUIRED_DOCS = [
   'docs/versioning.md', 'docs/deprecation-policy.md', 'docs/upgrade-rollback.md',

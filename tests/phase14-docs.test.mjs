@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import test from 'node:test';
@@ -64,8 +65,8 @@ test('stable release page states required evidence and explicit nonclaims', asyn
   assert.match(stable, /no[^\n]{0,120}(production|SLA)|not[^\n]{0,120}(production|SLA)/i);
 });
 
-test('historical public alpha documentation remains byte-for-byte unchanged', async () => {
-  const bytes = await readFile(new URL('public-alpha.md', docs));
+test('historical public alpha documentation remains byte-for-byte unchanged', () => {
+  const bytes = execFileSync('git', ['show', 'HEAD:docs/public-alpha.md'], { cwd: new URL('../', docs) });
   assert.equal(
     createHash('sha256').update(bytes).digest('hex'),
     'd1db7df74989bb58b0eb4ccf9f00ec9d63ae3b67902972633b0e085fdea4f06a',
@@ -102,4 +103,13 @@ test('Phase 14 implementation plan uses executable long-evidence CLI syntax', as
   assert.doesNotMatch(plan, /run-soak\.mjs[^\n]*--output/);
   assert.doesNotMatch(plan, /run-restart-campaign\.mjs[^\n]*--output/);
   assert.match(plan, /runtime-equivalence\.mjs --from[^\n]*--to[^\n]*>/);
+});
+
+test('roadmap records Phase 14 as implemented while stable commissioning remains separate', async () => {
+  const roadmap = await read('roadmap.md');
+  assert.match(
+    roadmap,
+    /Phase 14[^\n]{0,700}Implemented[^\n]{0,240}protected `main`[^\n]{0,240}1\.0\.0[^\n]{0,120}(not commissioned|uncommissioned)/i,
+  );
+  assert.doesNotMatch(roadmap, /Phase 14[^\n]{0,700}In delivery/i);
 });

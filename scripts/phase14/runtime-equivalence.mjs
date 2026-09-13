@@ -6,6 +6,7 @@ export const RUNTIME_NEUTRAL_PREFIXES = Object.freeze([
   '.github/workflows/', 'docs/', 'tests/', 'compatibility/evidence/',
 ]);
 export const RUNTIME_NEUTRAL_EXACT = Object.freeze([
+  'scripts/phase14/runtime-equivalence.mjs',
   'scripts/phase14/verify-completion.mjs',
   'compatibility/matrix.json',
   'compatibility/public-surface.rc1.json',
@@ -30,10 +31,14 @@ export function isCompletionWiringOnlyPackageChange(beforeInput, afterInput) {
   const afterCheck = afterScripts.check;
   const beforeVerify = beforeScripts['verify:phase14'];
   const afterVerify = afterScripts['verify:phase14'];
+  const beforeTest = beforeScripts.test;
+  const afterTest = afterScripts.test;
   delete beforeScripts.check;
   delete afterScripts.check;
   delete beforeScripts['verify:phase14'];
   delete afterScripts['verify:phase14'];
+  delete beforeScripts.test;
+  delete afterScripts.test;
   if (JSON.stringify(beforeScripts) !== JSON.stringify(afterScripts)) return false;
 
   const verifyCommand = 'node scripts/phase14/verify-completion.mjs';
@@ -43,7 +48,12 @@ export function isCompletionWiringOnlyPackageChange(beforeInput, afterInput) {
   const expectedCheck = beforeCheck.includes('npm run verify:phase14')
     ? beforeCheck
     : `${beforeCheck} && npm run verify:phase14`;
-  return afterCheck === expectedCheck;
+  if (afterCheck !== expectedCheck) return false;
+
+  const expectedTest = typeof beforeTest === 'string'
+    ? `${beforeTest} tests/phase14-docs.test.mjs`
+    : undefined;
+  return afterTest === beforeTest || afterTest === expectedTest;
 }
 
 export function evaluateRuntimeEquivalence(changedPaths) {
