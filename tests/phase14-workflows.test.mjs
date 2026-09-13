@@ -60,6 +60,12 @@ test('workflows executing Phase 14 completion fetch the historical acceptance co
       /uses:\s*actions\/checkout@[0-9a-f]{40}[^]*?with:\s*\n\s*fetch-depth:\s*0/,
       `${path} must fetch full Git history before runtime-equivalence verification`,
     );
+    for (const sha of [
+      'fa604e123960d32e66317d91cb909e82bc4fbd72',
+      '35ecac7850b214592de537e46d46a2677591b090',
+    ]) {
+      assert.match(setup, new RegExp(`git fetch --no-tags origin ${sha}`), `${path} must fetch ${sha}`);
+    }
   }
 });
 
