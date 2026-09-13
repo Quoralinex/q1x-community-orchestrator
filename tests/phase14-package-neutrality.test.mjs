@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { isCompletionWiringOnlyPackageChange } from '../scripts/phase14/runtime-equivalence.mjs';
+import { evaluateRuntimeEquivalence, isCompletionWiringOnlyPackageChange } from '../scripts/phase14/runtime-equivalence.mjs';
 
 const before = {
   name: 'q1x-community-orchestrator',
@@ -23,4 +23,10 @@ test('runtime-affecting package script changes remain invalidating', () => {
   const after = structuredClone(before);
   after.scripts.start = 'node packages/runtime/dist/other-service.js';
   assert.equal(isCompletionWiringOnlyPackageChange(before, after), false);
+});
+
+test('Phase 14 runtime-equivalence verifier changes are governance-only', () => {
+  const result = evaluateRuntimeEquivalence(['scripts/phase14/runtime-equivalence.mjs']);
+  assert.equal(result.equivalent, true);
+  assert.deepEqual(result.invalidatingPaths, []);
 });
