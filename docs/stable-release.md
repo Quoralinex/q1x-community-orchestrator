@@ -1,6 +1,6 @@
 # Stable release readiness
 
-Phase 14 prepares `1.0.0-rc.1` as the Q1X Community Orchestrator stable-readiness candidate. `1.0.0` is not commissioned by the current source state, and this page does not claim that a stable release already exists.
+Phase 14 is implemented and validated on protected `main` as the Q1X Community Orchestrator `1.0.0-rc.1` stable-readiness candidate. The validation-only stable commissioning lane has passed with release and npm publication disabled. `1.0.0` is not commissioned, and this page does not claim that a stable release already exists.
 
 ## Required evidence before stable commissioning
 
