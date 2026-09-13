@@ -1,0 +1,9 @@
+{
+  "schema": "q1x.phase14-runtime-equivalence-mainline-bridge.v1",
+  "fromSha": "35ecac7850b214592de537e46d46a2677591b090",
+  "toSha": "f960d1dd5adc036c21a344067b7c9c0c2fb619b3",
+  "equivalent": true,
+  "invalidatingPaths": [],
+  "reviewedHeadSha": "e67a8de001682b02db4dc3c29407e971db101737",
+  "basis": "Phase 14 exact-head runtime-equivalence and post-merge verification were green before the source branch was deleted; the target is the verified Phase 14 squash merge on protected main."
+}
