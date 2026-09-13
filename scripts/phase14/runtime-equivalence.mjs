@@ -23,6 +23,22 @@ function node24Range(value) {
 function node24Version(value) {
   return typeof value === 'string' && /^24\.\d+\.\d+$/.test(value);
 }
+function node24RangeIncludes(range, version) {
+  const rangeMatch = typeof range === 'string' ? /^\^24\.(\d+)\.(\d+)$/.exec(range) : null;
+  const versionMatch = typeof version === 'string' ? /^24\.(\d+)\.(\d+)$/.exec(version) : null;
+  if (!rangeMatch || !versionMatch) return false;
+  const rangeMinor = BigInt(rangeMatch[1]);
+  const rangePatch = BigInt(rangeMatch[2]);
+  const versionMinor = BigInt(versionMatch[1]);
+  const versionPatch = BigInt(versionMatch[2]);
+  return versionMinor > rangeMinor || (versionMinor === rangeMinor && versionPatch >= rangePatch);
+}
+function node24PairAligned(packageDocument, lockDocument) {
+  const packageRange = packageDocument?.devDependencies?.['@types/node'];
+  const lockRange = lockDocument?.packages?.['']?.devDependencies?.['@types/node'];
+  const installedVersion = lockDocument?.packages?.['node_modules/@types/node']?.version;
+  return packageRange === lockRange && node24RangeIncludes(packageRange, installedVersion);
+}
 function npmNodeTypesRecord(record) {
   if (!record || typeof record !== 'object' || record.dev !== true || !node24Version(record.version)) return false;
   if (record.resolved !== `https://registry.npmjs.org/@types/node/-/node-${record.version}.tgz`) return false;
@@ -137,6 +153,8 @@ export function runtimeEquivalenceBetween({ root = process.cwd(), fromSha, toSha
       if (
         isNode24TypesRuntimeNeutralPackageChange(beforePackage, afterPackage)
         && isNode24TypesOnlyLockfileChange(beforeLock, afterLock)
+        && node24PairAligned(beforePackage, beforeLock)
+        && node24PairAligned(afterPackage, afterLock)
       ) {
         neutralizedPaths.push('package.json', 'package-lock.json');
       }
