@@ -13,7 +13,7 @@ permissions:
 jobs:
   q1x-review:
     if: ${{ github.event.pull_request.draft == false }}
-    uses: Quoralinex/goose/.github/workflows/q1x-pr-review.yml@dbfc315f9dcb83e94b12f34e88f2d0732be9434b
+    uses: Quoralinex/goose/.github/workflows/q1x-pr-review.yml@b69439ad6bcb7ab237b00362b1a6337816f8ea1e
     with:
       pr_number: ${{ github.event.pull_request.number }}
       head_sha: ${{ github.event.pull_request.head.sha }}
