@@ -18,7 +18,7 @@
     }
   },
   "dependencies": {
-    "@modelcontextprotocol/client": "2.0.0",
+    "@modelcontextprotocol/client": "2.1.0",
     "@quoralinex/q1x-community-adapter-sdk": "1.0.0-rc.1",
     "@quoralinex/q1x-community-contracts": "1.0.0-rc.1",
     "@quoralinex/q1x-community-desktop-bridge-linux": "1.0.0-rc.1",
